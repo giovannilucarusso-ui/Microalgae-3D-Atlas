@@ -1,0 +1,20 @@
+# dipendenze e build
+node_modules
+dist
+share
+*.local
+
+# scratch di lavoro (crop, pagine estratte, misure)
+tmp/
+
+# Fonti bibliografiche — vedi docs/fonti/README.md per cosa sono e dove trovarle.
+# I PDF non sono ridistribuibili: Deschoenmaeker et al. 2016 non e open access,
+# la tesi van Eykelenburg pesa 41 MB e ha licenza non chiarita.
+# Restano tracciate le tre figure di Nowicka-Krawczyk et al. 2019 (CC BY 4.0).
+docs/fonti/*.pdf
+docs/fonti/*.txt
+docs/fonti/deschoenmaeker-2016-fig2-TEM.jpg
+
+# sistema
+.DS_Store
+Thumbs.db

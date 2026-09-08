@@ -1,0 +1,980 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+  background: #06110f;
+  color: #dcebe6;
+  overflow: hidden;
+}
+
+.app {
+  position: relative;
+  height: 100%;
+}
+
+.app canvas {
+  display: block;
+}
+
+/* The field falloff now comes from the optics pass in the render itself, not
+   from an overlay: a vignette drawn on top of the panel would give away that
+   the microscope is a picture with an interface on top of it. */
+
+/* Transmitted light puts a bright field behind the interface. The panel keeps
+   its dark glass — that is the software, not the specimen — but everything
+   drawn straight onto the image has to flip to dark ink. */
+.app.bright .panel {
+  box-shadow: 0 18px 50px rgba(20, 34, 32, 0.35);
+}
+
+.app.bright .bar,
+.app.bright .bar::before,
+.app.bright .bar::after {
+  background: #16211f;
+}
+
+.app.bright .bar {
+  border-color: #16211f;
+  box-shadow: 0 0 10px rgba(240, 248, 245, 0.75);
+}
+
+.app.bright .barlabel {
+  color: #16211f;
+  text-shadow: 0 0 7px rgba(240, 248, 245, 0.9);
+}
+
+.app.bright .hint {
+  color: #4a5a54;
+}
+
+/* Shown instead of the scene when there is no WebGL 2, and over it when the
+   context is lost. Both are states where a black rectangle would otherwise be
+   the whole explanation. */
+.unsupported {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 40px;
+  text-align: center;
+  background: rgba(6, 17, 15, 0.94);
+  z-index: 40;
+}
+
+.unsupported h2 {
+  font-size: 20px;
+  font-weight: 650;
+  color: #f0faf6;
+}
+
+.unsupported p {
+  max-width: 46ch;
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: #9db8b1;
+}
+
+.unsupported .cta {
+  width: auto;
+  padding: 9px 22px;
+  margin-top: 4px;
+}
+
+/* ── Left panel ─────────────────────────────────────────────── */
+
+/* The panel scrolls, but not as one block: the name of the organism and the
+   view switcher are how you know where you are and how you leave, so they stay
+   put and only the controls beneath them move. On a 730 px-tall window the
+   whole thing overflowed and the title was the first thing to go. */
+.panel {
+  position: absolute;
+  /* Above the in-scene labels, which are DOM elements drawn by drei with a
+     z-index of at most 20. They are anchored to the model, so the moment the
+     viewer moves the cell off centre they travel with it - and they used to
+     travel straight across the panel. Interface over specimen, always. */
+  z-index: 25;
+  top: 20px;
+  left: 20px;
+  width: 320px;
+  max-height: calc(100% - 40px);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  padding: 20px 22px;
+  background: rgba(8, 24, 22, 0.85);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(120, 200, 180, 0.18);
+  border-radius: 14px;
+}
+
+.panel-head {
+  flex: 0 0 auto;
+}
+
+.panel-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  /* room for the scrollbar so text never runs under it */
+  margin-right: -8px;
+  padding-right: 8px;
+  /* the last line of text fades rather than being sliced, which is what tells
+     the eye there is more below without spending a control on saying so */
+  mask-image: linear-gradient(to bottom, #000 calc(100% - 22px), transparent);
+}
+
+.panel-foot {
+  flex: 0 0 auto;
+  padding-top: 4px;
+}
+
+.panel-body,
+.detail {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(120, 200, 180, 0.28) transparent;
+}
+
+.panel-body::-webkit-scrollbar,
+.detail::-webkit-scrollbar {
+  width: 8px;
+}
+
+.panel-body::-webkit-scrollbar-track,
+.detail::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.panel-body::-webkit-scrollbar-thumb,
+.detail::-webkit-scrollbar-thumb {
+  background: rgba(120, 200, 180, 0.24);
+  border-radius: 4px;
+}
+
+.panel-body::-webkit-scrollbar-thumb:hover,
+.detail::-webkit-scrollbar-thumb:hover {
+  background: rgba(120, 200, 180, 0.45);
+}
+
+.eyebrow {
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #6fc4ad;
+}
+
+.panel h1 {
+  font-size: 30px;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+  color: #f0faf6;
+  margin-top: 2px;
+}
+
+.species {
+  font-size: 13px;
+  color: #9db8b1;
+  margin-bottom: 14px;
+}
+
+.tabs {
+  display: flex;
+  gap: 6px;
+  padding: 4px;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 9px;
+}
+
+.tab {
+  flex: 1;
+  padding: 7px 8px;
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #9db8b1;
+  background: none;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.tab.active {
+  background: rgba(71, 179, 145, 0.22);
+  color: #e8f5f0;
+}
+
+.control {
+  padding: 11px 0;
+  border-top: 1px solid rgba(120, 200, 180, 0.14);
+}
+
+.control:first-of-type {
+  margin-top: 14px;
+}
+
+.control label {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: 13px;
+  font-weight: 600;
+  color: #e8f5f0;
+}
+
+.control .value {
+  font-variant-numeric: tabular-nums;
+  color: #7fd4b8;
+}
+
+.control input[type="range"] {
+  width: 100%;
+  margin: 10px 0 8px;
+  accent-color: #47b391;
+}
+
+.readout {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  font-size: 12px;
+  color: #9db8b1;
+}
+
+.readout b {
+  color: #e8f5f0;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+
+.note {
+  margin-top: 8px;
+  font-size: 11.5px;
+  line-height: 1.45;
+  color: #7f968f;
+}
+
+/* The strain caveat. Set apart from the ordinary notes because it qualifies
+   the numbers directly above it rather than explaining them. */
+.note.strain {
+  margin-top: 10px;
+  padding: 8px 10px;
+  border-left: 2px solid rgba(224, 176, 113, 0.5);
+  background: rgba(224, 176, 113, 0.07);
+  border-radius: 0 5px 5px 0;
+  color: #93a79c;
+}
+
+.note.strain b {
+  color: #e0b071;
+  font-weight: 600;
+}
+
+/* The life-cycle scrubber. Given its own block because it is a second axis
+   through the filament view, alongside temperature. */
+.cycle {
+  margin-top: 14px;
+  padding-top: 11px;
+  border-top: 1px solid rgba(120, 200, 180, 0.14);
+}
+
+.cycle-row {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin: 9px 0 4px;
+}
+
+.cycle-row input[type="range"] {
+  flex: 1;
+  margin: 0;
+}
+
+.play {
+  flex: 0 0 auto;
+  width: 26px;
+  height: 26px;
+  font: inherit;
+  font-size: 10px;
+  line-height: 1;
+  color: #06110f;
+  background: #47b391;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.play:hover {
+  background: #57c8a3;
+}
+
+.step {
+  margin-top: 9px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #7fd4b8;
+  min-height: 15px;
+}
+
+.toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.toggle input {
+  accent-color: #47b391;
+  width: 15px;
+  height: 15px;
+}
+
+/* ── Structure list ─────────────────────────────────────────── */
+
+.caption {
+  margin: 12px 0 2px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: #9db8b1;
+}
+
+.list-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #6fc4ad;
+  margin-bottom: 10px;
+}
+
+.stepper {
+  display: flex;
+  gap: 4px;
+}
+
+.stepper button {
+  width: 22px;
+  height: 22px;
+  font: inherit;
+  font-size: 15px;
+  line-height: 1;
+  color: #9db8b1;
+  background: rgba(255, 255, 255, 0.05);
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.stepper button:hover {
+  background: rgba(71, 179, 145, 0.24);
+  color: #f0faf6;
+}
+
+.group + .group {
+  margin-top: 10px;
+}
+
+.group-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #7fb3a5;
+  margin-bottom: 3px;
+  padding-left: 8px;
+}
+
+/* The layer switch — one click to look past a whole system */
+.peek {
+  display: flex;
+  align-items: center;
+  padding: 3px 5px;
+  border: none;
+  border-radius: 5px;
+  background: transparent;
+  color: #5e8f83;
+  cursor: pointer;
+  transition: color 0.15s, background 0.15s;
+}
+
+.peek:hover {
+  color: #9fe0cd;
+  background: rgba(120, 200, 180, 0.12);
+}
+
+.peek.off {
+  color: #3e5f59;
+}
+
+.item.muted {
+  color: #4d635e;
+}
+
+.item.muted .dot {
+  opacity: 0.3;
+}
+
+.clear {
+  margin-top: 12px;
+  font: inherit;
+  font-size: 10.5px;
+  letter-spacing: 0.06em;
+  color: #8aa8a0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-decoration: underline;
+  padding-left: 8px;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  padding: 4px 8px;
+  font: inherit;
+  font-size: 12.5px;
+  text-align: left;
+  color: #c3d8d1;
+  background: none;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.item:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.item.active {
+  background: rgba(71, 179, 145, 0.18);
+  color: #f0faf6;
+}
+
+.dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  flex: 0 0 auto;
+  box-shadow: 0 0 6px currentColor;
+}
+
+.cta {
+  width: 100%;
+  margin-top: 12px;
+  padding: 10px;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: #06110f;
+  background: #47b391;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.cta:hover {
+  background: #57c8a3;
+}
+
+.cta.ghost {
+  color: #a9c8bf;
+  background: none;
+  border: 1px solid rgba(120, 200, 180, 0.3);
+}
+
+.cta.ghost:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* ── Detail card ────────────────────────────────────────────── */
+
+/* Stops short of the bottom strip. The scale bar and the hint live down there
+   on the same side, and the scale bar is the only thing telling you what
+   magnification you are at — covering it the moment you open a structure is
+   the worst possible time to lose it. */
+.detail {
+  position: absolute;
+  z-index: 25;
+  top: 20px;
+  right: 20px;
+  width: 350px;
+  max-height: calc(100% - 96px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  mask-image: linear-gradient(to bottom, #000 calc(100% - 24px), transparent);
+  padding: 22px 24px;
+  background: rgba(8, 24, 22, 0.9);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(120, 200, 180, 0.2);
+  border-radius: 14px;
+}
+
+.close {
+  position: absolute;
+  top: 12px;
+  right: 14px;
+  font: inherit;
+  font-size: 22px;
+  line-height: 1;
+  color: #7f968f;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.close:hover {
+  color: #e8f5f0;
+}
+
+.latin {
+  font-size: 11px;
+  font-style: italic;
+  letter-spacing: 0.05em;
+  color: #6fc4ad;
+}
+
+.detail h2 {
+  font-size: 21px;
+  font-weight: 650;
+  color: #f0faf6;
+  margin: 2px 0 9px;
+}
+
+/* What this card rests on, in the proportions it actually rests on it. */
+.evidence {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.evbar {
+  display: flex;
+  flex: 1 1 auto;
+  gap: 2px;
+  height: 4px;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.evbar > span {
+  background: currentColor;
+  border-radius: 999px;
+}
+
+.evbar > .tier-species {
+  color: #d8e6df;
+}
+
+.evbar > .tier-model {
+  color: #7cb2e0;
+}
+
+.evbar > .tier-unverified {
+  color: #9aa8a4;
+}
+
+.evcount {
+  flex: 0 0 auto;
+  font-size: 10.5px;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.06em;
+  color: #8aa8a0;
+}
+
+.evof {
+  color: #63807a;
+}
+
+.body {
+  margin-top: 12px;
+  font-size: 13px;
+  line-height: 1.6;
+  color: #c8ddd6;
+}
+
+.dims {
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(120, 200, 180, 0.14);
+  display: grid;
+  gap: 7px;
+}
+
+.dims div {
+  display: flex;
+  gap: 12px;
+  font-size: 12px;
+}
+
+.dims dt {
+  flex: 0 0 130px;
+  display: flex;
+  gap: 7px;
+  color: #6fc4ad;
+}
+
+/* One marker per row. Three tiers, three shapes as well as three colours, so
+   the distinction survives for anyone who cannot separate the hues: filled for
+   measured here, hollow for borrowed from a model organism, dashed for not
+   established. */
+.tier {
+  flex: 0 0 auto;
+  width: 10px;
+  height: 10px;
+  margin-top: 4px;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+}
+
+.tier-species .tier {
+  color: #d8e6df;
+  background: currentColor;
+}
+
+.tier-model .tier {
+  color: #7cb2e0;
+  background: transparent;
+}
+
+/* Not a dashed border — at this size that is two dashes and reads as the hollow
+   ring. An open ring with a bite out of one side has a silhouette of its own. */
+.tier-unverified .tier {
+  color: #9aa8a4;
+  background: transparent;
+  border-right-color: transparent;
+  transform: rotate(-38deg);
+}
+
+.tier-model dt,
+.tier-unverified dt {
+  color: #8aa8a0;
+}
+
+.tierkey {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  margin-top: 10px;
+  padding-top: 9px;
+  border-top: 1px solid rgba(120, 200, 180, 0.1);
+  list-style: none;
+  font-size: 10.5px;
+  color: #7f968f;
+}
+
+.tierkey li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* A tier this card does not use is still worth showing: "nothing here is
+   unverified" is a claim, and hiding the row makes it unsayable. */
+.tierkey li.unused {
+  opacity: 0.38;
+}
+
+.tierkey .tier {
+  margin-top: 0;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.dims dd {
+  color: #dcebe6;
+  font-variant-numeric: tabular-nums;
+}
+
+.srclabel {
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(120, 200, 180, 0.14);
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #6fc4ad;
+}
+
+.srclist {
+  margin-top: 8px;
+  padding-left: 16px;
+  display: grid;
+  gap: 6px;
+}
+
+.srclist li {
+  font-size: 11.5px;
+  line-height: 1.45;
+  color: #8aa8a0;
+}
+
+.srclist a {
+  color: #8aa8a0;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(138, 168, 160, 0.3);
+}
+
+.srclist a:hover {
+  color: #7fd4b8;
+}
+
+/* ── In-scene labels ────────────────────────────────────────── */
+
+.labelwrap {
+  pointer-events: none;
+  position: relative;
+}
+
+/* The dot sits on the structure; the pill is pushed away along a leader line. */
+.lanchor {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  margin: -3px 0 0 -3px;
+  border-radius: 50%;
+  box-shadow: 0 0 0 2px rgba(4, 16, 15, 0.7);
+}
+
+.lline {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 1px;
+  transform-origin: 0 50%;
+  background: linear-gradient(
+    90deg,
+    rgba(226, 240, 236, 0.55),
+    rgba(226, 240, 236, 0.28)
+  );
+}
+
+.label {
+  position: absolute;
+  left: 0;
+  top: 0;
+  white-space: nowrap;
+  padding: 3px 10px;
+  font: inherit;
+  font-size: 11.5px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  color: #e2f0ec;
+  background: rgba(5, 18, 18, 0.78);
+  border: 1px solid rgba(150, 220, 200, 0.2);
+  border-radius: 4px;
+  cursor: pointer;
+  pointer-events: auto;
+  backdrop-filter: blur(4px);
+  transition: border-color 0.15s, color 0.15s;
+}
+
+.label:hover {
+  border-color: rgba(150, 220, 200, 0.6);
+}
+
+.label.active {
+  border-color: #47b391;
+  color: #fff;
+}
+
+/* ── Scale bar & hint ───────────────────────────────────────── */
+
+.scalebar {
+  position: absolute;
+  z-index: 25;
+  right: 24px;
+  /* Clear of the hint bar below it, which grew a button and got taller. */
+  bottom: 54px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  pointer-events: none;
+}
+
+.bar {
+  height: 3px;
+  min-width: 20px;
+  background: #dcebe6;
+  border-left: 1px solid #dcebe6;
+  border-right: 1px solid #dcebe6;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.8);
+  position: relative;
+}
+
+.bar::before,
+.bar::after {
+  content: "";
+  position: absolute;
+  top: -4px;
+  width: 1px;
+  height: 11px;
+  background: #dcebe6;
+}
+
+.bar::before {
+  left: 0;
+}
+
+.bar::after {
+  right: 0;
+}
+
+.barlabel {
+  font-size: 12px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: #dcebe6;
+  text-shadow: 0 0 6px rgba(0, 0, 0, 0.9);
+}
+
+.hint {
+  position: absolute;
+  z-index: 25;
+  right: 18px;
+  bottom: 14px;
+  padding: 5px 11px;
+  border: 1px solid rgba(120, 200, 180, 0.12);
+  border-radius: 999px;
+  /* This line is the only place the app says that you can orbit, zoom, step
+     with the arrows or clear with Escape. Unbacked it measured 1.8:1 against
+     the bright field of the filament view — the one view every visitor meets
+     first. It gets the panel's own glass so it reads over either ground. */
+  background: rgba(8, 24, 22, 0.72);
+  backdrop-filter: blur(7px);
+  font-size: 11px;
+  color: #a9c2bb;
+  /* The bar itself still passes the pointer through to the canvas behind it —
+     it sits over the specimen and must not eat a drag that starts under it —
+     but the reset button inside it has to be clickable. */
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.hint .reset {
+  pointer-events: auto;
+  cursor: pointer;
+  border: 1px solid rgba(120, 200, 180, 0.28);
+  border-radius: 999px;
+  padding: 2px 9px;
+  background: rgba(18, 48, 44, 0.9);
+  color: #cfe6df;
+  font: inherit;
+  white-space: nowrap;
+}
+
+.hint .reset:hover {
+  border-color: rgba(140, 224, 200, 0.55);
+  color: #eafaf5;
+}
+
+.hint .reset:focus-visible {
+  outline: 2px solid #7fd4b8;
+  outline-offset: 2px;
+}
+
+button:focus-visible,
+input:focus-visible,
+a:focus-visible {
+  outline: 2px solid #47b391;
+  outline-offset: 2px;
+}
+
+@media (max-width: 900px) {
+  .panel,
+  .detail {
+    width: calc(100% - 32px);
+    left: 16px;
+    right: 16px;
+  }
+
+  .panel {
+    top: auto;
+    bottom: 16px;
+    max-height: 46%;
+  }
+
+  .detail {
+    top: 16px;
+    max-height: 42%;
+  }
+
+  .scalebar {
+    bottom: auto;
+    top: 16px;
+    right: 24px;
+  }
+
+  /* The instructions are for a pointer and there is not one here, but the way
+     back from a two-finger pan is needed more on a small screen, not less - so
+     the sentence goes and the button stays. */
+  .hint {
+    border: none;
+    background: none;
+    backdrop-filter: none;
+    padding: 0;
+  }
+
+  .hint span {
+    display: none;
+  }
+}
+
+
+/* Retracts the top fade at the very top and the bottom fade at the very bottom,
+   so a list that has ended looks ended. Browsers without scroll-driven
+   animations simply keep the static fade, which is the old behaviour. */
+@keyframes fade-ends {
+  0% {
+    --fade-top: 0px;
+    --fade-bottom: 22px;
+  }
+  100% {
+    --fade-top: 12px;
+    --fade-bottom: 0px;
+  }
+}
+
+@property --fade-top {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --fade-bottom {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 0px;
+}

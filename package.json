@@ -1,0 +1,29 @@
+{
+  "name": "spirulina-3d",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Interactive 3D cell atlas of Spirulina (Limnospira platensis) — prototype",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "check": "node tools/check-science.mjs",
+    "shots": "node tools/shoot.mjs",
+    "lamellae": "node tools/lamellae.mjs",
+    "share": "node tools/bundle-single.mjs",
+    "share:check": "node tools/check-bundle.mjs share/spirulina-3d.html"
+  },
+  "dependencies": {
+    "@react-three/drei": "^10.0.0",
+    "@react-three/fiber": "^9.0.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "three": "^0.180.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^5.0.0",
+    "puppeteer-core": "^25.8.0",
+    "vite": "^7.0.0"
+  }
+}
