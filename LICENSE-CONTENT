@@ -1,0 +1,49 @@
+# Licence for the content
+
+The code in this repository is under the MIT licence, in `LICENSE`. This file
+covers everything that is not code — the part that took the reading rather than
+the typing:
+
+- the anatomical data, dimensions, confidence tiers and bibliography in
+  `src/structures.js`, `src/science.js` and `src/sites.js`;
+- the written descriptions shown on the structure cards;
+- `docs/distinta-anatomica-spirulina.md`, `docs/design-notes.md` and
+  `docs/fonti/README.md`;
+- the rendered images in `docs/shots/`.
+
+Those are licensed under a **Creative Commons Attribution 4.0 International**
+licence (`CC-BY-4.0`). You may share and adapt them, including commercially,
+provided you give appropriate credit, link to the licence and indicate whether
+changes were made.
+
+Full legal code: https://creativecommons.org/licenses/by/4.0/legalcode
+Summary: https://creativecommons.org/licenses/by/4.0/
+
+## How to attribute
+
+> Microalgae 3D Atlas — Giovanni Luca Russo, CC BY 4.0.
+> https://github.com/giovannilucarusso-ui/Microalgae-3D-Atlas
+
+For anything derived from the anatomical data, cite the atlas itself
+(`CITATION.cff`) — the numbers carry their own primary sources, and a figure
+reused without them loses the one thing that distinguishes it from an
+illustration.
+
+## Third-party material
+
+`docs/fonti/nk2019-fig2.png`, `nk2019-fig4.png` and `nk2019-fig5.png` are
+figures from:
+
+> Nowicka-Krawczyk, P., Mühlsteinová, R. & Hauer, T. (2019). Detailed
+> characterization of the *Arthrospira* type species separating commercially
+> grown taxa into the new genus *Limnospira* (Cyanobacteria).
+> *Scientific Reports* 9:694. https://doi.org/10.1038/s41598-018-36831-0
+
+They are reproduced here under their own **CC BY 4.0** licence, with attribution
+to their authors. They are not covered by the copyright notice above, and
+reusing them carries their attribution, not this project's.
+
+The other sources described in `docs/fonti/README.md` are **not** in this
+repository and are not redistributable through it. One of them is not open
+access at all. `docs/fonti/README.md` says what each one is and where it came
+from, so a reader can obtain them the way this project did.

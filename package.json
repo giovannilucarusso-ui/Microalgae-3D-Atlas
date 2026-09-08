@@ -1,8 +1,9 @@
 {
-  "name": "spirulina-3d",
+  "name": "microalgae-3d-atlas",
   "private": true,
-  "version": "0.1.0",
-  "description": "Interactive 3D cell atlas of Spirulina (Limnospira platensis) — prototype",
+  "license": "MIT",
+  "version": "0.6.0",
+  "description": "Interactive 3D cell atlas of microalgae and cyanobacteria, sourced and confidence-tiered. First specimen: Spirulina (Limnospira platensis).",
   "type": "module",
   "scripts": {
     "dev": "vite",

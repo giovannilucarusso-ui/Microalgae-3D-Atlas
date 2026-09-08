@@ -1,0 +1,40 @@
+cff-version: 1.2.0
+message: >-
+  If you use this atlas, or any of the anatomical data in it, please cite it as
+  below. The numbers carry their own primary sources on every card; please cite
+  those as well where you rely on them.
+title: Microalgae 3D Atlas
+abstract: >-
+  An interactive 3D cell atlas of microalgae and cyanobacteria, drawn from
+  primary sources and stating the provenance of every measurement. The first
+  specimen is Spirulina (Limnospira platensis), from the helical trichome under
+  transmitted light down to a nanometre-scale cutaway of one cell. Each of the
+  19 clickable structures carries dated dimensions marked at one of three
+  confidence tiers — measured in Spirulina itself, taken from model
+  cyanobacteria, or not yet established — so a reader can tell what is known
+  from what is inferred. The constraints those numbers have to satisfy are
+  asserted in code rather than left as prose.
+type: software
+authors:
+  - family-names: Russo
+    given-names: Giovanni Luca
+    # orcid: "https://orcid.org/0000-0000-0000-0000"   ← add yours here
+repository-code: https://github.com/giovannilucarusso-ui/Microalgae-3D-Atlas
+version: 0.6.0
+date-released: 2026-09-09
+license:
+  - MIT
+  - CC-BY-4.0
+keywords:
+  - microalgae
+  - cyanobacteria
+  - Spirulina
+  - Limnospira platensis
+  - Arthrospira
+  - cell ultrastructure
+  - interactive 3D
+  - scientific visualisation
+  - WebGL
+# Once the repository is archived on Zenodo, add the DOI it mints here and the
+# citation becomes permanent rather than a link that can move:
+# doi: 10.5281/zenodo.XXXXXXX
