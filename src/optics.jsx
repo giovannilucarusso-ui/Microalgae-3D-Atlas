@@ -225,7 +225,7 @@ class MicroscopePass extends Pass {
 
 // Takes rendering over from React Three Fiber — any useFrame with a priority
 // above zero does — and drives the composer instead.
-export function Optics({ settings }) {
+export function Optics({ settings, focus }) {
   const gl = useThree((s) => s.gl)
   const scene = useThree((s) => s.scene)
   const camera = useThree((s) => s.camera)
@@ -261,9 +261,16 @@ export function Optics({ settings }) {
   }, [composer, size.width, size.height, dpr])
 
   // The plane of focus follows whatever the viewer has centred, so zooming in
-  // on a structure brings it into focus the way turning the fine focus does.
+  // on a structure brings it into focus the way turning the coarse focus does.
+  //
+  // `focus` is the fine focus: a ref, in scene units, added on top. It is a ref
+  // and not a prop because it is dragged, and a value that re-renders the app on
+  // every frame of a drag is a value nobody can rack smoothly. Nothing else in
+  // the pass needs to know it moved — the uniform is read here every frame
+  // anyway.
   useFrame((_, delta) => {
-    pass.uniforms.uFocus.value = camera.position.distanceTo(controls?.target ?? origin.current)
+    const centred = camera.position.distanceTo(controls?.target ?? origin.current)
+    pass.uniforms.uFocus.value = centred + (focus?.current ?? 0)
     composer.render(delta)
   }, 1)
 

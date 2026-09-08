@@ -48,8 +48,16 @@ const VIEWS = {
     camera: { position: [299, 160, 518], fov: 40, near: 1, far: 6000 },
     controls: { minDistance: 25, maxDistance: 1600 },
     home: { target: [0, 0, 0], dir: [299, 160, 518], distance: 620 },
+    // The fine focus, in µm of focal plane travel either way. A microscope has
+    // a second knob because the depth of field is thinner than the specimen,
+    // and the answer to "half of every coil is dissolved" is the answer a
+    // microscopist gives: rack through it. 60 µm covers the helix, whose depth
+    // extent from this camera is about 78, and a little past both ends of it.
+    fineFocus: { range: 60, step: 0.5 },
     // A high-aperture objective has a focal plane a couple of micrometres
-    // thick; over a 36 µm helix that leaves most of every coil dissolved.
+    // thick; over a 36 µm helix that leaves most of every coil dissolved. That
+    // is what an objective does, and it is why `fineFocus` above exists rather
+    // than this number being smaller.
     optics: {
       aperture: 11,
       maxBlur: 0.015,
@@ -189,12 +197,65 @@ export default function App() {
   // the thing that makes people afraid to move in the first place, and it is
   // why this view could feel as though it were locked to one axis when in fact
   // it was free the whole time. A fresh object per request fixes it.
+  // The fine focus: an offset on the plane of focus, in scene units, carried in
+  // a ref so that racking it does not re-render the app once per frame. The
+  // slider and the readout are driven from here rather than from state, the way
+  // the life cycle already is.
+  const focus = useRef(0)
+  const focusSlider = useRef(null)
+  const focusValue = useRef(null)
+  function showFocus() {
+    const v = focus.current
+    if (focusValue.current) {
+      focusValue.current.textContent =
+        (v > 0.05 ? '+' : v < -0.05 ? '−' : '') + Math.abs(v).toFixed(1) + ' µm'
+    }
+  }
+  function setFocus(value) {
+    const limit = config.fineFocus?.range ?? 0
+    focus.current = Math.max(-limit, Math.min(limit, value))
+    if (focusSlider.current) focusSlider.current.value = String(focus.current)
+    showFocus()
+  }
+
   const [homeAt, setHomeAt] = useState(0)
   const homeGoal = useMemo(() => ({ ...config.home }), [config, homeAt])
   function goHome() {
     setSelected(null)
     setHomeAt((n) => n + 1)
+    setFocus(0)
   }
+
+  // Switching view swaps the whole Canvas and with it the scene's units — µm
+  // one side, nm the other — so an offset carried across is not a smaller
+  // number, it is a nonsensical one.
+  useEffect(() => {
+    focus.current = 0
+    showFocus()
+  }, [view])
+
+  // Fine focus on shift+wheel. The wheel on its own is the coarse control: it
+  // dollies the camera towards the specimen. This is the other knob, and it
+  // belongs under the hand rather than in the panel — racking focus is
+  // something you do while looking, not something you go and set.
+  //
+  // The listener sits on window in the capture phase because OrbitControls owns
+  // the wheel on the canvas and does not look at modifiers. A listener on the
+  // canvas itself would run against drei's in registration order, which is
+  // whichever mounted first; capture on an ancestor is not a race.
+  useEffect(() => {
+    if (!config.fineFocus) return
+    const step = config.fineFocus.step * 4
+    const onWheel = (event) => {
+      if (!event.shiftKey) return
+      if (event.target?.tagName !== 'CANVAS') return
+      event.preventDefault()
+      event.stopPropagation()
+      setFocus(focus.current + (event.deltaY > 0 ? step : -step))
+    }
+    window.addEventListener('wheel', onWheel, { capture: true, passive: false })
+    return () => window.removeEventListener('wheel', onWheel, { capture: true })
+  }, [config])
 
   // Clicking empty field clears the selection, but a *drag* that starts and
   // ends on empty field is an orbit, and clearing the selection out from under
@@ -379,7 +440,7 @@ export default function App() {
         <CameraRig camera={detailCamera ?? homeGoal} />
         <KeyboardPan />
         <ScaleBarDriver barRef={barRef} labelRef={labelRef} unit={config.unit} />
-        <Optics settings={config.optics} />
+        <Optics settings={config.optics} focus={focus} />
       </Canvas>
       )}
 
@@ -529,6 +590,49 @@ export default function App() {
                 In open water that rotation drives it forward, one helix pitch per
                 turn — no flagella involved.
               </p>
+
+              {/* The fine focus. The depth of field here is an objective's, not
+                  a render's convenience: a couple of micrometres over a helix
+                  38 µm across, so at any one setting the far half of every coil
+                  is dissolved. That is not a fault to be tuned out — it is what
+                  the instrument does, and it is why a microscope has this
+                  second knob. Rack it and the coils come forward in turn. */}
+              <div className="cycle">
+                <label htmlFor="fine">
+                  Fine focus
+                  <span className="value" ref={focusValue}>
+                    0.0 µm
+                  </span>
+                </label>
+                <div className="cycle-row">
+                  <button
+                    className="play"
+                    onClick={() => setFocus(0)}
+                    aria-label="Return the plane of focus to the middle of the helix"
+                    title="Back to the middle of the helix"
+                  >
+                    ⌖
+                  </button>
+                  <input
+                    id="fine"
+                    type="range"
+                    min={-config.fineFocus.range}
+                    max={config.fineFocus.range}
+                    step={config.fineFocus.step}
+                    defaultValue="0"
+                    ref={focusSlider}
+                    onInput={(event) => setFocus(Number(event.target.value))}
+                  />
+                </div>
+                <p className="note">
+                  The plane of focus, moved through the slide. Shift and the
+                  wheel do the same over the specimen itself. The depth of field
+                  is a couple of micrometres and the helix is 38 across, so most
+                  of it is always dissolved — which is what a coil of this looks
+                  like down a real objective, and why the focus is a control
+                  rather than a setting.
+                </p>
+              </div>
 
               {/* The life cycle. Scrub it, or let it run: a necridium forms, the
                   filament parts at it, and the hormogonium screws away along the
@@ -720,6 +824,7 @@ export default function App() {
         <span>
           Click a structure · ← → to step · drag to orbit · WASD or right-drag
           to move · scroll to zoom at the pointer
+          {view === 'filament' ? ' · shift+scroll for fine focus' : ''}
         </span>
         <button className="reset" onClick={goHome} title="Back to the whole cell (Esc)">
           Reset view

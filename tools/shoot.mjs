@@ -8,6 +8,7 @@
 //   node tools/shoot.mjs cell@30 --crop 700,250,520,360
 //   node tools/shoot.mjs filament --still     → gliding rotation off, so two
 //                                               shots can be compared
+//   node tools/shoot.mjs filament --focus 24  → fine focus racked to +24 µm
 //
 // `--crop` writes the named rectangle at one screen pixel to one image pixel
 // instead of the whole 1400×900 frame scaled down to be looked at. Surface
@@ -129,6 +130,11 @@ async function main() {
   // were judging has moved. Nothing about a still is comparable to another
   // still until that is off.
   const still = args.includes('--still')
+  // Where the fine focus is racked to, in µm. The plane of focus is a control
+  // in the filament view, so a shot that does not say where it was set is not
+  // reproducible.
+  const focusFlag = args.indexOf('--focus')
+  const focusAt = focusFlag === -1 ? null : Number(args[focusFlag + 1])
   const [cx, cy, cw, ch] = cropFlag === -1 ? [] : (args[cropFlag + 1] ?? '').split(',').map(Number)
   const clip =
     cropFlag === -1
@@ -173,6 +179,16 @@ async function main() {
         const box = document.querySelector('.toggle input[type="checkbox"], input[type="checkbox"]')
         if (box?.checked) box.click()
       })
+      await sleep(400)
+    }
+
+    if (focusAt != null && Number.isFinite(focusAt)) {
+      await page.evaluate((v) => {
+        const slider = document.querySelector('#fine')
+        if (!slider) return
+        slider.value = String(v)
+        slider.dispatchEvent(new Event('input', { bubbles: true }))
+      }, focusAt)
       await sleep(400)
     }
 
