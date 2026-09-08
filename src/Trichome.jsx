@@ -260,7 +260,7 @@ export default function Trichome({ gliding, selected, onSelect, life }) {
       // layer it was making the tip six per cent darker than the cell under
       // it, which is the exact opposite of the bright refractile cap a light
       // microscope shows on an apical cell (Nowicka-Krawczyk 2019, Fig. 4).
-      calyptra: calyptraMaterial({ strength: 0.86, thickness: 1.05, rim: 1.05 }),
+      calyptra: calyptraMaterial({ strength: 1, thickness: 0.4, rim: 0.7 }),
     }
   }, [texture])
   useEffect(
@@ -278,10 +278,21 @@ export default function Trichome({ gliding, selected, onSelect, life }) {
   // It stands proud of the apical cell rather than skinning it. At 1.04 it was
   // inside the halo shell round the same cap and had no outline of its own; a
   // cap is a thing sitting on top of another thing, and the step is how you
-  // read that. 0.92 rad of sweep is a little over the dome — a calyptra covers
-  // the cap, not the shoulders.
+  // read that.
+  //
+  // 0.78 rad of sweep, not the 0.92 it was. In Nowicka-Krawczyk 2019 Fig. 4d—e
+  // and m—n the clear cap takes the terminal third of the apical cell and the
+  // green comes up to meet it; at 0.92 rad this one reached the shoulders, so
+  // its added light washed the whole dome at once and the apex read as a pale
+  // ball stuck on the end of the tube rather than as a cap on a green cell.
+  // What makes a calyptra legible in the plate is the contrast across its edge,
+  // and there is no edge left once it covers everything it could be read
+  // against. Nor is there one at 0.62, which was tried: the cap stops short of
+  // the dome's own outline from every angle but straight down its axis, and a
+  // cap whose rim never reaches the silhouette is not a cap, it is a spot
+  // floating on the cell.
   const calyptra = useMemo(
-    () => new THREE.SphereGeometry(cellRadius * APEX * 1.055, 30, 16, 0, Math.PI * 2, 0, 0.92),
+    () => new THREE.SphereGeometry(cellRadius * APEX * 1.055, 30, 16, 0, Math.PI * 2, 0, 0.78),
     [cellRadius],
   )
   useEffect(() => () => calyptra.dispose(), [calyptra])

@@ -132,9 +132,11 @@ const HALO_FRAGMENT = /* glsl */ `
 //   · the path through it goes as 1/cos, so it brightens where the line of
 //     sight runs along the wall rather than across it;
 //   · and it saturates, because a clear body can only bend the light it is
-//     given.
+//     given, and because the empty field is the ceiling: the lamp with nothing
+//     in front of it is the brightest thing a transmitted-light image has.
 //
-// Bright over the dome, brighter round its edge: the refractile spot a light
+// Clear where you look straight through it, bright where the line of sight
+// runs along the wall, brightest in the lip: the refractile spot a light
 // microscope shows on a mature apical cell, and one of the characters that
 // separates this genus from Spirulina proper.
 const CALYPTRA_FRAGMENT = /* glsl */ `
@@ -154,19 +156,38 @@ const CALYPTRA_FRAGMENT = /* glsl */ `
     vec3 V = normalize(vViewDir);
     // Floored, or the path runs away to infinity exactly at the silhouette and
     // the cap ends in a hard white ring.
-    float ndv = clamp(abs(dot(N, V)), 0.10, 1.0);
+    float ndv = clamp(abs(dot(N, V)), 0.16, 1.0);
 
     // On a sphere cap three's uv.y is 1 at the pole and 0 at the rim, so this
     // is the way out from the pole.
     float outward = 1.0 - vUv.y;
-    float wall = uThickness * (1.0 - smoothstep(0.52, 1.0, outward));
+    // The thickening is a taper: greatest over the dome, back to ordinary wall
+    // at the rim of the cap. Held flat across half the cap, as it was, it gave
+    // the whole middle a single value before anything else could vary it.
+    float wall = uThickness * (1.0 - smoothstep(0.30, 1.0, outward));
 
-    float bright = 1.0 - exp(-wall / ndv);
+    // The path through it goes as 1/cos, so it brightens where the line of
+    // sight runs along the wall rather than across it.
+    float bright = wall / ndv;
     // The lip of the cap, where the wall is seen end-on. It is what gives the
     // calyptra an outline of its own against the cell it caps.
     float lip = uRim * pow(1.0 - ndv, 4.0) * (1.0 - smoothstep(0.72, 1.0, outward));
 
-    gl_FragColor = vec4(uColor * (bright + lip) * uStrength * (1.0 - uFade), 1.0);
+    // The saturation belongs on the whole term, not on the path alone. As
+    // 1.0 - exp(-wall / ndv) at a thickness that reached 1 by sixty degrees
+    // off face-on, the path term was pinned at its own ceiling across most of
+    // the cap and nothing downstream could put a gradient back: the cap came
+    // out an opaque white disc with a hard edge, peaking at 235 where the empty
+    // field reaches 144. Nothing in transmitted light may be brighter than the
+    // field — the field is the lamp with nothing in front of it, and a body
+    // that beats it stops reading as transparent and starts reading as lit.
+    // Compressed on the sum instead, the cap keeps the gradient it is drawn by:
+    // nearly clear where you look straight through it, bright where the line of
+    // sight runs along the wall, brightest in the lip.
+    float glow = (bright + lip) * uStrength;
+    glow = glow / (1.0 + glow);
+
+    gl_FragColor = vec4(uColor * glow * (1.0 - uFade), 1.0);
   }
 `
 
@@ -212,10 +233,13 @@ export function specimenMaterial({
 }
 
 export function calyptraMaterial({
-  color = '#eef7f3',
-  strength = 0.62,
-  thickness = 0.85,
-  rim = 0.9,
+  // The colour of the light the cap bends in, which is the lamp's, so it is
+  // pulled towards the field's own cast rather than left white. White light
+  // added to a green-grey field is paint on the tip.
+  color = '#e4f1eb',
+  strength = 1,
+  thickness = 0.40,
+  rim = 0.70,
 } = {}) {
   return new THREE.ShaderMaterial({
     uniforms: {

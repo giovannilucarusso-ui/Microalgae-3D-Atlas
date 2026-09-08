@@ -6,6 +6,8 @@
 //   node tools/shoot.mjs                     → default set of shots
 //   node tools/shoot.mjs cell:0,60           → one shot, cell view, azimuth+elevation offsets
 //   node tools/shoot.mjs cell@30 --crop 700,250,520,360
+//   node tools/shoot.mjs filament --still     → gliding rotation off, so two
+//                                               shots can be compared
 //
 // `--crop` writes the named rectangle at one screen pixel to one image pixel
 // instead of the whole 1400×900 frame scaled down to be looked at. Surface
@@ -122,6 +124,11 @@ async function main() {
   const args = process.argv.slice(2)
   const setFlag = args.indexOf('--set')
   const cropFlag = args.indexOf('--crop')
+  // The trichome glides: it is turning about its own axis whenever the view is
+  // open, so two shots taken the same way land at two rotations and the tip you
+  // were judging has moved. Nothing about a still is comparable to another
+  // still until that is off.
+  const still = args.includes('--still')
   const [cx, cy, cw, ch] = cropFlag === -1 ? [] : (args[cropFlag + 1] ?? '').split(',').map(Number)
   const clip =
     cropFlag === -1
@@ -159,6 +166,14 @@ async function main() {
       // composer, the shader compiles and the whole lamella generator. Under
       // SwiftShader that is seconds, and a short wait catches an empty frame.
       await sleep(2600)
+    }
+
+    if (still) {
+      await page.evaluate(() => {
+        const box = document.querySelector('.toggle input[type="checkbox"], input[type="checkbox"]')
+        if (box?.checked) box.click()
+      })
+      await sleep(400)
     }
 
     if (shot.select) {

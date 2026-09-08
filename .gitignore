@@ -11,6 +11,9 @@ share/*
 
 # scratch di lavoro (crop, pagine estratte, misure)
 tmp/
+# gli scatti ad-hoc di `node tools/shoot.mjs <qualcosa>` si sovrascrivono a ogni
+# comando: sono il monitor, non un risultato
+docs/shots/adhoc*.png
 
 # Fonti bibliografiche — vedi docs/fonti/README.md per cosa sono e dove trovarle.
 # I PDF non sono ridistribuibili: Deschoenmaeker et al. 2016 non e open access,
