@@ -1,8 +1,13 @@
 # dipendenze e build
 node_modules
 dist
-share
 *.local
+
+# Il bundle a file singolo e un deliverable, non solo build output: e la forma
+# in cui l'atlante si apre senza toolchain, quindi va versionato. Rigenerabile
+# con `npm run share`, verificabile con `npm run share:check`.
+share/*
+!share/spirulina-3d.html
 
 # scratch di lavoro (crop, pagine estratte, misure)
 tmp/
