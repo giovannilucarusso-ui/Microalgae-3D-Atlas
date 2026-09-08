@@ -74,7 +74,8 @@ await writeFile(OUT, html)
 // The title comes next so it falls inside the first 8 KB the host scans for
 // one, ahead of seventeen kilobytes of stylesheet. It is the bare name and not
 // the document title: an artifact is picked out of a gallery by its name, and
-// "Spirulina 3D — Limnospira platensis" is a name with a caption stapled to it.
+// the document title names the specimen after the project, which is a caption
+// stapled to a name once it is a row in a list.
 //
 // The shim is the one thing the wrapped page needs that the standalone file
 // does not, and it repeats itself on purpose. The scene is sized off a chain of
@@ -88,7 +89,7 @@ await writeFile(
   OUT_ARTIFACT,
   [
     '<meta charset="utf-8">',
-    '<title>Spirulina 3D</title>',
+    '<title>Microalgae 3D Atlas</title>',
     ...css.map((sheet) => `<style>\n${sheet}\n</style>`),
     '<style>',
     '  html, body, #root { margin: 0; padding: 0; height: 100%; }',
