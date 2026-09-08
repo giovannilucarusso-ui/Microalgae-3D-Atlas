@@ -4,7 +4,14 @@
 // `<script type="module" src=...>` from file://. Inlined, there is nothing to
 // fetch, so a double-click is enough.
 //
-//   npm run build && npm run share      → share/spirulina-3d.html
+//   npm run share      → vite build, then share/spirulina-3d.html
+//
+// The build is part of the script rather than a step to remember. This reads
+// `dist/` and never writes it, so run on its own it will happily bundle
+// whatever was built last — and `npm run share:check` will pass, because a
+// stale bundle is a perfectly working bundle. That was harmless while the file
+// was ignored; it stopped being harmless the moment the bundle became the
+// tracked deliverable.
 //
 import { readFile, writeFile, mkdir } from 'node:fs/promises'
 import { join } from 'node:path'

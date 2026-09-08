@@ -450,19 +450,54 @@ export function lamellaeGeometry(lamellae, thickness) {
     for (let k = 0; k < 6; k++) tones.push(tone)
   }
 
-  const cap = (point, away) => {
-    const [x, z, nx, nz, top, bottom] = point
-    const o = [x + nx * half, 0, z + nz * half]
-    const inner = [x - nx * half, 0, z - nz * half]
-    const at = (p, y) => [p[0], y, p[2]]
+  // How much arc a sac spends closing itself, and how far its rim rounds in from
+  // top and bottom while it does. A thylakoid is a flattened sac: its edge is
+  // the line where its two membranes meet, so the thickness has to reach zero
+  // there. Rounding the corners in with it matters as much — a rim that is a
+  // straight vertical line with square ends is the same extrusion cue one step
+  // smaller.
+  const CLOSE_NM = 240
+  const ROUND_NM = 190
+
+  // One cross-section of the sac, with the closure and the lean already in it.
+  // The lean displaces the top edge along the sac's own normal and leaves the
+  // bottom where it is, so the sac shears instead of translating.
+  const frame = (point, close) => {
+    const [x, z, nx, nz, top, bottom, lx = 0, lz = 0] = point
+    const t = half * close
+    const inset = (1 - close) * Math.min(ROUND_NM, (top - bottom) * 0.22)
+    const ty = top - inset
+    const by = bottom + inset
+    // A leaning face is not an upright face with its top moved over: its normal
+    // tilts by the same angle. Left at (nx, 0, nz) the geometry leans and the
+    // shading says it does not, and the shading is what the eye believes.
+    //
+    // Only the part of the displacement that crosses the membrane tilts it. The
+    // part running along the sac slides the sheet within its own surface, which
+    // moves no geometry the normal can see.
+    const h = Math.max(ty - by, 1)
+    const across = nx * lx + nz * lz
+    const m = Math.hypot(h, across)
+    return {
+      ot: [x + nx * t + lx, ty, z + nz * t + lz],
+      ob: [x + nx * t, by, z + nz * t],
+      it: [x - nx * t + lx, ty, z - nz * t + lz],
+      ib: [x - nx * t, by, z - nz * t],
+      out: [(nx * h) / m, -across / m, (nz * h) / m],
+      inn: [(-nx * h) / m, across / m, (-nz * h) / m],
+    }
+  }
+
+  const cap = (f, point, away) => {
     if (away[0] === 0 && away[1] === 0) return
+    const [, , nx, nz] = point
     // The two ends of a run face opposite ways, so one of them has to be wound
     // the other way round. Which one is not worth reasoning about in the head:
     // this winding faces along (-nz, nx), so compare and flip when it disagrees.
     const forward = -nz * away[0] + nx * away[1] > 0
     const n = [away[0], 0, away[1]]
-    if (forward) quad(at(inner, bottom), at(o, bottom), at(o, top), at(inner, top), n)
-    else quad(at(inner, top), at(o, top), at(o, bottom), at(inner, bottom), n)
+    if (forward) quad(f.ib, f.ob, f.ot, f.it, n)
+    else quad(f.it, f.ot, f.ob, f.ib, n)
   }
 
   const runDir = (a, b) => {
@@ -472,37 +507,54 @@ export function lamellaeGeometry(lamellae, thickness) {
     return [dx / l, dz / l]
   }
 
-  for (const { points, tone: t } of lamellae) {
+  for (const { points, tone: t, cutStart = true, cutEnd = true } of lamellae) {
     tone = t ?? 0.5
+
+    // Measured in nanometres along the run rather than in samples. The ring is
+    // sampled about every 90 nm but runs come in every length, and a closure
+    // counted in points shuts a short arc entirely while barely touching a long
+    // one.
+    const along = [0]
+    for (let i = 1; i < points.length; i++) {
+      along.push(
+        along[i - 1] +
+          Math.hypot(points[i][0] - points[i - 1][0], points[i][1] - points[i - 1][1]),
+      )
+    }
+    const total = along[along.length - 1] || 1
+    const reach = Math.min(CLOSE_NM, total * 0.38)
+    const closure = (i) => {
+      const fromStart = cutStart ? Infinity : along[i]
+      const fromEnd = cutEnd ? Infinity : total - along[i]
+      const d = Math.min(fromStart, fromEnd)
+      if (d === Infinity) return 1
+      const u = Math.min(1, d / reach)
+      return u * u * (3 - 2 * u)
+    }
+
+    const frames = points.map((p, i) => frame(p, closure(i)))
+    const last = points.length - 1
+
     // Without caps a lamella shows the inside of its own sac wherever the
-    // cutaway slices it, which reads as a blank green wall instead of a section.
-    const first = runDir(points[1], points[0])
-    const last = runDir(points[points.length - 2], points[points.length - 1])
-    cap(points[0], first)
-    cap(points[points.length - 1], last)
+    // cutaway slices it, which reads as a blank green wall instead of a
+    // section. But only where the cutaway slices it: an end the wedge never
+    // touched has closed itself above, and capping that one puts an upright
+    // wall on a sac that simply stopped.
+    if (cutStart) cap(frames[0], points[0], runDir(points[1], points[0]))
+    if (cutEnd) cap(frames[last], points[last], runDir(points[last - 1], points[last]))
 
-    for (let i = 0; i < points.length - 1; i++) {
-      const [x0, z0, nx0, nz0, t0, b0] = points[i]
-      const [x1, z1, nx1, nz1, t1, b1] = points[i + 1]
-      const o0 = [x0 + nx0 * half, 0, z0 + nz0 * half]
-      const i0 = [x0 - nx0 * half, 0, z0 - nz0 * half]
-      const o1 = [x1 + nx1 * half, 0, z1 + nz1 * half]
-      const i1 = [x1 - nx1 * half, 0, z1 - nz1 * half]
-      const at = (p, y) => [p[0], y, p[2]]
-      const out0 = [nx0, 0, nz0]
-      const out1 = [nx1, 0, nz1]
-      const in0 = [-nx0, 0, -nz0]
-      const in1 = [-nx1, 0, -nz1]
-      const UP = [0, 1, 0]
-      const DOWN = [0, -1, 0]
-
+    const UP = [0, 1, 0]
+    const DOWN = [0, -1, 0]
+    for (let i = 0; i < last; i++) {
+      const a = frames[i]
+      const b = frames[i + 1]
       // Wound so the face the normal points at is the front face. It was the
       // other way round, which is why the sacs needed DoubleSide to shade at
       // all — two fragments per pixel on the deepest overdraw in the scene.
-      strip(at(o0, t0), at(o1, t1), at(o1, b1), at(o0, b0), out0, out1, out1, out0)
-      strip(at(i1, t1), at(i0, t0), at(i0, b0), at(i1, b1), in1, in0, in0, in1)
-      strip(at(i1, t1), at(o1, t1), at(o0, t0), at(i0, t0), UP, UP, UP, UP)
-      strip(at(o1, b1), at(i1, b1), at(i0, b0), at(o0, b0), DOWN, DOWN, DOWN, DOWN)
+      strip(a.ot, b.ot, b.ob, a.ob, a.out, b.out, b.out, a.out)
+      strip(b.it, a.it, a.ib, b.ib, b.inn, a.inn, a.inn, b.inn)
+      strip(b.it, b.ot, a.ot, a.it, UP, UP, UP, UP)
+      strip(b.ob, b.ib, a.ib, a.ob, DOWN, DOWN, DOWN, DOWN)
     }
   }
 
@@ -733,6 +785,11 @@ export function thylakoidLamellae({
   const half = height / 2
   const lamellae = []
   const MIN_HEIGHT = 220
+  // The furthest a top edge leans out. 190 nm over a sac 3.9 um tall is under
+  // three degrees: enough that the stack stops reading as milled, small enough
+  // that the interlamellar distance measured across the membrane is 55.9 nm
+  // rather than the 56 the card claims.
+  const LEAN_NM = 190
 
   const inSector = (x, z) => {
     let a = Math.atan2(z, x)
@@ -786,6 +843,50 @@ export function thylakoidLamellae({
     0.13 * Math.cos(z / 2200 - x / 3100 + phase * 1.6) +
     0.07 * Math.sin((x + z) / 1400 + phase * 2.4)
 
+  // How far the top edge of a sac stands out from its bottom edge, along its
+  // own normal. Every lamella here was exactly upright, and a stack of upright
+  // sheets is the strongest thing left in this cutaway that says the geometry
+  // was extruded rather than grown.
+  //
+  // Zero-mean, and a field rather than a value per lamella, for the same reason
+  // the crop is: neighbours 56 nm apart must lean together or they pass through
+  // each other, and two membranes that pass through each other are the one
+  // thing no section can show.
+  //
+  // It is a displacement in the plane of the cross-wall, read off two smooth
+  // fields of position and of nothing else. Both of those properties were
+  // arrived at the hard way, and `npm run lamellae` counted the casualties each
+  // time.
+  //
+  // Keyed on `tierPhase`, which carries r / 900, the lean changed from one
+  // lamella to the next by design — and a lean that differs between neighbours
+  // is precisely a lean that closes the gap between them. Ten pairs of
+  // membranes ended up passing through each other.
+  //
+  // Applied along each sac's own normal, it was still wrong, and worse where it
+  // is least visible: at a dislocation two families interleave at an angle, so
+  // two sacs a few nanometres apart have normals pointing opposite ways and a
+  // shared lean magnitude pushes their tops directly into each other. The
+  // largest displacement in the model was between the closest pair of sheets in
+  // it.
+  //
+  // As a vector field the failure mode is gone by construction. Two points near
+  // each other get nearly the same displacement whatever their sacs are doing,
+  // so what separates them at the top is their separation at the floor minus
+  // their distance times this field's gradient — about a seventh. The tightest
+  // pair is now the safest pair, and that is the property to keep if this is
+  // ever touched again. It also says something truer than a normal-aligned lean
+  // did: a region of the cell shears one way, rather than every sac leaning
+  // away from the axis like a bowl.
+  const leaning = (x, z) =>
+    0.62 * Math.sin(x / 3300 + z / 2550) +
+    0.26 * Math.cos(z / 4500 - x / 3600) +
+    0.12 * Math.sin((x + z) / 1650)
+  const leaningAcross = (x, z) =>
+    0.62 * Math.cos(x / 2850 - z / 3750) +
+    0.26 * Math.sin(z / 4050 + x / 4800) +
+    0.12 * Math.cos((x - z) / 1875)
+
   centres.forEach((centre, k) => {
     for (const r of radiiFor(centre)) {
       const reach = r * (1 + centre.ecc) + 350
@@ -823,8 +924,17 @@ export function thylakoidLamellae({
       const tone = rnd()
 
       let run = []
-      const flush = () => {
-        if (run.length > 3) lamellae.push({ points: run, tone })
+      // Why a run begins and why it ends, which are two different questions
+      // with two different answers in the mesh. A lamella that leaves the kept
+      // sector was cut by the wedge and shows a section face — that is the
+      // whole point of the cutaway. A lamella that stops for any other reason
+      // (a lane, a break, the wandering edge of the core, a granule in the way)
+      // simply ended, and a sac that ends shows the rim where its two membranes
+      // meet. Drawing the second as the first is what put a flat upright wall
+      // on every terminating sheet in the stack.
+      let openedAtCut = true
+      const flush = (endedAtCut) => {
+        if (run.length > 3) lamellae.push({ points: run, tone, cutStart: openedAtCut, cutEnd: endedAtCut })
         run = []
       }
 
@@ -844,11 +954,12 @@ export function thylakoidLamellae({
         // clause its outermost lamellae, oval and warped, reach past the radius
         // the surrounding family was told to keep clear of — and two membranes
         // that pass through each other are the one thing no section can show.
+        const inside = inSector(x, z)
         let ok =
           distFromAxis <= rOuter &&
           distFromAxis >= Math.max(420, coreEdge(x, z) - bite) &&
           fromCentre <= centre.claim * 0.94 &&
-          inSector(x, z) &&
+          inside &&
           !inLane(x, z, distFromAxis)
         if (ok) {
           for (const g of gaps) {
@@ -913,10 +1024,18 @@ export function thylakoidLamellae({
 
         const span =
           ok && top - baseBottom > MIN_HEIGHT ? clearance(x, z, top, baseBottom) : null
-        if (span) run.push([x, z, nx, nz, span[0], span[1]])
-        else flush()
+        if (span)
+          run.push([
+            x, z, nx, nz, span[0], span[1],
+            LEAN_NM * leaning(x, z),
+            LEAN_NM * leaningAcross(x, z),
+          ])
+        else {
+          flush(!inside)
+          openedAtCut = !inside
+        }
       }
-      flush()
+      flush(true)
     }
   })
 

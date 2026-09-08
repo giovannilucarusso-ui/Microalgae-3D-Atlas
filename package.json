@@ -11,7 +11,7 @@
     "check": "node tools/check-science.mjs",
     "shots": "node tools/shoot.mjs",
     "lamellae": "node tools/lamellae.mjs",
-    "share": "node tools/bundle-single.mjs",
+    "share": "vite build && node tools/bundle-single.mjs",
     "share:check": "node tools/check-bundle.mjs share/spirulina-3d.html"
   },
   "dependencies": {
