@@ -2,22 +2,28 @@
 // and the first one that is a population rather than an individual.
 //
 // Spirulina is a specimen: one filament, long enough that a frame holds a
-// fraction of it, and you look at *it*. Chlorella is not. A Chlorella cell is
-// two to ten micrometres of green sphere with a smooth wall and no flagellum,
-// and there is nothing in one of them a light microscope can say much about.
-// What you actually meet down the objective is a field of them at every depth,
-// and what distinguishes one species of Chlorella from another — as far as this
-// instrument goes — is the *distribution* of their sizes, not any one cell.
-// Drawing one average cell would be drawing the one thing that cannot carry the
-// difference.
+// fraction of it, and you look at *it*. Chlorella is not. What you meet down the
+// objective is a field of cells at every depth, and what distinguishes one
+// species of Chlorella from another — as far as this instrument goes — is the
+// *distribution* of their sizes, not any one cell. Drawing one average cell
+// would be drawing the one thing that cannot carry the difference.
 //
-// So the specimen here is the field, and the depth is real: the cells occupy a
-// slab as thick as the coverslip gap, most of them outside the plane of focus at
-// any one setting. That is not a concession to realism, it is the content. The
-// fine focus is how you get to the rest of them, which is exactly what it is for
-// at a bench.
+// So the specimen is the field, and the depth is real: the cells occupy a slab
+// as thick as the coverslip gap, most of them outside the plane of focus at any
+// one setting. That is not a concession to realism, it is the content. The fine
+// focus is how you reach the rest of them, which is what it is for at a bench.
+//
+// A cell is not a green ball. It was drawn as one to begin with, and that was
+// wrong twice over: it is not what an operator sees, and it puts the pigment in
+// the wrong place. Chlorella cytoplasm is colourless. The green is one parietal
+// chloroplast lining most of the wall and stopping short of closing, and the
+// opening it leaves is why a field of these cells reads as C-shapes, rings and
+// discs rather than as repeated spheres — one organelle seen from every angle at
+// once. The cell body here is nearly clear and carries the outline; the
+// chloroplast carries the colour.
 import { useEffect, useMemo, useRef } from 'react'
 import * as THREE from 'three'
+import { chloroplastCup } from './geometry.js'
 import { seededRandom } from './science.js'
 import { haloMaterial, specimenMaterial } from './specimen.jsx'
 
@@ -35,10 +41,10 @@ function drawSize(rnd, { minUm, maxUm, skew = 1.7 }) {
 //
 // Not a tuned constant. A count picked to look right is a count that means
 // nothing and cannot be wrong; a culture density is a quantity with units that
-// can be compared against a haemocytometer. The slab is the field across, by
-// the field across, by the coverslip gap, and a millilitre is 1e12 cubic
+// can be compared against a haemocytometer. The slab is the field across, by the
+// field across, by the coverslip gap, and a millilitre is 1e12 cubic
 // micrometres — so the number of cells in frame follows from how dense the
-// culture on the slide is said to be, and the card can state that instead of
+// culture on the slide is said to be, and the card states that instead of
 // stating a drawing decision.
 function populationSize(form) {
   const volumeUm3 = form.fieldUm * form.fieldUm * (form.depthUm ?? form.fieldUm * 0.5)
@@ -52,11 +58,11 @@ function buildPopulation(form) {
   const count = populationSize(form)
   const cells = []
   for (let i = 0; i < count; i++) {
-    // A mother cell part-way through autosporulation is the one thing about
-    // this genus a light microscope really resolves, and the character its
+    // A mother cell part-way through autosporulation is the one thing about this
+    // genus a light microscope really resolves, and the character its
     // description is built on: the daughters are cut inside the mother wall and
-    // released when it ruptures. It is worth showing, and it is worth showing
-    // as the minority of cells it actually is at any one moment.
+    // released when it ruptures. It is worth showing as the minority of cells it
+    // actually is at any one moment.
     const dividing = rnd() < (form.autospores?.fraction ?? 0)
     const size = dividing
       ? form.cell.maxUm * (0.82 + 0.18 * rnd())
@@ -67,13 +73,24 @@ function buildPopulation(form) {
             (form.autospores.max - form.autospores.min) * Math.pow(rnd(), 1.4),
         )
       : 0
+    // Which way this cell happens to be lying, which is the whole reason the
+    // field is not repetitive: the chloroplast's mouth points wherever the cell
+    // settled, so one organelle reads differently in every cell.
+    const q = new THREE.Quaternion().setFromEuler(
+      new THREE.Euler(rnd() * Math.PI * 2, rnd() * Math.PI * 2, rnd() * Math.PI * 2),
+    )
     cells.push({
       x: (rnd() * 2 - 1) * spread,
       y: (rnd() * 2 - 1) * spread,
       z: (rnd() * 2 - 1) * depth * 0.5,
       r: size / 2,
-      // How much pigment this one carries. A field of identical balls reads as
-      // a pattern; a real culture never does.
+      q,
+      // Subspherical rather than spherical, which is what the generic diagnosis
+      // says and what the plates show: a few per cent out of round is enough to
+      // stop a field reading as ball bearings.
+      shape: [1, 0.94 + rnd() * 0.11, 0.96 + rnd() * 0.09],
+      // How much pigment this one carries. A field of identical cells reads as a
+      // pattern; a real culture never does.
       density: 0.72 + rnd() * 0.5,
       brood,
       seed: rnd(),
@@ -106,95 +123,134 @@ function brood(cell) {
   return out
 }
 
-function useInstances(items, ref, densityName = 'aDensity') {
+// The pyrenoid: a body of Rubisco in a starch sheath, inside the chloroplast.
+// It sits in the thick of the cup rather than in the middle of the cell, so it
+// is placed down the cup's own axis and turned with it.
+function pyrenoids(cells) {
+  return cells.map((c) => {
+    const down = new THREE.Vector3(0, -0.52, 0).applyQuaternion(c.q).multiplyScalar(c.r)
+    return {
+      x: c.x + down.x,
+      y: c.y + down.y,
+      z: c.z + down.z,
+      r: c.r * 0.2,
+      q: c.q,
+      density: c.density,
+    }
+  })
+}
+
+function useInstances(items, ref, scale = 1) {
   useEffect(() => {
     const mesh = ref.current
     if (!mesh) return
     const m = new THREE.Matrix4()
-    const densities = new Float32Array(items.length)
+    const p = new THREE.Vector3()
+    const s = new THREE.Vector3()
+    const spare = new THREE.Quaternion()
+    const densities = new Float32Array(Math.max(1, items.length))
     items.forEach((c, i) => {
-      m.makeScale(c.r, c.r, c.r)
-      m.setPosition(c.x, c.y, c.z)
+      p.set(c.x, c.y, c.z)
+      const shape = c.shape ?? [1, 1, 1]
+      s.set(c.r * scale * shape[0], c.r * scale * shape[1], c.r * scale * shape[2])
+      m.compose(p, c.q ?? spare.identity(), s)
       mesh.setMatrixAt(i, m)
       densities[i] = c.density
     })
     mesh.instanceMatrix.needsUpdate = true
-    mesh.geometry.setAttribute(
-      densityName,
-      new THREE.InstancedBufferAttribute(densities, 1),
-    )
+    // One geometry per instanced mesh, never shared: `aDensity` lives on the
+    // geometry, so two meshes sharing a sphere overwrite each other's and the one
+    // with more instances reads off the end of the other's buffer.
+    mesh.geometry.setAttribute('aDensity', new THREE.InstancedBufferAttribute(densities, 1))
     mesh.count = items.length
-  }, [items, ref, densityName])
+  }, [items, ref, scale])
 }
 
 // `form` is the species record's `exterior` block, exactly as for the trichome:
 // the organism and nothing about how it is rendered.
 export default function CellField({ form, selected, onSelect }) {
-  const cellsRef = useRef()
+  const bodyRef = useRef()
   const haloRef = useRef()
+  const cupRef = useRef()
+  const pyrenoidRef = useRef()
   const broodRef = useRef()
 
   const cells = useMemo(() => buildPopulation(form), [form])
   const daughters = useMemo(() => cells.flatMap((c) => (c.brood ? brood(c) : [])), [cells])
+  // A dividing cell's chloroplast is being cut up along with it, so it does not
+  // get one drawn: what that cell shows is the brood, which is why it is there.
+  const intact = useMemo(() => cells.filter((c) => !c.brood), [cells])
+  const grains = useMemo(() => pyrenoids(intact), [intact])
 
-  // One geometry per instanced mesh, not one shared between the three.
-  //
-  // `aDensity` is an attribute *on the geometry*, so three meshes sharing one
-  // sphere were each overwriting the others': the last write won, and the cell
-  // mesh — a hundred and sixty-five instances — ended up reading a buffer as
-  // long as the daughters' population, giving most of its cells whatever was
-  // past the end of it. That is where the black solid in the middle of the
-  // field came from.
-  const [geometry, haloGeometry, broodGeometry] = useMemo(
-    () => [
-      new THREE.SphereGeometry(1, 24, 16),
-      new THREE.SphereGeometry(1, 20, 14),
-      new THREE.SphereGeometry(1, 14, 10),
-    ],
+  const geometries = useMemo(
+    () => ({
+      body: new THREE.SphereGeometry(1, 24, 16),
+      halo: new THREE.SphereGeometry(1, 20, 14),
+      cup: chloroplastCup({ outer: 1, thickness: 0.34, open: 0.95 }),
+      pyrenoid: new THREE.SphereGeometry(1, 12, 8),
+      brood: new THREE.SphereGeometry(1, 14, 10),
+    }),
     [],
   )
-  useEffect(
-    () => () => [geometry, haloGeometry, broodGeometry].forEach((g) => g.dispose()),
-    [geometry, haloGeometry, broodGeometry],
-  )
+  useEffect(() => () => Object.values(geometries).forEach((g) => g.dispose()), [geometries])
 
-  const materials = useMemo(
-    () => ({
-      // Chlorophyll a and b, and nothing else worth the name: no phycobilins,
-      // so this is grass green where Spirulina is blue-green. The difference is
-      // visible down any objective and it is the first thing that separates the
-      // two organisms in this atlas.
-      // Density well under the trichome's 1.35. A Chlorella cell is two to
-      // eight micrometres of chloroplast, not eight of packed cytoplasm: down a
-      // real objective it is a *green* ball you can see the field through, and
-      // at the first setting tried here the larger cells came out black, which
-      // is a cell with more pigment in the beam than the lamp can get through.
+  const materials = useMemo(() => {
+    const green = form.colour ?? '#2f6b34'
+    return {
+      // Cytoplasm, which is colourless. It is here for its outline and for the
+      // little it does take out of the beam, not for colour — putting the green
+      // in the cell body rather than in the chloroplast is what made these read
+      // as uniformly pigmented balls.
       body: specimenMaterial({
-        core: form.colour ?? '#3c7a44',
-        density: 0.62,
-        edge: 0.55,
+        core: '#b9cbb8',
+        density: 0.34,
+        edge: 1.15,
         perInstance: true,
+        depthWrite: false,
       }),
       rim: haloMaterial({ color: '#e6f2e4', strength: 0.2, sharpness: 8 }),
-      // Daughters are read against their mother, so they are drawn denser: what
-      // makes a dividing cell obvious is that its inside is lumpy and darker,
-      // not that anything about its outline has changed.
-      brood: specimenMaterial({
-        core: form.colour ?? '#3c7a44',
-        density: 0.85,
-        edge: 0.3,
+      // The chloroplast, and with it all the pigment.
+      cup: specimenMaterial({
+        core: green,
+        density: 0.44,
+        edge: 0.2,
         perInstance: true,
+        depthWrite: false,
+        shell: true,
       }),
-    }),
-    [form.colour],
-  )
+      // Refractile rather than dark: a pyrenoid is a protein body in a starch
+      // sheath, and what marks it out in transmitted light is that it bends the
+      // beam, not that it absorbs it.
+      pyrenoid: specimenMaterial({
+        core: '#8fae86',
+        density: 0.55,
+        edge: 1.5,
+        perInstance: true,
+        depthWrite: false,
+      }),
+      brood: specimenMaterial({
+        core: green,
+        density: 0.85,
+        edge: 0.45,
+        perInstance: true,
+        depthWrite: false,
+      }),
+    }
+  }, [form.colour])
   useEffect(() => () => Object.values(materials).forEach((m) => m.dispose()), [materials])
 
-  useInstances(cells, cellsRef)
-  useInstances(cells, haloRef)
+  useInstances(cells, bodyRef)
+  useInstances(cells, haloRef, 1.055)
+  useInstances(intact, cupRef, 0.9)
+  useInstances(grains, pyrenoidRef)
   useInstances(daughters, broodRef)
 
-  const dim = selected != null && selected !== 'cellBody' && selected !== 'autospores'
+  const dim =
+    selected != null &&
+    selected !== 'cellBody' &&
+    selected !== 'autospores' &&
+    selected !== 'chloroplast' &&
+    selected !== 'wall'
   for (const m of Object.values(materials)) m.uniforms.uFade.value = dim ? 0.72 : 0
 
   return (
@@ -212,29 +268,41 @@ export default function CellField({ form, selected, onSelect }) {
       }}
     >
       <instancedMesh
-        ref={cellsRef}
-        args={[geometry, materials.body, cells.length]}
+        ref={bodyRef}
+        args={[geometries.body, materials.body, cells.length]}
         frustumCulled={false}
       />
-      {/* The bright line just outside a transparent body in transmitted light.
-          It is drawn as its own shell for the same reason the trichome's is:
-          the specimen multiplies the field, and a Becke line adds to it. */}
       <instancedMesh
-        ref={haloRef}
-        args={[haloGeometry, materials.rim, cells.length]}
+        ref={cupRef}
+        args={[geometries.cup, materials.cup, Math.max(1, intact.length)]}
         raycast={() => null}
-        renderOrder={1}
         frustumCulled={false}
-        scale={1.055}
+      />
+      <instancedMesh
+        ref={pyrenoidRef}
+        args={[geometries.pyrenoid, materials.pyrenoid, Math.max(1, grains.length)]}
+        raycast={() => null}
+        frustumCulled={false}
       />
       {daughters.length > 0 && (
         <instancedMesh
           ref={broodRef}
-          args={[broodGeometry, materials.brood, daughters.length]}
+          args={[geometries.brood, materials.brood, daughters.length]}
           raycast={() => null}
           frustumCulled={false}
         />
       )}
+      {/* The bright line just outside a transparent body in transmitted light,
+          drawn as its own shell for the same reason the trichome's is: the
+          specimen multiplies the field, and a Becke line adds to it. Last, so it
+          sits over everything it belongs to. */}
+      <instancedMesh
+        ref={haloRef}
+        args={[geometries.halo, materials.rim, cells.length]}
+        raycast={() => null}
+        renderOrder={1}
+        frustumCulled={false}
+      />
     </group>
   )
 }

@@ -1307,3 +1307,50 @@ export function nucleoidStrands({ strands = 5, radiusNm = 6.5, region, seed = 12
   return merged
 }
 
+
+// The cup-shaped chloroplast of a Chlorella cell, as a solid of revolution.
+//
+// This is the thing an operator actually sees, and it is why a Chlorella cell
+// does not read as a plain green ball down a real objective. One parietal
+// chloroplast lines most of the inside of the wall and stops short, leaving an
+// opening: look through the closed side and the beam crosses two thicknesses of
+// pigment, look through the opening and it crosses almost none. Turned one way
+// the cell shows a C; turned another, a ring with a pale middle; turned a third,
+// nearly a full disc. That variation across a field is not noise, it is one
+// organelle seen from every angle at once, and it is most of what distinguishes
+// a field of Chlorella from a field of green spheres.
+//
+// Built rather than approximated by shading, for the same reason the
+// phycobilisome is: the shape is the content. A directional tint on a sphere
+// would give the asymmetry and never the edge, and the edge is what the eye
+// reads as an organelle rather than as a shadow.
+//
+// `open` is the half-angle of the mouth, measured from the axis. The profile
+// runs down the outer surface, across the rim, and back up the inner one, so
+// the lathe closes into a solid shell of real thickness — which is what makes
+// the doubled path through the closed side come out right.
+export function chloroplastCup({
+  outer = 1,
+  thickness = 0.34,
+  open = 0.95,
+  segments = 22,
+} = {}) {
+  const inner = outer * (1 - thickness)
+  const start = open
+  const end = Math.PI
+  const points = []
+  for (let i = 0; i <= segments; i++) {
+    const a = start + ((end - start) * i) / segments
+    points.push(new THREE.Vector2(Math.sin(a) * outer, Math.cos(a) * outer))
+  }
+  for (let i = segments; i >= 0; i--) {
+    const a = start + ((end - start) * i) / segments
+    points.push(new THREE.Vector2(Math.sin(a) * inner, Math.cos(a) * inner))
+  }
+  // Closed back onto the first point, or the lathe leaves the rim open and the
+  // shell shows its own inside wherever the mouth faces the camera.
+  points.push(points[0].clone())
+  const geometry = new THREE.LatheGeometry(points, 30)
+  geometry.computeVertexNormals()
+  return geometry
+}

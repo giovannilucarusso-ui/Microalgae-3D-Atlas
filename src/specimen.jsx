@@ -80,6 +80,29 @@ const FRAGMENT = /* glsl */ `
 
     // Chord through a convex body, normalised: 1 down the axis, 0 at the rim.
     float path = ndv;
+    #ifdef SHELL
+      // A shell is not a convex body and the chord is meaningless for one. What
+      // the beam crosses is a wall of roughly constant thickness, so the path
+      // goes as 1/cos — long where the surface is seen edge-on, short where it
+      // is seen face-on.
+      //
+      // The rest is done by the blending. This material is drawn double-sided
+      // and multiplies, so *every* crossing of the wall multiplies the field
+      // again: a ray through the closed side of a cup crosses twice and comes
+      // out twice as absorbed, a ray through the mouth crosses once or not at
+      // all. That is the whole reason a chloroplast reads as a C from one angle
+      // and a ring from another, and it falls out of the physics rather than
+      // being drawn.
+      //
+      // Floored, or the wall runs to infinite thickness exactly at its own
+      // silhouette and the organelle ends in a hard black rim. 0.31 is about
+      // seventy-two degrees off the normal; past that the ray is leaving through
+      // the rim rather than through the wall, and 1/cos has stopped describing
+      // anything. At the 0.16 tried first it reached six and a quarter wall
+      // thicknesses, doubled to twelve by the second crossing, and the middle of
+      // every chloroplast went black.
+      path = min(1.0 / max(ndv, 0.31), 3.2);
+    #endif
     float modulation = uUseMap > 0.5 ? 2.0 * texture2D(uMap, vUv).r : 1.0;
     float density = uDensity;
     #ifdef PER_INSTANCE
@@ -227,9 +250,20 @@ export function specimenMaterial({
   map = null,
   // Set when the mesh is instanced and each instance carries its own `aDensity`.
   perInstance = false,
+  // Set for a body that is a wall rather than a solid — see SHELL above. It
+  // switches the path model and draws both sides, because a wall crossed twice
+  // has to absorb twice.
+  shell = false,
+  // Off for bodies drawn inside other bodies. Multiply blending is commutative,
+  // so two absorbers in the same beam give the same answer in either order —
+  // but the depth test is not, and with it on the nearer surface simply rejects
+  // the further one. A chloroplast inside a cell, or a cell behind a cell, has
+  // to *multiply*: that is what transmitted light does, and it is why two
+  // overlapping cells are darker than one.
+  depthWrite = true,
 } = {}) {
   return new THREE.ShaderMaterial({
-    defines: perInstance ? { PER_INSTANCE: '' } : {},
+    defines: { ...(perInstance ? { PER_INSTANCE: '' } : {}), ...(shell ? { SHELL: '' } : {}) },
     uniforms: {
       uAbsorb: { value: absorbFrom(core) },
       uDensity: { value: density },
@@ -249,7 +283,8 @@ export function specimenMaterial({
     blending: THREE.MultiplyBlending,
     premultipliedAlpha: true, // what MultiplyBlending needs to be dst * src
     transparent: true,
-    depthWrite: true,
+    side: shell ? THREE.DoubleSide : THREE.FrontSide,
+    depthWrite,
   })
 }
 
