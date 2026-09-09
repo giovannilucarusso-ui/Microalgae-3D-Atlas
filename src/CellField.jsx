@@ -264,15 +264,21 @@ export default function CellField({ form, selected, onSelect }) {
       body: specimenMaterial({
         core: '#e3e0d4',
         density: 0.3,
-        // The contour is the loudest thing about a real cell and it was the
-        // quietest thing about this one. In the CAUP plates every cell carries a
-        // hard dark ring with a bright line just outside it, and you read the
-        // cell off that before you read anything about its colour.
-        edge: 1.7,
+        // The dark contour at the wall: light refracted out of the objective's
+        // cone. Real, and it stays — but modest. It was pushed to 1.7 to force
+        // an outline the optics were not yet producing, and once the phase term
+        // arrived that outline was being drawn three times over: here, in the
+        // halo shell below, and in the pass. Three renderings of one Becke line
+        // is what made the cells look cut out and pasted on.
+        edge: 0.95,
         perInstance: true,
         depthWrite: false,
       }),
-      rim: haloMaterial({ color: '#f2efe0', strength: 0.42, sharpness: 7 }),
+      // A whisper. The bright line outside a transparent body is mostly a
+      // defocus effect and the pass now produces it from the physics, where it
+      // correctly appears as a cell leaves the plane of focus and vanishes as it
+      // enters. What is left here is the little of it that survives at focus.
+      rim: haloMaterial({ color: '#f2efe0', strength: 0.13, sharpness: 7 }),
       // The chloroplast, and with it all the pigment.
       cup: specimenMaterial({
         core: green,

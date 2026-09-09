@@ -116,19 +116,25 @@ const FRAGMENT = /* glsl */ `
     // blur radius, so the ring is the size the defocus makes it. At focus the
     // term vanishes on its own, which is what it should do.
     if (uPhase > 0.0001) {
-      // On luminance, and added back neutrally. Run per channel it fringes:
-      // the three Laplacians differ wherever the specimen is coloured, and a
-      // green cell came back rimmed in magenta. Defocus moves light about — it
-      // does not tint it, and the hue of a ring is the hue of whatever the light
-      // came from.
-      vec2 lapStep = vec2(1.0 / uAspect, 1.0) * max(radius, uMaxBlur * 0.05);
+      // The operator is the difference between the defocused image and the sharp
+      // one, and both are already here: the blurred colour is the mean over the
+      // blur disc and this is its centre. Centre-minus-mean is a Laplacian at
+      // the scale of the defocus itself, and it is smooth.
+      //
+      // It replaced a five-tap Laplacian sampled at the blur radius, which is
+      // what was looking artificial and deserved the complaint. Four samples on
+      // a circle of thirteen pixels is not a Laplacian, it is a ring-shaped
+      // kernel: it draws a hard circle at exactly that radius round everything,
+      // whether the thing is out of focus or not. That is a drawn outline, not
+      // an optical halo. This one has no radius of its own to show, falls off
+      // the way the defocus does, and costs no extra samples.
+      //
+      // On luminance, added back neutrally. Per channel it fringes — the three
+      // Laplacians differ wherever the specimen is coloured, and a green cell
+      // came back rimmed in magenta. Defocus moves light about; it does not
+      // tint it.
       vec3 W = vec3(0.2126, 0.7152, 0.0722);
-      float lap =
-        dot(texture2D(tDiffuse, vUv + vec2(lapStep.x, 0.0)).rgb, W) +
-        dot(texture2D(tDiffuse, vUv - vec2(lapStep.x, 0.0)).rgb, W) +
-        dot(texture2D(tDiffuse, vUv + vec2(0.0, lapStep.y)).rgb, W) +
-        dot(texture2D(tDiffuse, vUv - vec2(0.0, lapStep.y)).rgb, W) -
-        4.0 * dot(texture2D(tDiffuse, vUv).rgb, W);
+      float lap = dot(color, W) - dot(texture2D(tDiffuse, vUv).rgb, W);
       color += uPhase * clamp(coc, -1.0, 1.0) * lap;
     }
 
