@@ -99,3 +99,28 @@ are text; the light micrographs consulted while drawing the field are cited from
 them and from the plates in Bock et al., and none of them carries a licence that
 would let this project redistribute the images. What is drawn here was drawn
 against them, not from them.
+
+## CAUP H1917 — *Chlorella vulgaris* var. *vulgaris* f. *viridis*
+
+https://botany.natur.cuni.cz/algo/CAUP/H1917_Chlorella_vulgaris.htm — four light
+micrographs of a living culture, from the Culture Collection of Algae of Charles
+University in Prague. **Copyright © Pavel Škaloud, Phycological research group,
+Charles University in Prague.** Not redistributable, and **not in this
+repository**: the plates were consulted, not copied.
+
+They are the reference the Chlorella field is drawn against, and two numbers off
+them corrected two mistakes that no amount of looking had:
+
+- **Field (186, 182, 131); cell interior (126, 147, 12).** So a cell transmits
+  0.74 of the field, not the 0.46 it was drawn at, and the green is made by
+  extinguishing *blue* — 0.09 through — while red passes 0.68 and green 0.81.
+  That is chlorophyll's absorption spectrum, and it is the opposite of what a
+  dark green paint does. `CHLORELLA_GENUS.colour` is those three transmittances.
+- **The lamp is warm.** The field here is frankly khaki; the field in
+  Nowicka-Krawczyk 2019 is near neutral at (156, 168, 153). The atlas's own was
+  (125, 145, 148) — blue, and the only one of the three that was. Now
+  neutral-warm, between the two rather than matched to either lab's white
+  balance.
+
+The strain description gives "diameter up to 7(-9)" µm, at the top of the range
+the species occupies.

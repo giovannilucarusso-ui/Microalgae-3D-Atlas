@@ -202,17 +202,21 @@ export default function CellField({ form, selected, onSelect }) {
       // in the cell body rather than in the chloroplast is what made these read
       // as uniformly pigmented balls.
       body: specimenMaterial({
-        core: '#b9cbb8',
-        density: 0.34,
-        edge: 1.15,
+        core: '#e3e0d4',
+        density: 0.3,
+        // The contour is the loudest thing about a real cell and it was the
+        // quietest thing about this one. In the CAUP plates every cell carries a
+        // hard dark ring with a bright line just outside it, and you read the
+        // cell off that before you read anything about its colour.
+        edge: 1.7,
         perInstance: true,
         depthWrite: false,
       }),
-      rim: haloMaterial({ color: '#e6f2e4', strength: 0.2, sharpness: 8 }),
+      rim: haloMaterial({ color: '#f2efe0', strength: 0.42, sharpness: 7 }),
       // The chloroplast, and with it all the pigment.
       cup: specimenMaterial({
         core: green,
-        density: 0.44,
+        density: 0.5,
         edge: 0.2,
         perInstance: true,
         depthWrite: false,

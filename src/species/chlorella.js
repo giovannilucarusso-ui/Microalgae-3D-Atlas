@@ -45,10 +45,18 @@ export const CHLORELLA_GENUS = {
   // from this, the field and the coverslip gap — see `populationSize` — instead
   // of being a count chosen because it looked about right.
   cellsPerMl: 2.0e8,
-  // Chlorophyll a and b and no phycobilins: grass green, where Spirulina is
-  // blue-green. It is the first thing that separates the two organisms here,
-  // and it is visible down any objective.
-  colour: '#3f7a3c',
+  // The colour is a set of transmittances, not a paint sample: `specimenMaterial`
+  // takes -log of each channel as an absorption coefficient, so this is what one
+  // unit of pigment lets through.
+  //
+  // Read off the CAUP Chlorella vulgaris H1917 plates rather than chosen. Field
+  // (186, 182, 131), cell interior (126, 147, 12) — so red transmits 0.68, green
+  // 0.81 and blue 0.09. **Chlorophyll makes green by extinguishing blue, not by
+  // darkening everything**, which is exactly what its absorption spectrum says
+  // and the opposite of what a dark green paint does. Drawn as a dark green the
+  // cells came out at 0.46 of the field where the plates put them at 0.74: too
+  // dark, too grey, and green for the wrong reason.
+  colour: '#adcf17',
   groups: [
     { title: 'The cell', ids: ['cellBody', 'chloroplast', 'wall'] },
     { title: 'Reproduction', ids: ['autospores'] },

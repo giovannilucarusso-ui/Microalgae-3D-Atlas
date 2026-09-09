@@ -310,18 +310,30 @@ function finish(canvas) {
 // blurred smudges of debris far outside the focal plane.
 export function brightFieldTexture() {
   const [canvas, ctx] = fieldCanvas(512)
+  // The lamp, and it used to be the wrong colour. Every stop here had blue at
+  // or above red — a cool cast — and a microscope lamp is a tungsten filament,
+  // which is the opposite. Measured against two plates: the field in
+  // Nowicka-Krawczyk 2019 runs (156, 168, 153), near neutral, and the CAUP
+  // Chlorella vulgaris H1917 plates run (186, 182, 131), frankly khaki. Ours was
+  // (125, 145, 148) and matched neither — it was the only one of the three that
+  // was blue.
+  //
+  // Set neutral-warm, between the two references rather than chasing one lab's
+  // white balance, and brighter: both plates have a field near 180, and at 141
+  // this one was dim enough that everything in it had to be darker still to
+  // register.
   const base = ctx.createLinearGradient(0, 0, 90, 512)
-  base.addColorStop(0, '#8ba3ac')
-  base.addColorStop(0.45, '#96acae')
-  base.addColorStop(1, '#a3b0a1')
+  base.addColorStop(0, '#b6b4a4')
+  base.addColorStop(0.45, '#c0bcaa')
+  base.addColorStop(1, '#bcbca8')
   ctx.fillStyle = base
   ctx.fillRect(0, 0, 512, 512)
 
-  blot(ctx, 296, 186, 240, 'rgba(206, 220, 220, 0.36)')
-  blot(ctx, 130, 430, 260, 'rgba(140, 165, 152, 0.40)')
-  blot(ctx, 430, 470, 190, 'rgba(112, 140, 145, 0.36)')
-  blot(ctx, 60, 90, 150, 'rgba(108, 134, 145, 0.34)')
-  blot(ctx, 380, 60, 120, 'rgba(150, 168, 162, 0.32)')
+  blot(ctx, 296, 186, 240, 'rgba(226, 222, 204, 0.36)')
+  blot(ctx, 130, 430, 260, 'rgba(178, 176, 152, 0.40)')
+  blot(ctx, 430, 470, 190, 'rgba(158, 156, 136, 0.36)')
+  blot(ctx, 60, 90, 150, 'rgba(152, 150, 132, 0.34)')
+  blot(ctx, 380, 60, 120, 'rgba(190, 186, 166, 0.32)')
   return finish(canvas)
 }
 
