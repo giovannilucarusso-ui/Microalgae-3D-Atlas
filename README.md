@@ -44,6 +44,37 @@ too. The polyglucan rods are recorded as packed in a hexagonal array and are
 drawn individually against the lamellae — and the card states the difference
 rather than hiding it.
 
+## Adding a specimen
+
+The microscope and the organism are separate. [`src/microscope.js`](src/microscope.js)
+holds the instrument — two objectives, their optics, and the arithmetic that
+turns "how much slide do I want in frame" into a working distance, clipping
+planes, zoom limits and fine-focus travel. [`src/species/`](src/species/) holds
+the organisms. A species declares how big it is and which way to look at it; it
+declares nothing about rendering, because every specimen in this atlas is looked
+at through the same instrument. **A species that needed its own optics to look
+right would be evidence the optics are wrong.**
+
+A new specimen is a file in `src/species/` and a line in its index. What it needs:
+
+```js
+exterior: {
+  kind: 'helical-trichome',  // which body generator draws it
+  fieldUm: 451.3,            // how much slide is in frame; the camera follows
+  view: [299, 160, 518],     // which way to look
+  …the generator's own parameters
+}
+```
+
+`kind` selects the generator. A coccoid, a chain-forming diatom or a flagellate
+is a new generator beside [`Trichome.jsx`](src/Trichome.jsx) and a different set
+of parameters — not a flag inside it.
+
+**A species may have an exterior and no interior at all**, and most will for a
+long time. That is what the confidence tiers are for: a specimen whose literature
+supports the outside and little else still belongs here, carrying more of the
+second and third tier, and how little is known about it is itself worth showing.
+
 ## Run it
 
 ```bash

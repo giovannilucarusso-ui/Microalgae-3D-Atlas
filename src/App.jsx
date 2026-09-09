@@ -7,6 +7,8 @@ import Debris from './specimen.jsx'
 import CellSection from './CellSection.jsx'
 import { SWATCH } from './materials.js'
 import { Optics, brightFieldTexture, darkFieldTexture } from './optics.jsx'
+import { BRIGHTFIELD, TOMOGRAM, stage } from './microscope.js'
+import { DEFAULT_SPECIES, speciesById } from './species/index.js'
 import { CLICK_SLOP, CameraRig, KeyboardPan, MicroscopeLights, ScaleBarDriver } from './scene.jsx'
 import { CONFIDENCE, GROUPS, SOURCES, STRUCTURES, tourOrder } from './structures.js'
 import {
@@ -31,83 +33,44 @@ const HAS_WEBGL2 = (() => {
   }
 })()
 
-// Two instruments, because the two scales are not seen with the same one.
-// The filament is a wet mount in transmitted light — that is genuinely how you
-// meet Spirulina. The interior is 56 nm of detail no lens can resolve, so it is
-// shown the way it is actually recorded: a dark ground with the structures lit
-// from within, the register of a confocal stack or a tomogram.
-const VIEWS = {
-  filament: {
-    label: 'Filament',
-    unit: 'µm',
-    field: 'bright',
-    // Pulled back from 516: at that distance the top of the filament was cut
-    // off by the frame, which nobody had noticed because the interesting part
-    // was in the middle. The life cycle happens at the far end, and it has to
-    // be somewhere you can see.
-    camera: { position: [299, 160, 518], fov: 40, near: 1, far: 6000 },
-    controls: { minDistance: 25, maxDistance: 1600 },
-    home: { target: [0, 0, 0], dir: [299, 160, 518], distance: 620 },
-    // The fine focus, in µm of focal plane travel either way. A microscope has
-    // a second knob because the depth of field is thinner than the specimen,
-    // and the answer to "half of every coil is dissolved" is the answer a
-    // microscopist gives: rack through it. 60 µm covers the helix, whose depth
-    // extent from this camera is about 78, and a little past both ends of it.
-    fineFocus: { range: 60, step: 0.5 },
-    // A high-aperture objective has a focal plane a couple of micrometres
-    // thick; over a 36 µm helix that leaves most of every coil dissolved. That
-    // is what an objective does, and it is why `fineFocus` above exists rather
-    // than this number being smaller.
-    optics: {
-      aperture: 11,
-      maxBlur: 0.015,
-      aberration: 0.0024,
-      glare: 0.085,
-      vignette: 0.34,
-      grain: 0.03,
-      saturation: 0.9,
-      lift: 0,
-      tint: '#fdfffd',
-    },
-  },
-  cell: {
-    label: 'Cell interior',
-    unit: 'nm',
-    field: 'dark',
-    // Above the middle of the cutaway opening: high enough that the lamella
-    // pattern reads in plan, far enough that the whole cell has margin.
-    camera: { position: [6660, 13660, 10460], fov: 36, near: 40, far: 90000 },
-    controls: { minDistance: 220, maxDistance: 40000 },
-    home: { target: [0, 0, 0], dir: [6660, 13660, 10460], distance: 18450 },
-    // Depth cueing does most of the work of telling front from back in a
-    // cutaway this crowded, so the fog starts earlier than the camera sits.
-    fog: [12800, 25500],
-    optics: {
-      aperture: 1.7,
-      // 3500 nm — a little under the cell's own radius. With the aperture at
-      // 1.7 and the blur capped at 11.7 px, that holds about ±180 nm within a
-      // pixel of focus and ±350 within two, so a whorl of lamellae is inspected
-      // as a body rather than as one sharp membrane between two smeared ones.
-      // Micrometres away still dissolves: this floors the near field, it does
-      // not switch the depth of field off.
-      depthFloor: 3500,
-      maxBlur: 0.013,
-      aberration: 0.0016,
-      glare: 0.09,
-      vignette: 0.44,
-      grain: 0.026,
-      saturation: 1.02,
-      lift: 0.008,
-      // The crevice darkening carries the form now. It is the only term in the
-      // pass that knows a lamella has a neighbour 56 nm behind it, and with
-      // the sky light down it is what separates one membrane from the next
-      // instead of the two blending into a plateau.
-      ao: 0.95,
-      aoRadius: 0.0052,
-      aoFalloff: 0.0042,
-      tint: '#ffffff',
-    },
-  },
+// The two views of one specimen, derived rather than written out.
+//
+// This used to be a literal holding two camera positions, two sets of clipping
+// planes, two sets of zoom limits and two sets of optics — all of them Spirulina's,
+// and all of them constants. A second specimen could not have been added without
+// hand-tuning a second copy of every one of them, which is the same as saying the
+// atlas had room for exactly one organism.
+//
+// Now the species says how big it is and which way to look at it, the microscope
+// says how to look, and the stage falls out of the two. The optics are the
+// instrument's and are shared by everything in the atlas on purpose: what should
+// differ between two plates is the organism, not the rendering.
+function viewsFor(species) {
+  const views = {}
+  if (species.exterior) {
+    views.filament = {
+      ...stage(BRIGHTFIELD, {
+        field: species.exterior.fieldUm,
+        dir: species.exterior.view,
+        unit: 'µm',
+        label: species.exterior.label,
+      }),
+      caption: species.exterior.caption,
+      form: species.exterior,
+    }
+  }
+  if (species.interior) {
+    views.cell = {
+      ...stage(TOMOGRAM, {
+        field: species.interior.fieldNm,
+        dir: species.interior.view,
+        unit: 'nm',
+        label: species.interior.label,
+      }),
+      caption: species.interior.caption,
+    }
+  }
+  return views
 }
 
 // Layer switch: the one control that answers "the thylakoids are in the way".
@@ -163,7 +126,9 @@ export default function App() {
   const fields = useMemo(() => ({ bright: brightFieldTexture(), dark: darkFieldTexture() }), [])
 
   const helix = SPECIES_HELIX
-  const config = VIEWS[view]
+  const species = speciesById(DEFAULT_SPECIES)
+  const views = useMemo(() => viewsFor(species), [species])
+  const config = views[view]
   const bright = config.field === 'bright'
   const detail = selected ? STRUCTURES[selected] : null
   // A structure that moves with the model says where it is as a function of the
@@ -395,6 +360,7 @@ export default function App() {
             {/* No lights: in transmitted light nothing is lit from the front —
                 the specimen is what is left of the lamp after the crossing. */}
             <Trichome
+              form={config.form}
               gliding={gliding}
               selected={selected}
               onSelect={select}
@@ -469,7 +435,7 @@ export default function App() {
           </p>
 
           <div className="tabs" role="tablist">
-            {Object.entries(VIEWS).map(([id, v]) => (
+            {Object.entries(views).map(([id, v]) => (
               <button
                 key={id}
                 role="tab"
@@ -485,9 +451,7 @@ export default function App() {
 
         <div className="panel-body">
         <p className="caption">
-          {view === 'filament'
-            ? 'One filament in a wet mount, about 110 cells long, seen in transmitted light. Pick a cell to go inside.'
-            : 'One cell, cut open: a wedge and the cell above it have been removed, so you look down onto the lower cross-wall.'}
+          {config.caption}
         </p>
 
 

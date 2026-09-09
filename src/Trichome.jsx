@@ -2,10 +2,6 @@ import { useEffect, useMemo, useRef } from 'react'
 import * as THREE from 'three'
 import { useFrame } from '@react-three/fiber'
 import {
-  CELL,
-  LIFE_CYCLE,
-  TRICHOME,
-  SPECIES_HELIX,
   helixPoint,
   trichomeHelix,
   helixSign,
@@ -192,7 +188,14 @@ const APEX = 1.05
 const DEPART = new THREE.Vector3(0.866, 0, -0.5)
 const MAX_DEPART = 130 // µm
 
-export default function Trichome({ gliding, selected, onSelect, life }) {
+// `form` is the species record's `exterior` block: the organism, and nothing
+// about how it is rendered. Everything this component used to read from module
+// constants in science.js now arrives through it, which is what lets a second
+// specimen exist without this file knowing about it. What stays hard-coded here
+// is the *shape* — a helix wound out of a tube — because that is what this
+// component is. A coccoid or a chain-forming diatom is a different `kind` and a
+// different component beside this one, not a flag inside it.
+export default function Trichome({ form, gliding, selected, onSelect, life }) {
   const groupRef = useRef()
   const driftRef = useRef()
   const breakCapRef = useRef()
@@ -200,7 +203,7 @@ export default function Trichome({ gliding, selected, onSelect, life }) {
   const travel = useRef({ elapsed: 0, dir: 1, spin: 0 })
   const reduced = usePrefersReducedMotion()
 
-  const helix = SPECIES_HELIX
+  const helix = form.helix
   const params = useMemo(
     () => trichomeHelix(helix),
     [helix.diameterUm, helix.pitchUm],
@@ -209,7 +212,7 @@ export default function Trichome({ gliding, selected, onSelect, life }) {
 
   const curve = useMemo(() => new HelixCurve(params), [params])
 
-  const cellRadius = CELL.diameterUm / 2
+  const cellRadius = form.cell.diameterUm / 2
 
   const [geometry, halo] = useMemo(
     () => [
@@ -220,7 +223,7 @@ export default function Trichome({ gliding, selected, onSelect, life }) {
   )
   useEffect(() => () => [geometry, halo].forEach((g) => g.dispose()), [geometry, halo])
 
-  const numCells = Math.round(TRICHOME.lengthUm / CELL.lengthUm)
+  const numCells = Math.round(form.trichome.lengthUm / form.cell.lengthUm)
   const texture = useMemo(() => makeDensityMap(numCells), [numCells])
   useEffect(() => () => texture.dispose(), [texture])
 
@@ -316,7 +319,7 @@ export default function Trichome({ gliding, selected, onSelect, life }) {
     const necrosis = smooth(0.05, 0.4, progress)
     const gap = smooth(0.38, 0.62, progress) * MAX_GAP
     const slide = smooth(0.6, 1, progress) * MAX_SLIDE
-    const breakAt = LIFE_CYCLE.breakAt
+    const breakAt = form.lifeCycle.breakAt
 
     const near = Math.max(0, breakAt - gap / 2)
     const far = Math.min(1, breakAt + gap / 2)
@@ -332,7 +335,8 @@ export default function Trichome({ gliding, selected, onSelect, life }) {
     }
 
     if (driftRef.current) {
-      driftRef.current.rotation.y = helixSign() * turns * Math.PI * 2 * slide
+      driftRef.current.rotation.y =
+        helixSign(form.trichome.handedness) * turns * Math.PI * 2 * slide
       const away = MAX_DEPART * smooth(0.62, 1, progress)
       driftRef.current.position.set(
         DEPART.x * away,
