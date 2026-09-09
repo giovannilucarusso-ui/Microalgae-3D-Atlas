@@ -91,6 +91,13 @@ See [`CITATION.cff`](CITATION.cff). Where you rely on a specific measurement,
 cite the primary source the card names as well — a figure reused without its
 sources loses the one thing that separates it from an illustration.
 
+## Audited
+
+[`docs/review-2026-09-08.md`](docs/review-2026-09-08.md) is an external review of
+the implementation, kept unedited, with a status header saying how each of its
+fifteen findings was closed. It is here because a model that claims to say where
+its numbers come from should also say who has checked it and what they found.
+
 ## How it is drawn, and why
 
 [`docs/design-notes.md`](docs/design-notes.md) is the long account: what the
