@@ -33,9 +33,13 @@ export const BRIGHTFIELD = {
   // they do would have meant re-tuning one of them to a shared compromise.
   ratios: { near: 1 / 620, far: 9.677, minDistance: 1 / 24.8, maxDistance: 2.581 },
   // A microscope has a second knob because the depth of field is thinner than
-  // the specimen, so the travel has to cover the specimen's depth — which scales
-  // with it. Only this objective has one: a reconstruction has no stage to rack.
-  fineFocus: { range: 1 / 7.5, step: 1 / 900 },
+  // the specimen. Only this objective has one: a reconstruction has no stage to
+  // rack. The travel is a fraction of the specimen's DEPTH, and getting that
+  // wrong is what made the control feel broken: keyed to the field's width, a
+  // Chlorella mount got 11.7 µm of travel through a slab 45 µm deep — the knob
+  // could not reach most of the specimen, and each wheel click moved it four
+  // tenths of a micrometre, so nothing visibly happened either.
+  fineFocus: { range: 0.8, step: 1 / 190 },
   // A high-aperture objective has a focal plane a couple of micrometres thick.
   // Over a specimen tens of micrometres deep that leaves most of it dissolved,
   // which is what an objective does — and why `fineFocus` exists rather than
@@ -113,7 +117,7 @@ export function workingDistance(fieldAcross, fov) {
 // its zoom limits or its fine-focus travel re-tuned by hand. Those multiples are
 // the ratios the Spirulina view was already using once its own numbers were
 // divided through.
-export function stage(objective, { field, dir, unit, label }) {
+export function stage(objective, { field, depth, dir, unit, label }) {
   const distance = workingDistance(field, objective.fov)
   const r = objective.ratios
   const position = new THREE.Vector3(...dir).normalize().multiplyScalar(distance).toArray()
@@ -133,8 +137,8 @@ export function stage(objective, { field, dir, unit, label }) {
     },
     home: { target: [0, 0, 0], dir: position, distance },
     fineFocus: objective.fineFocus && {
-      range: field * objective.fineFocus.range,
-      step: field * objective.fineFocus.step,
+      range: (depth ?? field * 0.5) * objective.fineFocus.range,
+      step: (depth ?? field * 0.5) * objective.fineFocus.step,
     },
     fog: objective.fog && [distance * objective.fog[0], distance * objective.fog[1]],
     optics: objective.optics,

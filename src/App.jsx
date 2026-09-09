@@ -52,6 +52,7 @@ function viewsFor(species) {
     views.filament = {
       ...stage(BRIGHTFIELD, {
         field: species.exterior.fieldUm,
+        depth: species.exterior.depthUm,
         dir: species.exterior.view,
         unit: 'µm',
         label: species.exterior.label,
@@ -495,6 +496,54 @@ export default function App() {
           {config.caption}
         </p>
 
+        {config.fineFocus && (
+          <div className="control">
+            {/* The fine focus belongs to the objective, not to the organism: any
+                specimen on this stage can be racked through, and it was sitting
+                inside the trichome's own controls where a coccoid never saw it.
+                The hint bar went on advertising shift+scroll for a control the
+                panel did not show and gave no feedback for, which is worse than
+                not having it. */}
+            <div className="cycle">
+              <label htmlFor="fine">
+                Fine focus
+                <span className="value" ref={focusValue}>
+                  0.0 µm
+                </span>
+              </label>
+              <div className="cycle-row">
+                <button
+                  className="play"
+                  onClick={() => setFocus(0)}
+                  aria-label="Return the plane of focus to the middle of the specimen"
+                  title="Back to the middle of the specimen"
+                >
+                  ⌖
+                </button>
+                <input
+                  id="fine"
+                  type="range"
+                  min={-config.fineFocus.range}
+                  max={config.fineFocus.range}
+                  step={config.fineFocus.step}
+                  defaultValue="0"
+                  ref={focusSlider}
+                  onInput={(event) => setFocus(Number(event.target.value))}
+                />
+              </div>
+              <p className="note">
+                The plane of focus, moved through the slide — shift and the wheel
+                do the same over the specimen itself. The depth of field is a
+                couple of micrometres and the specimen is tens across, so most of
+                it is dissolved at any one setting. That is what an objective
+                does, and it is why the focus is a control here rather than a
+                setting.
+              </p>
+            </div>
+          </div>
+        )}
+
+
 
         <div className="control list">
           <p className="list-title">
@@ -602,49 +651,6 @@ export default function App() {
                 In open water that rotation drives it forward, one helix pitch per
                 turn — no flagella involved.
               </p>
-
-              {/* The fine focus. The depth of field here is an objective's, not
-                  a render's convenience: a couple of micrometres over a helix
-                  38 µm across, so at any one setting the far half of every coil
-                  is dissolved. That is not a fault to be tuned out — it is what
-                  the instrument does, and it is why a microscope has this
-                  second knob. Rack it and the coils come forward in turn. */}
-              <div className="cycle">
-                <label htmlFor="fine">
-                  Fine focus
-                  <span className="value" ref={focusValue}>
-                    0.0 µm
-                  </span>
-                </label>
-                <div className="cycle-row">
-                  <button
-                    className="play"
-                    onClick={() => setFocus(0)}
-                    aria-label="Return the plane of focus to the middle of the helix"
-                    title="Back to the middle of the helix"
-                  >
-                    ⌖
-                  </button>
-                  <input
-                    id="fine"
-                    type="range"
-                    min={-config.fineFocus.range}
-                    max={config.fineFocus.range}
-                    step={config.fineFocus.step}
-                    defaultValue="0"
-                    ref={focusSlider}
-                    onInput={(event) => setFocus(Number(event.target.value))}
-                  />
-                </div>
-                <p className="note">
-                  The plane of focus, moved through the slide. Shift and the
-                  wheel do the same over the specimen itself. The depth of field
-                  is a couple of micrometres and the helix is 38 across, so most
-                  of it is always dissolved — which is what a coil of this looks
-                  like down a real objective, and why the focus is a control
-                  rather than a setting.
-                </p>
-              </div>
 
               {/* The life cycle. Scrub it, or let it run: a necridium forms, the
                   filament parts at it, and the hormogonium screws away along the

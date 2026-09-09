@@ -42,6 +42,10 @@ export default {
     // distance, the clipping planes, the zoom limits and the fine-focus travel
     // from this one number.
     fieldUm: 451.3,
+    // How deep the specimen lies along the line of sight, which is what the fine
+    // focus has to be able to cross. The helix is 160 µm along its axis and 38
+    // across; from this camera that projects to about 78 µm of depth.
+    depthUm: 78,
     // Where the camera sits, as a direction. Pulled off the axis so the helix
     // reads as a helix rather than as a row of discs.
     view: [299, 160, 518],
