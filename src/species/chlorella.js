@@ -49,6 +49,10 @@ export const CHLORELLA_GENUS = {
   // CAUP plates, where roughly half the cells are in clumps of a handful to a
   // couple of dozen and the rest are free.
   clumping: { fraction: 0.55, size: [3, 14] },
+  // Chlorella is denser than its medium and has no flagellum: in a mount left to
+  // stand it goes to the glass. Most of the culture is on the slide, a minority
+  // still in suspension above it.
+  settling: { settled: 0.72, layerUm: 4 },
   // The colour is a set of transmittances, not a paint sample: `specimenMaterial`
   // takes -log of each channel as an absorption coefficient, so this is what one
   // unit of pigment lets through.

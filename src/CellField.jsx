@@ -68,10 +68,36 @@ function placeCells(rnd, form, count) {
   const clumped = Math.round(count * (form.clumping?.fraction ?? 0))
   const perClump = form.clumping?.size ?? [3, 9]
   const spots = []
+
+  // Cells settle, and that is why a real mount can be read at all.
+  //
+  // Spread evenly through the coverslip gap, as they were, no two cells share a
+  // plane: the depth of field at this working distance is about +/- 0.8 um, a
+  // Chlorella cell is two to eight across, and the gap is forty-five deep — so
+  // at any one setting exactly one cell in the field is sharp and the rest are
+  // smeared. That is arithmetic, not a rendering fault, and no amount of tuning
+  // the optics would have fixed it, because the optics are right.
+  //
+  // What was wrong is the biology. Chlorella is denser than its medium and does
+  // not swim; in a mount left to stand it sediments onto the glass, and what an
+  // operator does is rack down to that layer. Most of the population is
+  // therefore within a couple of micrometres of one plane, with a minority still
+  // in suspension above it — which is exactly what the CAUP plates show, whole
+  // groups of cells sharp together and the odd one floating and soft.
+  //
+  // The settled plane is the origin, because that is what the objective is
+  // pointed at. Racking the fine focus away from zero leaves the layer and finds
+  // the floaters, which is what racking is for.
+  const settledFraction = form.settling?.settled ?? 0
+  const layer = (form.settling?.layerUm ?? 3) * 0.5
+  const depthAt = () =>
+    rnd() < settledFraction
+      ? (rnd() * 2 - 1) * layer
+      : (rnd() * 2 - 1) * depth
   const anywhere = () => [
     (rnd() * 2 - 1) * spread,
     (rnd() * 2 - 1) * spread,
-    (rnd() * 2 - 1) * depth,
+    depthAt(),
   ]
 
   let placed = 0
@@ -94,7 +120,9 @@ function placeCells(rnd, form, count) {
         const p = [
           cx + reach * Math.sin(ph) * Math.cos(th),
           cy + reach * Math.sin(ph) * Math.sin(th),
-          cz + reach * Math.cos(ph) * 0.55,
+          // Flattened hard: a clump resting on the slide spreads across it
+          // rather than standing up through the gap.
+          cz + reach * Math.cos(ph) * 0.18,
         ]
         const clash = members.some(
           (m) => Math.hypot(p[0] - m[0], p[1] - m[1], p[2] - m[2]) < form.cell.maxUm * 0.62,
@@ -261,6 +289,23 @@ export default function CellField({ form, selected, onSelect }) {
       // little it does take out of the beam, not for colour — putting the green
       // in the cell body rather than in the chloroplast is what made these read
       // as uniformly pigmented balls.
+      // The one body in a cell that writes depth, and it has to.
+      //
+      // Everything here was depthWrite:false so that nested absorbers would
+      // multiply instead of occluding each other — right for the colour, and
+      // quietly fatal for the focus. The depth-of-field pass reads the depth
+      // buffer to learn how far away each pixel is; where nothing writes it, it
+      // finds the background. Every cell was therefore being told it sat at the
+      // far plane and blurred by the maximum, whatever the fine focus was set
+      // to, while the slide debris — which does write depth — came in and out of
+      // focus perfectly. That is exactly the complaint: the focus works on
+      // everything except the specimen.
+      //
+      // So the cell's outer surface writes depth, and it is drawn after its own
+      // organelles so that it does not reject them. The cost is that two
+      // overlapping cells no longer darken each other, which is a small error in
+      // the absorption; the alternative was a specimen that could not be brought
+      // into focus at all.
       body: specimenMaterial({
         core: '#e3e0d4',
         density: 0.3,
@@ -272,7 +317,6 @@ export default function CellField({ form, selected, onSelect }) {
         // is what made the cells look cut out and pasted on.
         edge: 0.95,
         perInstance: true,
-        depthWrite: false,
       }),
       // A whisper. The bright line outside a transparent body is mostly a
       // defocus effect and the pass now produces it from the physics, where it
@@ -343,11 +387,6 @@ export default function CellField({ form, selected, onSelect }) {
       }}
     >
       <instancedMesh
-        ref={bodyRef}
-        args={[geometries.body, materials.body, cells.length]}
-        frustumCulled={false}
-      />
-      <instancedMesh
         ref={cupRef}
         args={[geometries.cup, materials.cup, Math.max(1, intact.length)]}
         raycast={() => null}
@@ -367,6 +406,14 @@ export default function CellField({ form, selected, onSelect }) {
           frustumCulled={false}
         />
       )}
+      {/* After the organelles, so writing depth does not reject them, and it is
+          this surface's distance the depth-of-field pass reads. */}
+      <instancedMesh
+        ref={bodyRef}
+        args={[geometries.body, materials.body, cells.length]}
+        renderOrder={1}
+        frustumCulled={false}
+      />
       {/* The bright line just outside a transparent body in transmitted light,
           drawn as its own shell for the same reason the trichome's is: the
           specimen multiplies the field, and a Becke line adds to it. Last, so it
@@ -375,7 +422,7 @@ export default function CellField({ form, selected, onSelect }) {
         ref={haloRef}
         args={[geometries.halo, materials.rim, cells.length]}
         raycast={() => null}
-        renderOrder={1}
+        renderOrder={2}
         frustumCulled={false}
       />
     </group>

@@ -16,11 +16,12 @@ export const SHARED_CARDS = {
     latin: 'cellula',
     confidence: 'species',
     what: 'A single green sphere, two to ten micrometres across, with a smooth wall and no flagellum. There is very little else a light microscope can say about one: at this size the cell is close to the resolution limit of the instrument looking at it, and most of what is written about Chlorella anatomy comes from electron microscopy rather than from this view.',
-    role: 'What you meet is never one cell. A culture is a field of them at every depth, and the field is the specimen here — a single drawn cell would be an average, and an average is exactly the thing that cannot carry the difference between two species of this genus.',
+    role: 'What you meet is never one cell. A culture is a field of them, and the field is the specimen here — a single drawn cell would be an average, and an average is exactly the thing that cannot carry the difference between two species of this genus. Most of them have settled onto the glass, which is why so many can be sharp at once: the depth of field at this magnification is under a micrometre, so a population spread through the whole coverslip gap would never show you more than one cell at a time. Rack the fine focus off the layer and you find the few still in suspension.',
     dimensions: [
       ['Shape', 'spherical, subspherical or ellipsoid', 'species'],
       ['Wall', 'smooth, no flagella, no gliding', 'species'],
       ['Culture drawn here', '2 x 10^8 cells/mL — a dense harvest culture', 'unverified'],
+      ['On the glass', 'about seven in ten; Chlorella is denser than its medium and has no flagellum', 'model'],
       ['Cells in frame', 'follows from that density, the field and the coverslip gap', 'unverified'],
     ],
     sources: ['r44', 'r46'],
