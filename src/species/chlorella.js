@@ -45,6 +45,10 @@ export const CHLORELLA_GENUS = {
   // from this, the field and the coverslip gap — see `populationSize` — instead
   // of being a count chosen because it looked about right.
   cellsPerMl: 2.0e8,
+  // How much of the culture is stuck together, and in what sizes. Read off the
+  // CAUP plates, where roughly half the cells are in clumps of a handful to a
+  // couple of dozen and the rest are free.
+  clumping: { fraction: 0.55, size: [3, 14] },
   // The colour is a set of transmittances, not a paint sample: `specimenMaterial`
   // takes -log of each channel as an absorption coefficient, so this is what one
   // unit of pigment lets through.

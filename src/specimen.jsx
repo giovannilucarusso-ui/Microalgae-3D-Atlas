@@ -26,6 +26,12 @@ const VERTEX = /* glsl */ `
     attribute float aDensity;
     varying float vDensity;
   #endif
+  #ifdef GRAIN
+    // Where this fragment is on the slide, so the grain has a physical size:
+    // the same organelle drawn twice as large gets twice as many granules
+    // across it, rather than the same pattern stretched.
+    varying vec3 vObject;
+  #endif
 
   void main() {
     vUv = uv;
@@ -37,6 +43,9 @@ const VERTEX = /* glsl */ `
     #ifdef USE_INSTANCING
       transformed = (instanceMatrix * vec4(transformed, 1.0)).xyz;
       objectNormal = mat3(instanceMatrix) * objectNormal;
+    #endif
+    #ifdef GRAIN
+      vObject = transformed;
     #endif
     vec4 mv = modelViewMatrix * vec4(transformed, 1.0);
     vNormalView = normalMatrix * objectNormal;
@@ -66,6 +75,28 @@ const FRAGMENT = /* glsl */ `
   varying float vDistance;
   #ifdef PER_INSTANCE
     varying float vDensity;
+  #endif
+  #ifdef GRAIN
+    uniform float uGrainAmt;
+    uniform float uGrainSize;
+    varying vec3 vObject;
+
+    float hash31(vec3 p) {
+      p = fract(p * 0.3183099 + vec3(0.11, 0.27, 0.43));
+      p *= 17.0;
+      return fract(p.x * p.y * p.z * (p.x + p.y + p.z));
+    }
+    float vnoise(vec3 x) {
+      vec3 i = floor(x);
+      vec3 f = fract(x);
+      f = f * f * (3.0 - 2.0 * f);
+      return mix(
+        mix(mix(hash31(i), hash31(i + vec3(1.0, 0.0, 0.0)), f.x),
+            mix(hash31(i + vec3(0.0, 1.0, 0.0)), hash31(i + vec3(1.0, 1.0, 0.0)), f.x), f.y),
+        mix(mix(hash31(i + vec3(0.0, 0.0, 1.0)), hash31(i + vec3(1.0, 0.0, 1.0)), f.x),
+            mix(hash31(i + vec3(0.0, 1.0, 1.0)), hash31(i + vec3(1.0, 1.0, 1.0)), f.x), f.y),
+        f.z);
+    }
   #endif
 
   void main() {
@@ -107,6 +138,16 @@ const FRAGMENT = /* glsl */ `
     float density = uDensity;
     #ifdef PER_INSTANCE
       density *= vDensity;
+    #endif
+    #ifdef GRAIN
+      // A chloroplast is not a smooth shell of dye. In the plates it is lobed
+      // and granular, with paler patches where the lamellae part and denser
+      // ones where they stack, and that texture is a good part of why a real
+      // cell looks alive and a drawn one looks moulded. Two octaves: the coarse
+      // one makes lobes, the fine one makes grain.
+      float lobes = vnoise(vObject / uGrainSize);
+      float grain = vnoise(vObject / (uGrainSize * 0.33));
+      density *= 1.0 + uGrainAmt * (1.35 * (lobes - 0.5) + 0.65 * (grain - 0.5));
     #endif
     vec3 transmittance = exp(-uAbsorb * (path * density * modulation) - uEdge * pow(1.0 - ndv, 3.0));
 
@@ -254,6 +295,10 @@ export function specimenMaterial({
   // switches the path model and draws both sides, because a wall crossed twice
   // has to absorb twice.
   shell = false,
+  // Mottles the pigment. `grainSize` is in scene units — the size of a lobe —
+  // so the texture is a property of the organelle rather than of the mesh.
+  grain = 0,
+  grainSize = 1,
   // Off for bodies drawn inside other bodies. Multiply blending is commutative,
   // so two absorbers in the same beam give the same answer in either order —
   // but the depth test is not, and with it on the nearer surface simply rejects
@@ -263,7 +308,11 @@ export function specimenMaterial({
   depthWrite = true,
 } = {}) {
   return new THREE.ShaderMaterial({
-    defines: { ...(perInstance ? { PER_INSTANCE: '' } : {}), ...(shell ? { SHELL: '' } : {}) },
+    defines: {
+      ...(perInstance ? { PER_INSTANCE: '' } : {}),
+      ...(shell ? { SHELL: '' } : {}),
+      ...(grain > 0 ? { GRAIN: '' } : {}),
+    },
     uniforms: {
       uAbsorb: { value: absorbFrom(core) },
       uDensity: { value: density },
@@ -277,6 +326,8 @@ export function specimenMaterial({
       uNecrosis: { value: 0 },
       uNecrosisAt: { value: 0.5 },
       uNecrosisWidth: { value: 0.012 },
+      uGrainAmt: { value: grain },
+      uGrainSize: { value: grainSize },
     },
     vertexShader: VERTEX,
     fragmentShader: FRAGMENT,

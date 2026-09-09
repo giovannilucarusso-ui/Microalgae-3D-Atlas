@@ -51,11 +51,70 @@ function populationSize(form) {
   return Math.max(4, Math.round(volumeUm3 * form.cellsPerMl * 1e-12))
 }
 
+// Where a cell sits, which is not "anywhere".
+//
+// A culture is not a Poisson scatter and the CAUP plates make that plain: dense
+// clumps with clear water between them, not an even sprinkle. Two mechanisms
+// produce it and both are real — autospores stay together where the mother wall
+// let them go, and the cells stick to each other and to the glass. Drawn evenly
+// spread, a field of Chlorella reads as a diagram of a culture rather than as a
+// drop of one, and it was the largest single difference left against the plates.
+//
+// Cells are placed into clumps by rejection against what is already in the same
+// clump, so they touch rather than interpenetrate; the rest are free-swimming.
+function placeCells(rnd, form, count) {
+  const spread = form.fieldUm * 0.46
+  const depth = (form.depthUm ?? form.fieldUm * 0.5) * 0.5
+  const clumped = Math.round(count * (form.clumping?.fraction ?? 0))
+  const perClump = form.clumping?.size ?? [3, 9]
+  const spots = []
+  const anywhere = () => [
+    (rnd() * 2 - 1) * spread,
+    (rnd() * 2 - 1) * spread,
+    (rnd() * 2 - 1) * depth,
+  ]
+
+  let placed = 0
+  while (placed < clumped) {
+    const [cx, cy, cz] = anywhere()
+    const want = Math.min(
+      clumped - placed,
+      Math.round(perClump[0] + (perClump[1] - perClump[0]) * Math.pow(rnd(), 1.3)),
+    )
+    const members = []
+    for (let i = 0; i < want; i++) {
+      // Out from the centre until it stops overlapping anything already in this
+      // clump. Bounded, because a clump that cannot fit another cell should end
+      // rather than search forever.
+      let put = null
+      for (let tries = 0; tries < 24 && !put; tries++) {
+        const reach = form.cell.maxUm * (0.5 + 0.9 * Math.sqrt(members.length + 1)) * (0.7 + rnd() * 0.7)
+        const th = rnd() * Math.PI * 2
+        const ph = Math.acos(1 - 2 * rnd())
+        const p = [
+          cx + reach * Math.sin(ph) * Math.cos(th),
+          cy + reach * Math.sin(ph) * Math.sin(th),
+          cz + reach * Math.cos(ph) * 0.55,
+        ]
+        const clash = members.some(
+          (m) => Math.hypot(p[0] - m[0], p[1] - m[1], p[2] - m[2]) < form.cell.maxUm * 0.62,
+        )
+        if (!clash) put = p
+      }
+      if (!put) break
+      members.push(put)
+    }
+    spots.push(...members)
+    placed += members.length
+  }
+  while (spots.length < count) spots.push(anywhere())
+  return spots
+}
+
 function buildPopulation(form) {
   const rnd = seededRandom(form.seed ?? 1201)
-  const spread = form.fieldUm * 0.46
-  const depth = form.depthUm ?? form.fieldUm * 0.5
   const count = populationSize(form)
+  const spots = placeCells(rnd, form, count)
   const cells = []
   for (let i = 0; i < count; i++) {
     // A mother cell part-way through autosporulation is the one thing about this
@@ -79,10 +138,11 @@ function buildPopulation(form) {
     const q = new THREE.Quaternion().setFromEuler(
       new THREE.Euler(rnd() * Math.PI * 2, rnd() * Math.PI * 2, rnd() * Math.PI * 2),
     )
+    const [x, y, z] = spots[i]
     cells.push({
-      x: (rnd() * 2 - 1) * spread,
-      y: (rnd() * 2 - 1) * spread,
-      z: (rnd() * 2 - 1) * depth * 0.5,
+      x,
+      y,
+      z,
       r: size / 2,
       q,
       // Subspherical rather than spherical, which is what the generic diagnosis
@@ -221,6 +281,11 @@ export default function CellField({ form, selected, onSelect }) {
         perInstance: true,
         depthWrite: false,
         shell: true,
+        // Lobes about 0.8 µm across, which is roughly what the plates show
+        // inside a seven-micrometre cell: three or four to a face, not a fine
+        // speckle.
+        grain: 0.55,
+        grainSize: 0.8,
       }),
       // Refractile rather than dark: a pyrenoid is a protein body in a starch
       // sheath, and what marks it out in transmitted light is that it bends the

@@ -42,6 +42,10 @@ export const BRIGHTFIELD = {
   // this number being smaller. See the fine focus in App.
   optics: {
     aperture: 11,
+    // The ring a defocused phase object grows — see uPhase in optics.jsx. This
+    // is transmitted light, where almost everything on the slide is a phase
+    // object, so it belongs to the objective rather than to any one specimen.
+    phase: 0.26,
     maxBlur: 0.015,
     aberration: 0.0024,
     glare: 0.085,

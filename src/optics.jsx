@@ -39,6 +39,7 @@ const FRAGMENT = /* glsl */ `
   uniform float uFar;
   uniform float uFocus;
   uniform float uAperture;
+  uniform float uPhase;
   uniform float uDepthFloor;
   uniform float uMaxBlur;
   uniform float uAberration;
@@ -96,6 +97,40 @@ const FRAGMENT = /* glsl */ `
       sum += texture2D(tDiffuse, vUv + offset).rgb;
     }
     vec3 color = sum / float(TAPS);
+
+    // Defocus does not blur a transparent object, it rings it.
+    //
+    // A blurred photograph is what a camera does to something that *absorbs*.
+    // Most of what is on a slide barely absorbs at all — it retards the light
+    // instead — and a phase object out of focus does something a blur cannot
+    // imitate: it grows a bright centre inside a dark rim on one side of focus,
+    // and swaps them on the other. It is the single loudest thing in a real
+    // brightfield field of small cells, and every out-of-focus cell here was
+    // simply going soft.
+    //
+    // The transport-of-intensity equation says the first-order change in
+    // intensity with defocus goes as the Laplacian of the phase, so the sign of
+    // the ring follows the *signed* defocus and flips through zero. The phase is
+    // not available here, but the specimen's own optical path is what drew the
+    // image, so the Laplacian of the image stands in for it — sampled at the
+    // blur radius, so the ring is the size the defocus makes it. At focus the
+    // term vanishes on its own, which is what it should do.
+    if (uPhase > 0.0001) {
+      // On luminance, and added back neutrally. Run per channel it fringes:
+      // the three Laplacians differ wherever the specimen is coloured, and a
+      // green cell came back rimmed in magenta. Defocus moves light about — it
+      // does not tint it, and the hue of a ring is the hue of whatever the light
+      // came from.
+      vec2 lapStep = vec2(1.0 / uAspect, 1.0) * max(radius, uMaxBlur * 0.05);
+      vec3 W = vec3(0.2126, 0.7152, 0.0722);
+      float lap =
+        dot(texture2D(tDiffuse, vUv + vec2(lapStep.x, 0.0)).rgb, W) +
+        dot(texture2D(tDiffuse, vUv - vec2(lapStep.x, 0.0)).rgb, W) +
+        dot(texture2D(tDiffuse, vUv + vec2(0.0, lapStep.y)).rgb, W) +
+        dot(texture2D(tDiffuse, vUv - vec2(0.0, lapStep.y)).rgb, W) -
+        4.0 * dot(texture2D(tDiffuse, vUv).rgb, W);
+      color += uPhase * clamp(coc, -1.0, 1.0) * lap;
+    }
 
     // Lateral chromatic aberration: nil on axis, growing with field height, and
     // only where the image is sharp — a blurred edge has no fringe to show.
@@ -162,6 +197,8 @@ class MicroscopePass extends Pass {
       uFar: { value: camera.far },
       uFocus: { value: 1 },
       uAperture: { value: 0.8 },
+      // How strongly a defocused phase object rings. Off unless a view asks.
+      uPhase: { value: 0 },
       // Off unless a view asks for it: the filament really is a light
       // microscope and its focus should collapse the way one does.
       uDepthFloor: { value: 0 },
