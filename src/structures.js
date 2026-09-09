@@ -136,6 +136,28 @@ export const SOURCES = {
     text: 'Poly-β-hydroxybutyrate accumulation in Nostoc muscorum and Spirulina platensis under phosphate limitation (2005) J Plant Physiol',
     url: 'https://www.researchgate.net/publication/7348236',
   },
+  // --- Chlorella ---------------------------------------------------------
+  // The taxonomic revision that sorted the genus out, and the source of the
+  // emended generic diagnosis the coccoid field is drawn to. Its account of why
+  // morphology failed here — "the limited number of morphological characters
+  // and small dimensions of vegetative cells" — is why this atlas draws the two
+  // Chlorella species alike and says so.
+  r44: {
+    text: 'Bock, Krienitz & Pröschold (2011) Fottea 11:293–312 — “Taxonomic reassessment of the genus Chlorella (Trebouxiophyceae) using molecular signatures (barcodes), including description of seven new species”',
+    url: 'https://doi.org/10.5507/fot.2011.028',
+  },
+  r45: {
+    text: 'Safi, Zebib, Merah, Pontalier & Vaca-Garcia (2014) Renew Sustain Energy Rev 35:265–278 — “Morphology, composition, production, processing and applications of Chlorella vulgaris: A review”',
+    url: 'https://doi.org/10.1016/j.rser.2014.04.007',
+  },
+  r46: {
+    text: 'Lizzul, Lekuona-Amundarain, Purton & Campos (2018) Biology 7:25 — “Characterization of Chlorella sorokiniana, UTEX 1230”',
+    url: 'https://doi.org/10.3390/biology7020025',
+  },
+  r47: {
+    text: 'Krivina & Temraleeva (2020) Microbiology 89:720–732 — “Identification Problems and Cryptic Diversity of Chlorella-Clade Microalgae (Chlorophyta)”',
+    url: 'https://doi.org/10.1134/S0026261720060107',
+  },
   r43: {
     text: 'Deschoenmaeker, Facchini, Cabrera Pino, Bayon-Vicente, Sachdeva, Flammang & Wattiez (2016) J Struct Biol 196:385–393 — “Nitrogen depletion in Arthrospira sp. PCC 8005, an ultrastructural point of view”',
     url: 'https://doi.org/10.1016/j.jsb.2016.08.007',

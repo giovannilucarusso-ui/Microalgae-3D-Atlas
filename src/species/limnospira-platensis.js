@@ -9,6 +9,7 @@
 // The measurements are not repeated here. They live in `src/science.js` with the
 // reasoning and the sources that justify them, and this record points at them —
 // two copies of a number are two numbers, and one of them goes stale.
+import { GROUPS, STRUCTURES } from '../structures.js'
 import {
   CELL,
   LIFE_CYCLE,
@@ -23,6 +24,10 @@ export default {
   name: 'Spirulina',
   latin: 'Limnospira (Arthrospira) platensis',
   group: 'Cyanobacteria',
+  // The cards. They stay in structures.js, where they sit beside the shared
+  // bibliography every species draws on; the record points at them, the way it
+  // points at science.js for the measurements.
+  structures: STRUCTURES,
 
   // The outside: what a light microscope shows, which is where every species in
   // the atlas starts. `kind` chooses the body generator; everything under it is
@@ -51,6 +56,7 @@ export default {
     // absence of a character and a character absent are different statements,
     // and only the first belongs in a record.
     calyptra: true,
+    groups: GROUPS.filament,
   },
 
   // The inside. A species may sit in this atlas with an exterior and no
@@ -63,5 +69,6 @@ export default {
       'One cell, cut open: a wedge and the cell above it have been removed, so you look down onto the lower cross-wall.',
     fieldNm: 11989,
     view: [6660, 13660, 10460],
+    groups: GROUPS.cell,
   },
 }

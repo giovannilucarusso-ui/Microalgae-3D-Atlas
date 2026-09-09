@@ -978,3 +978,39 @@ a:focus-visible {
   inherits: false;
   initial-value: 0px;
 }
+
+/* The specimen picker. It sits with the title rather than in the controls,
+   because which organism is on the stage is not a setting — it is what you are
+   looking at. */
+.specimen {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(226, 244, 238, 0.5);
+}
+.specimen select {
+  flex: 1;
+  min-width: 0;
+  padding: 5px 8px;
+  border-radius: 6px;
+  border: 1px solid rgba(226, 244, 238, 0.16);
+  background: rgba(8, 26, 24, 0.75);
+  color: #e6f4ee;
+  font: inherit;
+  font-size: 12px;
+  letter-spacing: 0;
+  text-transform: none;
+  font-style: italic;
+}
+.specimen select:focus-visible {
+  outline: 2px solid #4fd0a8;
+  outline-offset: 1px;
+}
+.species .authority {
+  font-style: normal;
+  color: rgba(226, 244, 238, 0.42);
+}

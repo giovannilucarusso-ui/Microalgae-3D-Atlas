@@ -9,6 +9,7 @@
 //   node tools/shoot.mjs filament --still     → gliding rotation off, so two
 //                                               shots can be compared
 //   node tools/shoot.mjs filament --focus 24  → fine focus racked to +24 µm
+//   node tools/shoot.mjs filament --species chlorella-vulgaris
 //
 // `--crop` writes the named rectangle at one screen pixel to one image pixel
 // instead of the whole 1400×900 frame scaled down to be looked at. Surface
@@ -135,6 +136,10 @@ async function main() {
   // reproducible.
   const focusFlag = args.indexOf('--focus')
   const focusAt = focusFlag === -1 ? null : Number(args[focusFlag + 1])
+  // Which specimen is on the stage. The atlas has more than one now, and a shot
+  // that does not say which organism it is of is not much of a record.
+  const speciesFlag = args.indexOf('--species')
+  const speciesAt = speciesFlag === -1 ? null : args[speciesFlag + 1]
   const [cx, cy, cw, ch] = cropFlag === -1 ? [] : (args[cropFlag + 1] ?? '').split(',').map(Number)
   const clip =
     cropFlag === -1
@@ -171,6 +176,16 @@ async function main() {
       // Switching view remounts the canvas: a fresh WebGL context, the optics
       // composer, the shader compiles and the whole lamella generator. Under
       // SwiftShader that is seconds, and a short wait catches an empty frame.
+      await sleep(2600)
+    }
+
+    if (speciesAt) {
+      await page.evaluate((id) => {
+        const select = document.querySelector('.specimen select')
+        if (!select) return
+        select.value = id
+        select.dispatchEvent(new Event('change', { bubbles: true }))
+      }, speciesAt)
       await sleep(2600)
     }
 

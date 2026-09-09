@@ -18,9 +18,20 @@ const VERTEX = /* glsl */ `
   varying vec3 vViewDir;
   varying vec2 vUv;
   varying float vDistance;
+  // A population is not one specimen repeated. Cells of one species differ in
+  // how much pigment they carry and in which way their chloroplast happens to
+  // face, and a field of identical balls reads as a pattern rather than as a
+  // culture. One attribute is enough to break it, and it costs nothing.
+  #ifdef PER_INSTANCE
+    attribute float aDensity;
+    varying float vDensity;
+  #endif
 
   void main() {
     vUv = uv;
+    #ifdef PER_INSTANCE
+      vDensity = aDensity;
+    #endif
     vec3 transformed = position;
     vec3 objectNormal = normal;
     #ifdef USE_INSTANCING
@@ -53,6 +64,9 @@ const FRAGMENT = /* glsl */ `
   varying vec3 vViewDir;
   varying vec2 vUv;
   varying float vDistance;
+  #ifdef PER_INSTANCE
+    varying float vDensity;
+  #endif
 
   void main() {
     // The trichome is drawn as a length of itself. Outside that length there
@@ -67,7 +81,11 @@ const FRAGMENT = /* glsl */ `
     // Chord through a convex body, normalised: 1 down the axis, 0 at the rim.
     float path = ndv;
     float modulation = uUseMap > 0.5 ? 2.0 * texture2D(uMap, vUv).r : 1.0;
-    vec3 transmittance = exp(-uAbsorb * (path * uDensity * modulation) - uEdge * pow(1.0 - ndv, 3.0));
+    float density = uDensity;
+    #ifdef PER_INSTANCE
+      density *= vDensity;
+    #endif
+    vec3 transmittance = exp(-uAbsorb * (path * density * modulation) - uEdge * pow(1.0 - ndv, 3.0));
 
     // The necridium: an intercalary cell that dies on purpose. It loses its
     // contents and fills with mucilage, so it stops absorbing long before the
@@ -207,8 +225,11 @@ export function specimenMaterial({
   edge = 0.5,
   haze = [1e9, 1e9],
   map = null,
+  // Set when the mesh is instanced and each instance carries its own `aDensity`.
+  perInstance = false,
 } = {}) {
   return new THREE.ShaderMaterial({
+    defines: perInstance ? { PER_INSTANCE: '' } : {},
     uniforms: {
       uAbsorb: { value: absorbFrom(core) },
       uDensity: { value: density },
@@ -291,7 +312,25 @@ class DriftCurve extends THREE.Curve {
   }
 }
 
-export default function Debris({ spread = 320, depth = 260, seed = 17 }) {
+// The slide's own furniture: grit in Brownian motion, detritus, neighbouring
+// organisms well out of the plane of focus.
+//
+// `field` is how much slide is in frame, and everything here is a multiple of
+// it. Written against the trichome view's numbers as constants — a slab 320
+// across and a haze that began at 520 — it arrived at Chlorella's field of 88
+// five times oversized and sitting in the camera's lap, where a detritus flake
+// stopped being an out-of-focus lump and became a visibly twenty-faced black
+// solid parked among the cells.
+//
+// Scaling the objects along with the slab means the slide looks the same at
+// every magnification, which is not true of a real one: a 2 µm speck of grit is
+// 2 µm whichever objective is over it. This is set dressing rather than a
+// measured structure and it is drawn as such — nothing on a card refers to it —
+// but the simplification is here rather than hidden.
+export default function Debris({ field = 451.3, seed = 17 }) {
+  const k = field / 451.3
+  const spread = 320 * k
+  const depth = 260 * k
   const specks = useRef([])
   const reduced = usePrefersReducedMotion()
 
@@ -304,7 +343,7 @@ export default function Debris({ spread = 320, depth = 260, seed = 17 }) {
     }
     // Everything on the slide fades towards the open field with depth: contrast
     // is the first thing an out-of-focus object loses, before its shape.
-    const haze = [520, 1400]
+    const haze = [520 * k, 1400 * k]
     const materials = {
       grit: specimenMaterial({ core: '#5a5f55', density: 1, edge: 0.9, haze }),
       flake: specimenMaterial({ core: '#7a6a4a', density: 0.9, edge: 0.7, haze }),
@@ -325,7 +364,7 @@ export default function Debris({ spread = 320, depth = 260, seed = 17 }) {
           (rnd() - 0.5) * spread * 2.2,
           (rnd() - 0.5) * depth * 2,
         ],
-        scale: 0.5 + rnd() * 2.2,
+        scale: (0.5 + rnd() * 2.2) * k,
       })
     }
 
@@ -340,7 +379,7 @@ export default function Debris({ spread = 320, depth = 260, seed = 17 }) {
           (rnd() - 0.5) * spread * 2,
           (rnd() - 0.5) * depth * 2.4,
         ],
-        scale: [3 + rnd() * 7, 1 + rnd() * 2, 3 + rnd() * 6],
+        scale: [(3 + rnd() * 7) * k, (1 + rnd() * 2) * k, (3 + rnd() * 6) * k],
         rotation: [rnd() * 3, rnd() * 3, rnd() * 3],
       })
     }
@@ -356,7 +395,7 @@ export default function Debris({ spread = 320, depth = 260, seed = 17 }) {
           (rnd() - 0.5) * spread * 1.8,
           (rnd() - 0.5) * depth * 2,
         ],
-        scale: 2 + rnd() * 3,
+        scale: (2 + rnd() * 3) * k,
       })
     }
 
@@ -378,7 +417,7 @@ export default function Debris({ spread = 320, depth = 260, seed = 17 }) {
       })
       items.push({
         kind: 'filament',
-        geometry: new THREE.TubeGeometry(new DriftCurve(points), 120, 0.9 + rnd() * 1.1, 10, false),
+        geometry: new THREE.TubeGeometry(new DriftCurve(points), 120, (0.9 + rnd() * 1.1) * k, 10, false),
         material: materials.filament,
         home: [0, 0, 0],
         scale: 1,

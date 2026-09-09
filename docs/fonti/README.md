@@ -57,3 +57,45 @@ indica*, which makes this a dedicated TEM study of the interior of a Limnospira
   the electron-dense central cytoplasm, so that two-zone reading is current for
   Limnospira and not only van Eykelenburg's.
 - An **EPS sheath of about 50 nm** lies outside the wall.
+
+## Chlorella — Bock, Krienitz & Pröschold (2011) *Fottea* 11:293–312
+
+The taxonomic revision that sorted the genus out, and the source of the emended
+generic diagnosis the coccoid field is drawn to:
+
+> "cells spherical, subspherical or ellipsoid, single or forming colonies with
+> up to 64 cells, mucilage present or absent. Chloroplast single, parietal,
+> pyrenoid present, surrounded by starch grains. Reproduction by autospores,
+> zoospores lacking. Autospores released through disruption of mother cell wall."
+
+Its account of why morphology failed here is the reason both Chlorella species
+in this atlas are drawn alike: what defeated a century of work was "the limited
+number of morphological characters and small dimensions of vegetative cells".
+Open access at https://doi.org/10.5507/fot.2011.028 — not kept in this
+repository; the passages above were read out of the published PDF.
+
+## Krivina & Temraleeva (2020) *Microbiology* 89:720–732
+
+"Identification Problems and Cryptic Diversity of Chlorella-Clade Microalgae".
+The source for the statement on the *Which species is this?* card: no single
+phenotypic character determines a taxonomic position within this clade, and the
+separation of *C. vulgaris* from *C. sorokiniana* is made on ITS-2 and 18S.
+https://doi.org/10.1134/S0026261720060107
+
+## Lizzul, Lekuona-Amundarain, Purton & Campos (2018) *Biology* 7:25
+
+"Characterization of *Chlorella sorokiniana*, UTEX 1230". **CC BY 4.0.** The
+measured size for the strain — 2–4.5 µm — and the range the genus occupies,
+2–10 µm. https://doi.org/10.3390/biology7020025
+
+## Safi, Zebib, Merah, Pontalier & Vaca-Garcia (2014) *Renew Sustain Energy Rev* 35:265–278
+
+"Morphology, composition, production, processing and applications of *Chlorella
+vulgaris*: A review". The size range and the autospore count for the type
+species. https://doi.org/10.1016/j.rser.2014.04.007
+
+**No Chlorella micrographs are kept in this repository.** The four sources above
+are text; the light micrographs consulted while drawing the field are cited from
+them and from the plates in Bock et al., and none of them carries a licence that
+would let this project redistribute the images. What is drawn here was drawn
+against them, not from them.

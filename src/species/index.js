@@ -4,8 +4,10 @@
 // microscope, the optics and the shared machinery do not change, which is the
 // property this registry exists to protect.
 import limnospiraPlatensis from './limnospira-platensis.js'
+import chlorellaVulgaris from './chlorella-vulgaris.js'
+import chlorellaSorokiniana from './chlorella-sorokiniana.js'
 
-export const SPECIES = [limnospiraPlatensis]
+export const SPECIES = [limnospiraPlatensis, chlorellaVulgaris, chlorellaSorokiniana]
 
 export const DEFAULT_SPECIES = limnospiraPlatensis.id
 

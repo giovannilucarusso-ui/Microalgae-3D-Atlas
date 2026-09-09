@@ -3,14 +3,15 @@ import * as THREE from 'three'
 import { Canvas } from '@react-three/fiber'
 import { OrbitControls } from '@react-three/drei'
 import Trichome from './Trichome.jsx'
+import CellField from './CellField.jsx'
 import Debris from './specimen.jsx'
 import CellSection from './CellSection.jsx'
 import { SWATCH } from './materials.js'
 import { Optics, brightFieldTexture, darkFieldTexture } from './optics.jsx'
 import { BRIGHTFIELD, TOMOGRAM, stage } from './microscope.js'
-import { DEFAULT_SPECIES, speciesById } from './species/index.js'
+import { DEFAULT_SPECIES, SPECIES, speciesById } from './species/index.js'
 import { CLICK_SLOP, CameraRig, KeyboardPan, MicroscopeLights, ScaleBarDriver } from './scene.jsx'
-import { CONFIDENCE, GROUPS, SOURCES, STRUCTURES, tourOrder } from './structures.js'
+import { CONFIDENCE, SOURCES } from './structures.js'
 import {
   CELL,
   HELIX_SPECIES_RANGE,
@@ -56,6 +57,7 @@ function viewsFor(species) {
         label: species.exterior.label,
       }),
       caption: species.exterior.caption,
+      groups: species.exterior.groups,
       form: species.exterior,
     }
   }
@@ -68,6 +70,7 @@ function viewsFor(species) {
         label: species.interior.label,
       }),
       caption: species.interior.caption,
+      groups: species.interior.groups,
     }
   }
   return views
@@ -91,6 +94,7 @@ function Eye({ off }) {
 
 export default function App() {
   const [view, setView] = useState('filament')
+  const [speciesId, setSpeciesId] = useState(DEFAULT_SPECIES)
   const [gliding, setGliding] = useState(true)
   const [showLabels, setShowLabels] = useState(true)
   const [selected, setSelected] = useState(null)
@@ -126,11 +130,18 @@ export default function App() {
   const fields = useMemo(() => ({ bright: brightFieldTexture(), dark: darkFieldTexture() }), [])
 
   const helix = SPECIES_HELIX
-  const species = speciesById(DEFAULT_SPECIES)
+  const species = useMemo(() => speciesById(speciesId), [speciesId])
   const views = useMemo(() => viewsFor(species), [species])
-  const config = views[view]
+  // Not every specimen has an interior, and most never will. Falling back to the
+  // exterior is not a guard against a bug, it is the normal case.
+  const config = views[view] ?? views.filament
   const bright = config.field === 'bright'
-  const detail = selected ? STRUCTURES[selected] : null
+  // Pitch, coils, gliding rotation and the fragmentation cycle are properties of
+  // a helical trichome, not of a specimen. A coccoid has no pitch to report and
+  // nothing to glide, and showing those controls beside a field of Chlorella
+  // would be the panel describing an organism that is not on the stage.
+  const helical = config.form?.kind === 'helical-trichome'
+  const detail = selected ? species.structures[selected] : null
   // A structure that moves with the model says where it is as a function of the
   // geometry rather than remembering a coordinate that was true once.
   const detailCamera =
@@ -150,7 +161,7 @@ export default function App() {
       ])
     : []
   const rowCount = detail ? detail.dimensions.length : 0
-  const order = tourOrder(view)
+  const order = config.groups.flatMap((group) => group.ids)
 
   // Getting back out.
   //
@@ -246,6 +257,17 @@ export default function App() {
     setSelected(null)
     setHidden(new Set())
     setView(next)
+  }
+
+  // Changing specimen changes the scene, its units and its structure list, so
+  // nothing selected, hidden or focused on the old one survives it. The view
+  // goes back to the exterior because that is the one every species has.
+  function switchSpecies(id) {
+    setSelected(null)
+    setHidden(new Set())
+    setView('filament')
+    setSpeciesId(id)
+    setFocus(0)
   }
 
   // Picking a structure that has been switched off brings it back — otherwise
@@ -359,14 +381,18 @@ export default function App() {
           <>
             {/* No lights: in transmitted light nothing is lit from the front —
                 the specimen is what is left of the lamp after the crossing. */}
-            <Trichome
-              form={config.form}
-              gliding={gliding}
-              selected={selected}
-              onSelect={select}
-              life={life}
-            />
-            <Debris />
+            {config.form.kind === 'coccoid-field' ? (
+              <CellField form={config.form} selected={selected} onSelect={select} />
+            ) : (
+              <Trichome
+                form={config.form}
+                gliding={gliding}
+                selected={selected}
+                onSelect={select}
+                life={life}
+              />
+            )}
+            <Debris field={config.form.fieldUm} />
           </>
         ) : (
           <>
@@ -429,10 +455,25 @@ export default function App() {
             block and the title was the first thing to leave. */}
         <div className="panel-head">
           <p className="eyebrow">Interactive 3D atlas · prototype v0.6</p>
-          <h1>Spirulina</h1>
+          <h1>{species.name}</h1>
           <p className="species">
-            <i>Limnospira (Arthrospira) platensis</i>
+            <i>{species.latin}</i>
+            {species.authority ? <span className="authority"> {species.authority}</span> : null}
           </p>
+
+          {/* The specimen on the stage. One microscope, several organisms —
+              which is the whole claim of an atlas, and it should be the first
+              control in the panel rather than something to go and find. */}
+          <label className="specimen">
+            <span>Specimen</span>
+            <select value={speciesId} onChange={(e) => switchSpecies(e.target.value)}>
+              {SPECIES.map((s) => (
+                <option key={s.id} value={s.id}>
+                  {s.latin}
+                </option>
+              ))}
+            </select>
+          </label>
 
           <div className="tabs" role="tablist">
             {Object.entries(views).map(([id, v]) => (
@@ -464,7 +505,7 @@ export default function App() {
             </span>
           </p>
 
-          {GROUPS[view].map((group) => {
+          {config.groups.map((group) => {
             const allOff = group.ids.every((id) => hidden.has(id))
             return (
               <div className="group" key={group.title}>
@@ -494,7 +535,7 @@ export default function App() {
                     onClick={() => select(id)}
                   >
                     <span className="dot" style={{ background: SWATCH[id] ?? '#7fd4b8' }} />
-                    {STRUCTURES[id].name}
+                    {species.structures[id].name}
                   </button>
                 ))}
               </div>
@@ -513,7 +554,7 @@ export default function App() {
             </button>
           )}
         </div>
-        {view === 'filament' && (
+        {view === 'filament' && helical && (
           <div className="control">
             <div className="readout">
               <span>Pitch <b>{helix.pitchUm.toFixed(0)} µm</b></span>
@@ -539,7 +580,14 @@ export default function App() {
         )}
 
         <div className="control">
+          {/* Three cases, not two. The exterior of a helical trichome has its
+              own controls; the interior has different ones; and the exterior of
+              anything else has neither. Written as a single ternary on
+              `helical`, a coccoid fell through to the interior's controls and
+              the Chlorella field arrived with a photosynthesis walkthrough for
+              phycobilisomes it does not have. */}
           {view === 'filament' ? (
+            helical ? (
             <>
               <label className="toggle">
                 <input
@@ -635,6 +683,7 @@ export default function App() {
                 </p>
               </div>
             </>
+            ) : null
           ) : (
             <>
               <label className="toggle">
@@ -687,9 +736,17 @@ export default function App() {
             pinned like the tabs rather than left to scroll away. */}
         <div className="panel-foot">
           {view === 'filament' ? (
-            <button className="cta" onClick={() => switchView('cell')}>
-              Enter a single cell →
-            </button>
+            views.cell ? (
+              <button className="cta" onClick={() => switchView('cell')}>
+                Enter a single cell →
+              </button>
+            ) : (
+              <p className="note">
+                No interior for this specimen yet. What is known about the outside
+                is on the cards above, and what this instrument cannot resolve is
+                marked as such.
+              </p>
+            )
           ) : (
             <button className="cta ghost" onClick={() => switchView('filament')}>
               ← Back to the filament
