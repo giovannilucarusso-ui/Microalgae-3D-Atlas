@@ -4,14 +4,15 @@ import { Canvas } from '@react-three/fiber'
 import { OrbitControls } from '@react-three/drei'
 import Trichome from './Trichome.jsx'
 import CellField from './CellField.jsx'
+import CellField2D from './CellField2D.jsx'
 import Debris from './specimen.jsx'
 import CellSection from './CellSection.jsx'
 import { SWATCH } from './materials.js'
 import { Optics, brightFieldTexture, darkFieldTexture } from './optics.jsx'
-import { BRIGHTFIELD, TOMOGRAM, stage } from './microscope.js'
+import { BRIGHTFIELD, FILTERS, TOMOGRAM, filterById, stage } from './microscope.js'
 import { DEFAULT_SPECIES, SPECIES, speciesById } from './species/index.js'
 import { CLICK_SLOP, CameraRig, KeyboardPan, MicroscopeLights, ScaleBarDriver } from './scene.jsx'
-import { CONFIDENCE, SOURCES } from './structures.js'
+import { confidenceFor, SOURCES } from './structures.js'
 import {
   CELL,
   HELIX_SPECIES_RANGE,
@@ -46,7 +47,7 @@ const HAS_WEBGL2 = (() => {
 // says how to look, and the stage falls out of the two. The optics are the
 // instrument's and are shared by everything in the atlas on purpose: what should
 // differ between two plates is the organism, not the rendering.
-function viewsFor(species) {
+function viewsFor(species, condenser) {
   const views = {}
   if (species.exterior) {
     views.filament = {
@@ -56,6 +57,7 @@ function viewsFor(species) {
         dir: species.exterior.view,
         unit: 'µm',
         label: species.exterior.label,
+        illumination: condenser,
       }),
       caption: species.exterior.caption,
       groups: species.exterior.groups,
@@ -93,6 +95,20 @@ function Eye({ off }) {
   )
 }
 
+// Which of the two coccoid renderers is on the stage.
+//
+// A switch and not a replacement, on purpose: the analytic one in CellField2D
+// is a different answer to the same question, and the only way to tell whether
+// it is a better one is to put the two side by side on the same culture. Both
+// read the same population out of coccoid.js, so a difference between them is a
+// difference in the *imaging* and nothing else.
+//
+//   ?render=3d   the instanced-mesh scene
+//   ?render=2d   the analytic field  (default for a coccoid)
+const RENDER_2D =
+  typeof window === 'undefined' ||
+  new URLSearchParams(window.location.search).get('render') !== '3d'
+
 export default function App() {
   const [view, setView] = useState('filament')
   const [speciesId, setSpeciesId] = useState(DEFAULT_SPECIES)
@@ -128,21 +144,46 @@ export default function App() {
   const barRef = useRef(null)
   const labelRef = useRef(null)
 
-  const fields = useMemo(() => ({ bright: brightFieldTexture(), dark: darkFieldTexture() }), [])
+  const dark = useMemo(() => darkFieldTexture(), [])
 
   const helix = SPECIES_HELIX
   const species = useMemo(() => speciesById(speciesId), [speciesId])
-  const views = useMemo(() => viewsFor(species), [species])
+  // Which condenser filter is in. A specimen declares the one it opens with and
+  // the viewer may change it, so this is state keyed on the specimen rather than
+  // a value read off the record — sliding a filter in is a thing you do at a
+  // bench, and the atlas should let you do it.
+  //
+  // Null means "whatever this specimen asked for", so switching organism picks
+  // up the new default instead of carrying the last one across; an explicit
+  // choice survives until the specimen changes.
+  const [chosenFilter, setChosenFilter] = useState(null)
+  useEffect(() => setChosenFilter(null), [speciesId])
+
+  const condenser = useMemo(
+    () => filterById(chosenFilter ?? species.exterior?.filter ?? 'none'),
+    [chosenFilter, species],
+  )
+  const views = useMemo(() => viewsFor(species, condenser), [species, condenser])
   // Not every specimen has an interior, and most never will. Falling back to the
   // exterior is not a guard against a bug, it is the normal case.
   const config = views[view] ?? views.filament
   const bright = config.field === 'bright'
+  // The empty field is the condenser's central disc, so it is rebuilt whenever
+  // the filter changes — which is per specimen, not per session.
+  const brightTexture = useMemo(
+    () => brightFieldTexture(config.optics?.illumination),
+    [config.optics?.illumination],
+  )
+  useEffect(() => () => brightTexture.dispose(), [brightTexture])
   // Pitch, coils, gliding rotation and the fragmentation cycle are properties of
   // a helical trichome, not of a specimen. A coccoid has no pitch to report and
   // nothing to glide, and showing those controls beside a field of Chlorella
   // would be the panel describing an organism that is not on the stage.
   const helical = config.form?.kind === 'helical-trichome'
   const detail = selected ? species.structures[selected] : null
+  // Two of the three tier labels name an organism, so they belong to the
+  // specimen rather than to the atlas. See CONFIDENCE in structures.js.
+  const tiers = useMemo(() => confidenceFor(species), [species])
   // A structure that moves with the model says where it is as a function of the
   // geometry rather than remembering a coordinate that was true once.
   const detailCamera =
@@ -373,7 +414,7 @@ export default function App() {
           gl.domElement.addEventListener('webglcontextrestored', () => setLostContext(false))
         }}
       >
-        <primitive attach="background" object={bright ? fields.bright : fields.dark} />
+        <primitive attach="background" object={bright ? brightTexture : dark} />
         {config.fog && (
           <fog attach="fog" args={[BACKGROUND, config.fog[0], config.fog[1]]} />
         )}
@@ -383,7 +424,21 @@ export default function App() {
             {/* No lights: in transmitted light nothing is lit from the front —
                 the specimen is what is left of the lamp after the crossing. */}
             {config.form.kind === 'coccoid-field' ? (
-              <CellField form={config.form} selected={selected} onSelect={select} />
+              RENDER_2D ? (
+                <CellField2D
+                  form={config.form}
+                  focus={focus}
+                  optics={config.optics}
+                  onSelect={select}
+                />
+              ) : (
+                <CellField
+                  form={config.form}
+                  focus={focus}
+                  aperture={config.optics?.aperture ?? 0}
+                  onSelect={select}
+                />
+              )
             ) : (
               <Trichome
                 form={config.form}
@@ -393,7 +448,14 @@ export default function App() {
                 life={life}
               />
             )}
-            <Debris field={config.form.fieldUm} />
+            {/* A coccoid field gets no neighbouring trichomes: a Spirulina
+                filament is four hundred micrometres of another organism, and
+                two of them arcing across a field of Chlorella read as hairs on
+                the lens. See Debris. */}
+            <Debris
+              field={config.form.fieldUm}
+              neighbours={config.form.kind === 'coccoid-field' ? 0 : 2}
+            />
           </>
         ) : (
           <>
@@ -424,7 +486,11 @@ export default function App() {
           dampingFactor={0.08}
           zoomToCursor
           mouseButtons={{
-            LEFT: THREE.MOUSE.ROTATE,
+            // On an objective that does not turn, the left button is the stage.
+            // Leaving it on ROTATE with rotation disabled would make the most
+            // obvious gesture in the app do nothing at all, which reads as a
+            // broken view rather than as an honest one.
+            LEFT: config.controls.enableRotate === false ? THREE.MOUSE.PAN : THREE.MOUSE.ROTATE,
             MIDDLE: THREE.MOUSE.PAN,
             RIGHT: THREE.MOUSE.PAN,
           }}
@@ -540,6 +606,50 @@ export default function App() {
                 setting.
               </p>
             </div>
+
+            {/* The condenser filter, beside the fine focus because it is the
+                same kind of thing: a knob on the instrument rather than a fact
+                about the organism. Which one suits a specimen depends on the
+                specimen — a pair that is spectacular on a colourless ciliate is
+                the wrong choice for a green alga — so the atlas offers the
+                choice and each species opens with the one it is best read
+                under. */}
+            {/* Only where a renderer can actually deliver it.
+                The analytic coccoid field draws the deviated beam as its own
+                additive pass; the trichome's renderer does not have one yet, so
+                under a Rheinberg filter a Spirulina would come out as a flat
+                dark silhouette on a coloured ground. Offering the control there
+                would promise something the renderer cannot do, and a viewer
+                would reasonably read the result as a bug rather than as a gap.
+                It comes back the moment specimenMaterial grows the second
+                pass. */}
+            {config.form?.kind === 'coccoid-field' && (
+            <div className="cycle">
+              <label htmlFor="condenser">Condenser filter</label>
+              <select
+                id="condenser"
+                value={condenser.id}
+                onChange={(event) => setChosenFilter(event.target.value)}
+              >
+                {FILTERS.map((f) => (
+                  <option key={f.id} value={f.id}>
+                    {f.label}
+                  </option>
+                ))}
+              </select>
+              <p className="note">
+                {condenser.note}
+                {condenser.id !== 'none' && (
+                  <>
+                    {' '}
+                    A filter changes what the colour <em>means</em>: under two
+                    lamps a specimen's colour is its measured transmittance seen
+                    under both, not the transmittance alone.
+                  </>
+                )}
+              </p>
+            </div>
+            )}
           </div>
         )}
 
@@ -772,7 +882,7 @@ export default function App() {
           <div className="evidence">
             <div className="evbar" role="img" aria-label={tierCounts
               .filter(([, n]) => n > 0)
-              .map(([tier, n]) => `${n} ${CONFIDENCE[tier].label}`)
+              .map(([tier, n]) => `${n} ${tiers[tier].label}`)
               .join(', ')}>
               {tierCounts
                 .filter(([, n]) => n > 0)
@@ -793,6 +903,16 @@ export default function App() {
           <p className="body">{detail.what}</p>
           <p className="body">{detail.role}</p>
 
+          {/* A card may carry a caveat about its own evidence — not about the
+              organism, about what this view is entitled to claim. The
+              chloroplast's is the case that made it necessary: its colour is a
+              measured transmittance, and under a condenser filter what reaches
+              the screen is that transmittance seen under two lamps. An atlas
+              whose whole argument is provenance cannot let a display choice
+              quietly stand in for a measurement. Styled like the helix's strain
+              note, because it is the same kind of statement. */}
+          {detail.caveat && <p className="note strain">{detail.caveat}</p>}
+
           {/* The evidence is per row — a card can hold a thickness measured on
               Spirulina next to a shell composition inferred from a genome — so
               each row carries its own tier and the bar above is only their
@@ -801,12 +921,12 @@ export default function App() {
             {detail.dimensions.map(([k, v, tier = detail.confidence]) => (
               <div key={k} className={`tier-${tier}`}>
                 <dt>
-                  <span className="tier" title={CONFIDENCE[tier].label} aria-hidden="true" />
+                  <span className="tier" title={tiers[tier].label} aria-hidden="true" />
                   {k}
                 </dt>
                 <dd>
                   {v}
-                  <span className="sr-only"> — {CONFIDENCE[tier].label}</span>
+                  <span className="sr-only"> — {tiers[tier].label}</span>
                 </dd>
               </div>
             ))}
@@ -820,7 +940,7 @@ export default function App() {
             {tierCounts.map(([tier, n]) => (
               <li key={tier} className={`tier-${tier}${n ? '' : ' unused'}`}>
                 <span className="tier" aria-hidden="true" />
-                {CONFIDENCE[tier].label}
+                {tiers[tier].label}
               </li>
             ))}
           </ul>
@@ -849,9 +969,17 @@ export default function App() {
           locked to one axis. */}
       <div className="hint">
         <span>
-          Click a structure · ← → to step · drag to orbit · WASD or right-drag
-          to move · scroll to zoom at the pointer
-          {view === 'filament' ? ' · shift+scroll for fine focus' : ''}
+          {config.controls.enableRotate === false ? (
+            <>
+              Click a structure · ← → to step · drag or WASD to move the stage ·
+              scroll to zoom · shift+scroll for fine focus
+            </>
+          ) : (
+            <>
+              Click a structure · ← → to step · drag to orbit · WASD or
+              right-drag to move · scroll to zoom at the pointer
+            </>
+          )}
         </span>
         <button className="reset" onClick={goHome} title="Back to the whole cell (Esc)">
           Reset view

@@ -44,6 +44,8 @@ const FRAGMENT = /* glsl */ `
   uniform float uMaxBlur;
   uniform float uAberration;
   uniform float uGlare;
+  uniform float uVeil;
+  uniform vec3 uVeilColor;
   uniform float uVignette;
   uniform float uGrain;
   uniform float uSaturation;
@@ -159,6 +161,21 @@ const FRAGMENT = /* glsl */ `
     // add atmosphere was the pass flattening the image.
     color += uGlare * halo * 0.25;
 
+    // And the part of the glare that has forgotten where it came from: light
+    // that has bounced inside the objective, off the tube, off the mount, and
+    // arrives spread evenly over the whole image. It is the contrast ceiling of
+    // a brightfield instrument, and it is why nothing in a real micrograph —
+    // not a carbon speck, not two dense cells lying on top of each other —
+    // reaches the floor of the encoding.
+    //
+    // It belongs *here* and not on the specimen, which is where it was tried
+    // first. A body that carries its own floor gives the right answer alone and
+    // the wrong one in company: transmittances multiply, so two cells one
+    // behind the other returned a floor of veil squared and went black again at
+    // exactly the overlaps that most needed it. Scattered light does not care
+    // how many bodies the beam crossed. One term, once, on the finished image.
+    color = mix(color, uVeilColor, uVeil);
+
     // Crevice darkening, read straight off the depth buffer: a pixel that sits
     // behind everything around it is down a gap, and a gap is dark. Nothing
     // reads as solid matter without it — a lit surface with no occlusion in its
@@ -211,6 +228,8 @@ class MicroscopePass extends Pass {
       uMaxBlur: { value: 0.01 },
       uAberration: { value: 0.002 },
       uGlare: { value: 0.12 },
+      uVeil: { value: 0 },
+      uVeilColor: { value: new THREE.Color('#ffffff') },
       uVignette: { value: 0.45 },
       uGrain: { value: 0.03 },
       uSaturation: { value: 0.9 },
@@ -351,32 +370,79 @@ function finish(canvas) {
 // Transmitted light through a wet mount: cool grey-blue, warmer and greener
 // where the water film thickens, the condenser's hot spot off centre, and a few
 // blurred smudges of debris far outside the focal plane.
-export function brightFieldTexture() {
+// The field the condenser lays down, which is now a *choice of filter* rather
+// than a white balance.
+//
+// Rheinberg illumination puts a two-colour filter under the condenser: a disc in
+// the middle and a ring around it. The disc's light goes straight up the optical
+// axis, misses nothing, and arrives — that is the background, and it is whatever
+// colour the disc is. The ring's light comes in at angles steeper than the
+// objective will accept, so **none of it arrives unless something on the slide
+// bends it**. A specimen therefore appears in the ring's colour on a ground of
+// the disc's, and every refracting edge in the field lights up.
+//
+// It is a real technique, about a century old, and it is what the reference
+// image is: green organisms on a petrol-blue ground with a black-and-white ring
+// round an air bubble. That ring is the giveaway — a bubble has no pigment at
+// all and cannot be dark for any absorbing reason, so what is drawing it is
+// pure refraction, which is what Rheinberg makes visible.
+//
+// `palette.direct` is the disc, `palette.oblique` is the ring. Passing them as
+// an equal near-white pair gives back ordinary brightfield exactly, which is
+// why this replaces the old function rather than sitting beside it.
+export function brightFieldTexture(palette = {}) {
+  const direct = palette.direct ?? '#e6e3d9'
   const [canvas, ctx] = fieldCanvas(512)
-  // The lamp, and it used to be the wrong colour. Every stop here had blue at
-  // or above red — a cool cast — and a microscope lamp is a tungsten filament,
-  // which is the opposite. Measured against two plates: the field in
-  // Nowicka-Krawczyk 2019 runs (156, 168, 153), near neutral, and the CAUP
-  // Chlorella vulgaris H1917 plates run (186, 182, 131), frankly khaki. Ours was
-  // (125, 145, 148) and matched neither — it was the only one of the three that
-  // was blue.
+  // The lamp, and it took three goes to get right.
   //
-  // Set neutral-warm, between the two references rather than chasing one lab's
-  // white balance, and brighter: both plates have a field near 180, and at 141
-  // this one was dim enough that everything in it had to be darker still to
-  // register.
-  const base = ctx.createLinearGradient(0, 0, 90, 512)
-  base.addColorStop(0, '#b6b4a4')
-  base.addColorStop(0.45, '#c0bcaa')
-  base.addColorStop(1, '#bcbca8')
-  ctx.fillStyle = base
+  // It was blue once — every stop had blue at or above red — and a microscope
+  // lamp is a tungsten filament, which is the opposite. That was corrected
+  // against two plates: the field in Nowicka-Krawczyk 2019 runs (156, 168, 153),
+  // near neutral, and the CAUP Chlorella vulgaris H1917 plates run
+  // (186, 182, 131), frankly khaki. Splitting them gave a field that rendered
+  // at about (153, 152, 135), and that is what is wrong with it.
+  //
+  // **A khaki field is a white balance, not an illuminant.** The CAUP plates
+  // are that colour because nobody set the camera's white point; it is a
+  // property of that afternoon's capture, not of the microscope, and averaging
+  // it in put a sepia cast over an atlas that is meant to look like what you
+  // see. What you see down a Köhler-illuminated brightfield with the balance
+  // set is a near-neutral field with a trace of warmth left in it — the lamp is
+  // tungsten, and nobody corrects it all the way.
+  //
+  // **And a brightfield field is bright.** At 153 with the vignette on top,
+  // the empty slide here was darker than the *specimen* is in a real
+  // micrograph, which puts every cell into the bottom third of the encoding and
+  // leaves nothing for a refractile body to be brighter than. A photographed
+  // field sits near 210 to 230, and this one now lands about 205 in the middle
+  // of the frame. Nothing else had to be re-tuned for it: the specimen
+  // multiplies the field rather than being drawn against it, so the whole image
+  // scales and only the contrast ceiling had to be stated separately.
+  // The disc's own colour, with the slow unevenness any real condenser has.
+  //
+  // Parsed by hand rather than through THREE.Color, and that is not fussiness.
+  // Colour management converts a hex string to *linear* on assignment, and this
+  // canvas is tagged sRGB — so building the fill from `color.r * 255` writes the
+  // linear number into an sRGB buffer and everything comes out far too dark:
+  // #2a6d88 landed as (7, 44, 66) and the field was nearly black. The texture
+  // wants sRGB bytes, so the arithmetic stays in sRGB bytes.
+  const hex = direct.replace('#', '')
+  const base = [0, 2, 4].map((i) => parseInt(hex.slice(i, i + 2), 16))
+  const shade = (k, a) => {
+    const v = base.map((b) => Math.round(Math.min(255, Math.max(0, b * k))))
+    return `rgba(${v[0]}, ${v[1]}, ${v[2]}, ${a})`
+  }
+  ctx.fillStyle = shade(1, 1)
   ctx.fillRect(0, 0, 512, 512)
 
-  blot(ctx, 296, 186, 240, 'rgba(226, 222, 204, 0.36)')
-  blot(ctx, 130, 430, 260, 'rgba(178, 176, 152, 0.40)')
-  blot(ctx, 430, 470, 190, 'rgba(158, 156, 136, 0.36)')
-  blot(ctx, 60, 90, 150, 'rgba(152, 150, 132, 0.34)')
-  blot(ctx, 380, 60, 120, 'rgba(190, 186, 166, 0.32)')
+  // The condenser's hot spot, off centre, and the slow unevenness of a real
+  // field. Kept gentle: at this contrast these blots are most of what could
+  // make the background look painted.
+  blot(ctx, 296, 186, 250, shade(1.16, 0.34))
+  blot(ctx, 130, 430, 260, shade(0.9, 0.34))
+  blot(ctx, 430, 470, 190, shade(0.84, 0.3))
+  blot(ctx, 60, 90, 150, shade(0.82, 0.28))
+  blot(ctx, 380, 60, 120, shade(1.1, 0.26))
   return finish(canvas)
 }
 

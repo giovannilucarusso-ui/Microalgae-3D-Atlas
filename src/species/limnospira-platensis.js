@@ -28,6 +28,14 @@ export default {
   // bibliography every species draws on; the record points at them, the way it
   // points at science.js for the measurements.
   structures: STRUCTURES,
+  // The two tier labels that have to name an organism. The model organisms
+  // behind this one are the well-worked cyanobacteria — Synechocystis and
+  // Synechococcus — which is what "model" means on a Spirulina card and nowhere
+  // else in the atlas.
+  tiers: {
+    species: 'Measured in Spirulina',
+    model: 'From model cyanobacteria',
+  },
 
   // The outside: what a light microscope shows, which is where every species in
   // the atlas starts. `kind` chooses the body generator; everything under it is

@@ -88,6 +88,28 @@ https://doi.org/10.1134/S0026261720060107
 measured size for the strain — 2–4.5 µm — and the range the genus occupies,
 2–10 µm. https://doi.org/10.3390/biology7020025
 
+## Ikeda & Takeda (1995) *J Phycol* 31:813–818
+
+"Species-specific differences of pyrenoids in *Chlorella* (Chlorophyta)". The
+genus sectioned and sorted by one organelle, and the source for the *Pyrenoid*
+card. Two things off it are drawn:
+
+- **The starch sheath is in two pieces.** In *C. vulgaris* the matrix is capped
+  by two thick concavo-convex cup-shaped starch plates, not wrapped in a
+  continuous shell, and a single **double-layered thylakoid** runs through it.
+- **It does not separate the two species in this atlas.** The species with
+  glucosamine walls — *C. vulgaris*, *C. sorokiniana* and *C. kessleri* — are
+  virtually identical in pyrenoid morphology. That is a second character, at a
+  scale a light microscope cannot reach, agreeing with the objective that these
+  two cannot be told apart, and it is on the *Which species is this?* card for
+  that reason.
+
+The plates are drawn as two **lenses** rather than as two cups. The concavity is
+a fraction of a micrometre on a body about one across: it is in the electron
+micrographs and it is not in a wet mount, and the card says so rather than the
+model claiming a resolution it does not have.
+https://doi.org/10.1111/j.0022-3646.1995.00813.x
+
 ## Safi, Zebib, Merah, Pontalier & Vaca-Garcia (2014) *Renew Sustain Energy Rev* 35:265–278
 
 "Morphology, composition, production, processing and applications of *Chlorella
@@ -108,19 +130,89 @@ University in Prague. **Copyright © Pavel Škaloud, Phycological research group
 Charles University in Prague.** Not redistributable, and **not in this
 repository**: the plates were consulted, not copied.
 
-They are the reference the Chlorella field is drawn against, and two numbers off
-them corrected two mistakes that no amount of looking had:
+They are the reference the Chlorella field is drawn against, and reading them
+went two rounds: the first took two numbers off them and corrected two mistakes
+that no amount of looking had, and the second worked out which of those two
+numbers the plates could actually carry.
 
 - **Field (186, 182, 131); cell interior (126, 147, 12).** So a cell transmits
-  0.74 of the field, not the 0.46 it was drawn at, and the green is made by
-  extinguishing *blue* — 0.09 through — while red passes 0.68 and green 0.81.
-  That is chlorophyll's absorption spectrum, and it is the opposite of what a
-  dark green paint does. `CHLORELLA_GENUS.colour` is those three transmittances.
-- **The lamp is warm.** The field here is frankly khaki; the field in
+  about three quarters of the light, not the half it was first drawn at, and
+  the green is made by *failing to absorb* green rather than by darkening
+  everything. That is chlorophyll's absorption spectrum, and it is the opposite
+  of what a dark green paint does. The **luminance** of `CHLORELLA_GENUS.colour`
+  is still those pixels.
+- **The same two pixels cannot carry the hue, and for a while they were asked
+  to.** Taken literally they say blue transmits 0.09 where red transmits 0.68 —
+  blue extinguished seven times harder than red. No chlorophyll does that: in
+  vivo the Soret band near 435 nm and the red band near 675 nm are comparable,
+  with the carotenoids adding on the blue side, so red and blue should both be
+  well down and blue only somewhat further. What that ratio measured is this
+  plate's own white balance. Its field is already khaki — blue at 0.70 of red
+  before the light has met a cell — so inside one the blue channel sits at 12
+  out of 255, on the sensor's floor, where a ratio has stopped meaning anything.
+
+  Used as a transmittance it was worse than merely wrong, because transmittances
+  are raised to the path length: at twice the drawn thickness 0.09 becomes
+  0.008, and more than half the pigmented area of the frame was rendering with a
+  blue channel of 0, 1 or 2 — a *clipped* colour, which is the one thing no
+  camera returns and a reliable tell that an image was computed. The hue now
+  comes from the pigment's spectrum (0.50 / 0.72 / 0.33) and the luminance from
+  the plate.
+- **The lamp is warm — but a khaki field is a white balance, not an
+  illuminant.** The field here is frankly khaki; the field in
   Nowicka-Krawczyk 2019 is near neutral at (156, 168, 153). The atlas's own was
-  (125, 145, 148) — blue, and the only one of the three that was. Now
-  neutral-warm, between the two rather than matched to either lab's white
-  balance.
+  (125, 145, 148) — blue, and the only one of the three that was. Splitting the
+  difference between the two references put a sepia cast over the whole atlas,
+  which is a property of one afternoon's capture rather than of any microscope.
+  The field is now near-neutral with a trace of warmth left in it, and *bright*:
+  a photographed brightfield sits near 210–230, and at 153 the empty slide was
+  darker than the specimen is in a real micrograph.
 
 The strain description gives "diameter up to 7(-9)" µm, at the top of the range
 the species occupies.
+
+A second pass over the same plates is what put the inside of a cell in. Drawn
+against them and not before them:
+
+- **The refractile bodies are the loudest thing in a cell** at this
+  magnification — two to four of them, unmistakable, mostly gathered in one part
+  of the cell. Drawn first as a faint sheen, they were the feature the plates put
+  in the foreground and the model had left out.
+- **They cannot be sorted into starch and oil by looking.** Both are there and
+  both look the same; the *Refractile granules* card says so instead of giving
+  them two colours.
+- **The chloroplast's margin wanders.** It is lobed, sometimes incised, and never
+  a circle — which is why the cup stopped being a solid of revolution. Drawn as
+  one, every cell in the field carried the same outline at a different angle.
+- **The emptied mother walls are on the slide**, between the living cells:
+  colourless, thin, sharply outlined, and empty.
+- **Nothing in the plate is brighter than the field.** The field is the lamp with
+  nothing in front of it, and it is the ceiling — which is why the refractile
+  bodies screen rather than add, and why a pile of them saturates instead of
+  running away.
+
+A third pass, this one for magnification. The field was halved to 48 µm — the
+difference between scanning a slide and looking at a cell — and two numbers came
+off the plates rather than out of the air:
+
+- **The culture is a little over four hundred million cells to the millilitre.**
+  Counted: about forty-five objects in a field roughly sixty-six micrometres
+  across, read off the frame against the cells' own diameters, at close to two
+  cells an object. Eighty-five cells in 66 × 66 × 45 µm is 4.3 × 10⁸ /mL. The
+  record had carried 2 × 10⁸ — plausible, and half of what the plates show.
+- **About a third of what is on the slide is dividing.** Pairs inside an unbroken
+  wall and quartets sitting where they were released are not a curiosity in these
+  plates, they are most of what you look at. The model had them at one cell in
+  ten, so the character the whole genus is *described by* was something you had
+  to hunt for.
+
+And two things the plates settle about the shape of it:
+
+- **The autospore count is a power of two.** Successive bipartition cannot arrive
+  at three or five, and the plates show pairs, quartets, and the occasional
+  mother packed with more than you can count. The old draw — a rounded power law
+  over 2–8 — was producing every number in between.
+- **A sporangium has a contour of its own**, with a visible gap between the
+  daughters and the wall that holds them, because the daughters have built their
+  own walls already. Drawn as green balls in a sac, they had no anatomy; drawn as
+  cells, which is what they are, each one carries its own chloroplast.
