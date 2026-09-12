@@ -1,6 +1,6 @@
 // Chlorella vulgaris Beijerinck 1890 — the type species of the genus, and the
 // one every "chlorella" on a supplement label is nominally referring to.
-import { CHLORELLA_CARDS, CHLORELLA_GENUS } from './chlorella.js'
+import { CHLORELLA_CARDS, CHLORELLA_GENUS, CHLORELLA_TIERS } from './chlorella.js'
 
 export default {
   id: 'chlorella-vulgaris',
@@ -9,6 +9,7 @@ export default {
   authority: 'Beijerinck 1890',
   group: CHLORELLA_GENUS.group,
   structures: CHLORELLA_CARDS,
+  tiers: CHLORELLA_TIERS,
 
   exterior: {
     ...CHLORELLA_GENUS,
@@ -20,7 +21,14 @@ export default {
     // anything a culture normally shows, and the size distribution is the one
     // thing this view is being asked to carry honestly.
     cell: { minUm: 2, maxUm: 8, skew: 1.8 },
-    autospores: { fraction: 0.1, min: 2, max: 8 },
+    // What proportion of the units in a field are a mother part-way through
+    // autosporulation, and what proportion are a group she has just let go.
+    // Read off the CAUP plates, which are emphatically not a field of single
+    // cells: pairs still inside an unbroken wall and quartets sitting where
+    // they were released are a third of what is on the slide. Drawn at one in
+    // ten, as this was, the character the whole genus is described by was a
+    // curiosity you had to hunt for.
+    autospores: { sporangia: 0.2, released: 0.1 },
     seed: 5150,
   },
 

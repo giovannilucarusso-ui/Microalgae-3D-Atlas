@@ -8,7 +8,7 @@
 // can carry is the size distribution, and it is carried at the same field of
 // view as its sibling so that the difference is the organism's and not the
 // framing's.
-import { CHLORELLA_CARDS, CHLORELLA_GENUS } from './chlorella.js'
+import { CHLORELLA_CARDS, CHLORELLA_GENUS, CHLORELLA_TIERS } from './chlorella.js'
 
 export default {
   id: 'chlorella-sorokiniana',
@@ -17,6 +17,7 @@ export default {
   authority: 'Shihira & Krauss 1965',
   group: CHLORELLA_GENUS.group,
   structures: CHLORELLA_CARDS,
+  tiers: CHLORELLA_TIERS,
 
   exterior: {
     ...CHLORELLA_GENUS,
@@ -25,7 +26,14 @@ export default {
     // 2–4.5 µm measured on UTEX 1230; the species is reported to about 5.5 µm.
     // The drawn range takes the measured strain and allows the tail.
     cell: { minUm: 1.8, maxUm: 5.2, skew: 1.8 },
-    autospores: { fraction: 0.1, min: 2, max: 8 },
+    // What proportion of the units in a field are a mother part-way through
+    // autosporulation, and what proportion are a group she has just let go.
+    // Read off the CAUP plates, which are emphatically not a field of single
+    // cells: pairs still inside an unbroken wall and quartets sitting where
+    // they were released are a third of what is on the slide. Drawn at one in
+    // ten, as this was, the character the whole genus is described by was a
+    // curiosity you had to hunt for.
+    autospores: { sporangia: 0.2, released: 0.1 },
     seed: 3907,
   },
 }

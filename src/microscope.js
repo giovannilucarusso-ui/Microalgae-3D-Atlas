@@ -16,11 +16,89 @@
 // tomogram.
 import * as THREE from 'three'
 
+// The filters that can go under the condenser.
+//
+// Rheinberg illumination is a two-colour filter: a central disc whose light goes
+// straight up the optical axis — that is the empty field, and it is the disc's
+// colour — and a ring around it whose light enters too steeply for the objective
+// to collect, so it reaches the image **only where something on the slide has
+// bent it**. The specimen therefore appears in the ring's colour on a ground of
+// the disc's, and every refracting edge lights up.
+//
+// Three things follow, and they are why this is a list rather than a setting:
+//
+//   · **No filter is the first entry, and it is not a special case.** With the
+//     disc and the ring the same colour they are one lamp, the deviated beam has
+//     nothing to add that the direct beam did not already deliver, and every
+//     equation returns ordinary brightfield. Everything else here is a departure
+//     from that, measured against it.
+//   · **Darkfield is the same mechanism with the disc blacked out.** Nothing
+//     goes straight through, so the ground is dark and the only light in the
+//     image is what the specimen scattered. It is not a separate technique in
+//     this model — it is the end of the same continuum, which is a pleasant
+//     thing for the atlas to be able to say.
+//   · **The right filter depends on the organism**, which is why the choice is
+//     offered rather than fixed. A blue disc with a warm ring is the classic
+//     pair and it is spectacular on colourless things; on a green alga it is
+//     the wrong choice, because the disc passes almost no red, the ring-to-disc
+//     ratio in that channel is enormous, and the cells come out orange.
+//
+// What a filter costs is stated on the card: under any of these but the first,
+// a specimen's colour is no longer simply its measured transmittance — it is
+// that transmittance under two lamps.
+export const FILTERS = [
+  {
+    id: 'none',
+    label: 'None · brightfield',
+    note: 'One lamp. The colour of a specimen is its own transmittance and nothing else.',
+    direct: '#e6e3d9',
+    oblique: '#e6e3d9',
+  },
+  {
+    id: 'teal-green',
+    label: 'Rheinberg · teal and green',
+    note: 'Chosen for green algae. The ring is pulled towards green rather than the usual gold, because the disc passes almost no red and a warm ring therefore turns a green cell amber: measured on a Chlorella field the red-to-green ratio of a median cell reads 0.73 here against 0.76 under no filter at all, so the pigment and not the glass is still deciding the hue.',
+    direct: '#35758c',
+    oblique: '#cdeeb2',
+  },
+  {
+    id: 'blue-gold',
+    label: 'Rheinberg · blue and gold',
+    note: 'The classic pair. Spectacular on colourless bodies; on a green cell the disc passes so little red that the specimen turns amber.',
+    direct: '#243f86',
+    oblique: '#ffd27a',
+  },
+  {
+    id: 'darkfield',
+    label: 'Darkfield',
+    note: 'The same filter with the disc blacked out: nothing reaches the image except what the specimen scattered.',
+    direct: '#07161d',
+    oblique: '#f4f7ff',
+  },
+]
+
+export const filterById = (id) => FILTERS.find((f) => f.id === id) ?? FILTERS[0]
+
 export const BRIGHTFIELD = {
   id: 'brightfield',
   label: 'Transmitted light',
   field: 'bright',
   fov: 40,
+  // **A microscope does not orbit.** You can move the stage, you can change the
+  // objective, you can rack the focus — and that is the whole of it. The
+  // specimen is under a coverslip on a flat piece of glass and the optical axis
+  // is fixed; there is no gesture on any instrument that shows you a wet mount
+  // from the side.
+  //
+  // So the wet-mount objective does not turn, and left-drag moves the stage
+  // instead. This is a property of the *instrument*, which is why it is stated
+  // here rather than in either specimen: it applies to the Chlorella field and
+  // to the Spirulina filament for exactly the same reason, and a view that let
+  // you orbit was quietly saying it was a 3D model of an organism rather than
+  // an image of one through a lens. Letting the viewer fly round the specimen
+  // was also doing real damage to the illusion the rest of this file exists to
+  // build — the moment the field tips, it stops being a microscope.
+  orbit: false,
   // The stage, as ratios of the working distance rather than as constants. A
   // specimen an order of magnitude smaller then needs no clipping planes, zoom
   // limits or fine-focus travel re-tuned by hand — it declares how much slide it
@@ -45,6 +123,26 @@ export const BRIGHTFIELD = {
   // which is what an objective does — and why `fineFocus` exists rather than
   // this number being smaller. See the fine focus in App.
   optics: {
+    // The condenser's filter, and the default is no filter at all.
+    //
+    // See brightFieldTexture in optics.jsx. `direct` is the central disc, whose
+    // light goes straight up the axis and is the colour of the empty field;
+    // `oblique` is the ring around it, whose light enters too steeply for the
+    // objective to collect and so arrives *only* where something on the slide
+    // has bent it. Equal, as here, the two are one lamp and every equation in
+    // the atlas returns ordinary brightfield — which is why this is the default
+    // and Rheinberg is the departure, rather than the other way round.
+    //
+    // A specimen may ask for a different pair. A filter is a piece of glass you
+    // slide into the condenser and take out again, chosen for whatever is on the
+    // stage, so it is one of the very few optical settings that belongs to the
+    // session rather than to the lens — and it is the reason Chlorella is looked
+    // at through one and Spirulina is not. See `illumination` on the Chlorella
+    // record, and the merge in stage() below.
+    illumination: {
+      direct: '#e6e3d9',
+      oblique: '#e6e3d9',
+    },
     aperture: 11,
     // The ring a defocused phase object grows — see uPhase in optics.jsx. This
     // is transmitted light, where almost everything on the slide is a phase
@@ -52,8 +150,25 @@ export const BRIGHTFIELD = {
     phase: 0.26,
     maxBlur: 0.015,
     aberration: 0.0024,
-    glare: 0.085,
-    vignette: 0.34,
+    // Veiling glare and field falloff, both pulled back.
+    //
+    // They were set when this view was standing in for a microscope with a
+    // painted look rather than modelling one, and they are the two terms that
+    // cost the most contrast for the least truth. Multi-coated modern optics
+    // scatter a few per cent, not eight and a half; and a Köhler-illuminated
+    // field on a modern objective is close to even across the frame, because
+    // making it so is the entire point of Köhler illumination. What was left was
+    // a soft, slightly dim picture with the corners falling away — an old lens's
+    // faults borrowed as atmosphere, sitting on top of an optical model that had
+    // become accurate enough not to need them.
+    glare: 0.05,
+    // The instrument's contrast ceiling. See uVeil in optics.jsx: a few per cent
+    // of the field, arriving everywhere, which is what keeps two overlapping
+    // cells a very dark green instead of a colour with a channel of zero in it.
+    // The colour is the field's own, because that is what is being scattered.
+    veil: 0.032,
+    veilColor: '#e6e3d9',
+    vignette: 0.2,
     grain: 0.03,
     saturation: 0.9,
     lift: 0,
@@ -66,6 +181,12 @@ export const TOMOGRAM = {
   label: 'Reconstruction',
   field: 'dark',
   fov: 36,
+  // And this one does turn, for the same reason the other does not. A
+  // reconstruction is not an image taken through a lens along one axis — it is a
+  // volume, assembled, and turning it over is how such a thing is read. The
+  // distinction is the whole argument of this file: two scales, two instruments,
+  // and the interaction belongs to the instrument as much as the optics do.
+  orbit: true,
   ratios: { near: 1 / 461, far: 4.878, minDistance: 1 / 84, maxDistance: 2.168 },
   // Depth cueing does most of the work of telling front from back in a cutaway
   // this crowded, so the fog starts nearer than the camera sits.
@@ -117,7 +238,7 @@ export function workingDistance(fieldAcross, fov) {
 // its zoom limits or its fine-focus travel re-tuned by hand. Those multiples are
 // the ratios the Spirulina view was already using once its own numbers were
 // divided through.
-export function stage(objective, { field, depth, dir, unit, label }) {
+export function stage(objective, { field, depth, dir, unit, label, illumination }) {
   const distance = workingDistance(field, objective.fov)
   const r = objective.ratios
   const position = new THREE.Vector3(...dir).normalize().multiplyScalar(distance).toArray()
@@ -134,6 +255,8 @@ export function stage(objective, { field, depth, dir, unit, label }) {
     controls: {
       minDistance: distance * r.minDistance,
       maxDistance: distance * r.maxDistance,
+      // Spread straight onto OrbitControls; see `orbit` on each objective.
+      enableRotate: objective.orbit !== false,
     },
     home: { target: [0, 0, 0], dir: position, distance },
     fineFocus: objective.fineFocus && {
@@ -141,6 +264,12 @@ export function stage(objective, { field, depth, dir, unit, label }) {
       step: (depth ?? field * 0.5) * objective.fineFocus.step,
     },
     fog: objective.fog && [distance * objective.fog[0], distance * objective.fog[1]],
-    optics: objective.optics,
+    // The specimen may have brought its own condenser filter. Everything else
+    // here is the lens's and is not negotiable; this one is a piece of glass
+    // somebody slid in, and the veil — which is field light scattered inside the
+    // objective — has to take the field's colour with it.
+    optics: illumination
+      ? { ...objective.optics, illumination, veilColor: illumination.direct }
+      : objective.optics,
   }
 }

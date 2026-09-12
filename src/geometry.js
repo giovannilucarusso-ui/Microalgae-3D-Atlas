@@ -1308,7 +1308,7 @@ export function nucleoidStrands({ strands = 5, radiusNm = 6.5, region, seed = 12
 }
 
 
-// The cup-shaped chloroplast of a Chlorella cell, as a solid of revolution.
+// The cup-shaped chloroplast of a Chlorella cell.
 //
 // This is the thing an operator actually sees, and it is why a Chlorella cell
 // does not read as a plain green ball down a real objective. One parietal
@@ -1325,32 +1325,169 @@ export function nucleoidStrands({ strands = 5, radiusNm = 6.5, region, seed = 12
 // would give the asymmetry and never the edge, and the edge is what the eye
 // reads as an organelle rather than as a shadow.
 //
-// `open` is the half-angle of the mouth, measured from the axis. The profile
-// runs down the outer surface, across the rim, and back up the inner one, so
-// the lathe closes into a solid shell of real thickness — which is what makes
-// the doubled path through the closed side come out right.
+// It was a lathe, and a lathe is a *solid of revolution* — which is the one
+// thing this organelle is not. Every cell in the field got the same perfectly
+// circular mouth and the same perfectly spherical shell, so the field read as
+// one turned object at forty orientations: the give-away was that every C had
+// the same C, and no amount of pigment noise fixed it, because the fault was in
+// the silhouette rather than in the fill. The plates show a margin that wanders
+// — lobed, sometimes incised nearly to the pyrenoid, never a circle — and a
+// shell that bulges where the lamellae stack.
+//
+// So the profile is swept by hand instead, and the sweep carries two seeded
+// perturbations:
+//
+//   · `incision` moves the mouth's half-angle with azimuth, so the rim is a
+//     wandering curve rather than a circle. This is the one that shows: it is
+//     the outline, and the outline is what the eye reads.
+//   · `lobes` moves the whole shell in and out. Faded out at the pole by sin(a),
+//     or the azimuths no longer meet on the axis and the cup ends in a star.
+//
+// `open` is the half-angle of the mouth, measured from the axis; `seed` picks
+// the wander, so two cups asked for the same opening still differ.
 export function chloroplastCup({
   outer = 1,
   thickness = 0.34,
   open = 0.95,
   segments = 22,
+  radial = 40,
+  incision = 0,
+  lobes = 0,
+  // How much thicker the sheet is over the ridges than in the hollows between
+  // them, as a fraction. A parietal chloroplast is a lobed sheet and not a
+  // rolled one of constant gauge, and this is the one variable that puts any
+  // structure at all inside its face: the shell is drawn by 1/cos through a
+  // wall, and 1/cos is flat wherever the wall faces you.
+  ridges = 0,
+  // How far down the profile from the mouth the sheet reaches full thickness.
+  // A plastid margin thins away; it does not stop.
+  //
+  // This is also what stops the mouth being a polygon. The beam crosses four
+  // walls inside the rim and two outside it, and drawn at a constant thickness
+  // that ratio changes in one step along a curve sampled at a few dozen points
+  // — which is a straight-sided edge, however finely the surface itself is
+  // tessellated. Thin the sheet to nothing over the last few degrees and the
+  // step becomes a ramp with no sampling to show.
+  margin = 0,
+  seed = 1,
 } = {}) {
-  const inner = outer * (1 - thickness)
-  const start = open
-  const end = Math.PI
-  const points = []
-  for (let i = 0; i <= segments; i++) {
-    const a = start + ((end - start) * i) / segments
-    points.push(new THREE.Vector2(Math.sin(a) * outer, Math.cos(a) * outer))
+  const rnd = seededRandom(seed)
+
+  // Two to five lobes round the margin, which is what a chloroplast has — not a
+  // fine ripple. A high harmonic here would be read as surface texture, and the
+  // shader already draws that from the pigment.
+  const harmonics = (ks) =>
+    ks.map((k) => ({ k, phase: rnd() * Math.PI * 2, amp: 0.35 + rnd() * 0.65 }))
+  const wave = (hs, t) => {
+    let sum = 0
+    let total = 0
+    for (const h of hs) {
+      sum += h.amp * Math.sin(h.k * t + h.phase)
+      total += h.amp
+    }
+    return sum / total
   }
-  for (let i = segments; i >= 0; i--) {
-    const a = start + ((end - start) * i) / segments
-    points.push(new THREE.Vector2(Math.sin(a) * inner, Math.cos(a) * inner))
+  const rim = harmonics([2, 3, 5])
+  const skin = harmonics([2, 3, 4])
+  // The ridges are their own harmonics rather than the surface bumps' — a sheet
+  // whose thickest places are exactly where it bulges outermost is a sheet of
+  // constant inner radius, which is a shape, not a thickness.
+  const ridge = harmonics([2, 3, 5])
+
+  // How thick the sheet is at a point, as a multiple of the nominal. Written
+  // once and used twice: the shader needs it to work out the optical path, and
+  // the geometry needs it so that the inner surface actually meets the outer
+  // one where the sheet has thinned to nothing.
+  // Floored, and not at zero. A sheet whose thickness reaches exactly nought at
+  // the mouth puts the inner surface on top of the outer one, and the band of
+  // quads that joins them has no area — so `computeVertexNormals` hands back a
+  // zero vector for all ninety-seven vertices of that ring, the shader
+  // normalises it, and every fragment touching one comes out NaN. NaN written
+  // to a colour buffer is white, so the taper's first render put a scatter of
+  // pure white specks round the mouth of every chloroplast: the one value a
+  // transmitted-light image cannot contain, arriving from a division by zero
+  // rather than from any optics at all.
+  //
+  // Five per cent of the nominal wall is a few thousandths of a cell radius —
+  // well under a pixel at any magnification this view reaches — so the sheet
+  // still reads as thinning away to nothing, and the mesh stays a mesh.
+  const THINNEST = 0.05
+  const thickAt = (theta, t) => {
+    // Exactly one when nothing asked for a shape, so a caller that does not
+    // want a lobed sheet gets the constant wall it used to get, to the bit.
+    if (!ridges && !margin) return 1
+    const reach = margin > 0 ? Math.min(1, t / margin) ** 1.4 : 1
+    const thick = reach * (0.78 + 0.42 * t) * (1 + ridges * wave(ridge, theta + 1.15 * t))
+    return Math.max(THINNEST, thick)
   }
-  // Closed back onto the first point, or the lathe leaves the rim open and the
-  // shell shows its own inside wherever the mouth faces the camera.
-  points.push(points[0].clone())
-  const geometry = new THREE.LatheGeometry(points, 30)
+
+  // The profile: down the outer surface from the mouth to the pole, back up the
+  // inner one, then the repeat of the first point that closes the rim band. Two
+  // consecutive points at the pole — one on each surface — is what the lathe
+  // did too, and it is what floors the shell.
+  const count = 2 * segments + 3
+  const vertices = (radial + 1) * count
+  const positions = new Float32Array(vertices * 3)
+  const uvs = new Float32Array(vertices * 2)
+  const thicks = new Float32Array(vertices)
+  const indices = []
+
+  for (let j = 0; j <= radial; j++) {
+    const theta = (j / radial) * Math.PI * 2
+    // Clamped: a mouth that wanders past a right angle stops being a cup, and
+    // one that closes stops leaving the opening the whole organelle is read by.
+    const mouth = Math.min(1.5, Math.max(0.34, open * (1 + incision * wave(rim, theta))))
+    for (let i = 0; i < count; i++) {
+      const step = i === count - 1 ? 0 : i
+      const outward = step <= segments
+      const t = outward ? step / segments : (2 * segments + 1 - step) / segments
+      const a = mouth + (Math.PI - mouth) * t
+      // Skewed as it descends, so the lobes lean across the shell rather than
+      // running straight from pole to rim, and faded to nothing at the pole.
+      //
+      // Gently. At 1.7 the phase ran four radians from the mouth to the pole,
+      // so a harmonic of order four oscillated two and a half times *along* the
+      // profile — and bands of constant polar angle, seen down the axis, are
+      // concentric circles. The cure for ribs was rings, and rings are worse:
+      // a large cell came out drawn in tree rings, which is the one pattern
+      // nothing in a cell makes.
+      const bump = lobes * wave(skin, theta + 0.55 * a) * Math.sin(a)
+      // The sheet's own thickness here, which both surfaces have to agree on:
+      // the outer one is where it is, and the inner one is that much inside it.
+      // Taken from a single function of (theta, t) for exactly that reason —
+      // the two legs of the profile visit the same t and must come back with
+      // the same answer, or the shell has a thickness that depends on which
+      // way round it was built.
+      const thick = thickAt(theta, t)
+      const radius = (outward ? outer : outer * (1 - thickness * thick)) * (1 + bump)
+      thicks[j * count + i] = thick
+      const v = (j * count + i) * 3
+      positions[v] = Math.sin(theta) * Math.sin(a) * radius
+      positions[v + 1] = Math.cos(a) * radius
+      positions[v + 2] = Math.cos(theta) * Math.sin(a) * radius
+      const uv = (j * count + i) * 2
+      uvs[uv] = j / radial
+      uvs[uv + 1] = i / (count - 1)
+    }
+  }
+
+  for (let j = 0; j < radial; j++) {
+    for (let i = 0; i < count - 1; i++) {
+      const a = j * count + i
+      const b = (j + 1) * count + i
+      const c = (j + 1) * count + i + 1
+      const d = j * count + i + 1
+      indices.push(a, b, d, d, b, c)
+    }
+  }
+
+  const geometry = new THREE.BufferGeometry()
+  geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3))
+  geometry.setAttribute('uv', new THREE.BufferAttribute(uvs, 2))
+  // Read by specimenMaterial under TAPER: what the beam crosses here, as a
+  // multiple of the nominal wall.
+  geometry.setAttribute('aThick', new THREE.BufferAttribute(thicks, 1))
+  geometry.setIndex(indices)
   geometry.computeVertexNormals()
   return geometry
 }

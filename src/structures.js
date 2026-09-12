@@ -23,12 +23,34 @@ const KEPT = CUTAWAY.kept
 
 // Content layer for the info panel — derived from the Anatomical Bill of Materials
 // (docs/distinta-anatomica-spirulina.md, v1.1). Confidence tiers are carried through
-// to the UI so the viewer always knows what was measured on Spirulina itself.
+// to the UI so the viewer always knows what was measured on the organism in front
+// of them and what was borrowed from somewhere else.
 
+// What a tier *means* is fixed for the whole atlas — measured in the organism
+// on the stage, borrowed from something else, or not established at all — but
+// two of the three labels have to name an organism, and which organism depends
+// on what is on the stage. Written out as Spirulina's, as they were, they told a
+// reader of the Chlorella cards that the oil content of Chlorella vulgaris had
+// been "measured in Spirulina" and that its cup-shaped chloroplast came "from
+// model cyanobacteria" — which is the exact failure the tiers exist to prevent,
+// committed by the tiers themselves.
+//
+// So a species record says what its own two labels are, and this is the fallback
+// for one that does not.
 export const CONFIDENCE = {
-  species: { label: 'Measured in Spirulina', tone: 'species' },
-  model: { label: 'From model cyanobacteria', tone: 'model' },
+  species: { label: 'Measured in this species', tone: 'species' },
+  model: { label: 'From a relative', tone: 'model' },
   unverified: { label: 'Not yet established', tone: 'unverified' },
+}
+
+export function confidenceFor(species) {
+  const tiers = species?.tiers
+  if (!tiers) return CONFIDENCE
+  return {
+    species: { ...CONFIDENCE.species, ...(tiers.species ? { label: tiers.species } : {}) },
+    model: { ...CONFIDENCE.model, ...(tiers.model ? { label: tiers.model } : {}) },
+    unverified: CONFIDENCE.unverified,
+  }
 }
 
 export const SOURCES = {
@@ -157,6 +179,16 @@ export const SOURCES = {
   r47: {
     text: 'Krivina & Temraleeva (2020) Microbiology 89:720–732 — “Identification Problems and Cryptic Diversity of Chlorella-Clade Microalgae (Chlorophyta)”',
     url: 'https://doi.org/10.1134/S0026261720060107',
+  },
+  // The pyrenoid across the genus, in section. Two thick concavo-convex starch
+  // plates round the matrix in C. vulgaris, a double-layered thylakoid through
+  // it — and the three species with glucosamine walls, C. vulgaris,
+  // C. sorokiniana and C. kessleri, "virtually identical". A second character,
+  // at a scale a light microscope cannot reach, that declines to separate the
+  // two species this atlas draws.
+  r48: {
+    text: 'Ikeda & Takeda (1995) J Phycol 31:813–818 — “Species-specific differences of pyrenoids in Chlorella (Chlorophyta)”',
+    url: 'https://doi.org/10.1111/j.0022-3646.1995.00813.x',
   },
   r43: {
     text: 'Deschoenmaeker, Facchini, Cabrera Pino, Bayon-Vicente, Sachdeva, Flammang & Wattiez (2016) J Struct Biol 196:385–393 — “Nitrogen depletion in Arthrospira sp. PCC 8005, an ultrastructural point of view”',

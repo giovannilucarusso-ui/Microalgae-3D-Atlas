@@ -10,6 +10,7 @@
 //                                               shots can be compared
 //   node tools/shoot.mjs filament --focus 24  → fine focus racked to +24 µm
 //   node tools/shoot.mjs filament --species chlorella-vulgaris
+//   node tools/shoot.mjs filament --filter none      → condenser filter out
 //
 // `--crop` writes the named rectangle at one screen pixel to one image pixel
 // instead of the whole 1400×900 frame scaled down to be looked at. Surface
@@ -140,6 +141,11 @@ async function main() {
   // that does not say which organism it is of is not much of a record.
   const speciesFlag = args.indexOf('--species')
   const speciesAt = speciesFlag === -1 ? null : args[speciesFlag + 1]
+  // Which condenser filter is in. A shot taken under a Rheinberg filter and one
+  // taken without it are not the same picture of the same organism, so a shot
+  // that does not say which is not a record of anything.
+  const filterFlag = args.indexOf('--filter')
+  const filterAt = filterFlag === -1 ? null : args[filterFlag + 1]
   const [cx, cy, cw, ch] = cropFlag === -1 ? [] : (args[cropFlag + 1] ?? '').split(',').map(Number)
   const clip =
     cropFlag === -1
@@ -189,6 +195,16 @@ async function main() {
       await sleep(2600)
     }
 
+    if (filterAt) {
+      await page.evaluate((id) => {
+        const select = document.querySelector('#condenser')
+        if (!select) return
+        select.value = id
+        select.dispatchEvent(new Event('change', { bubbles: true }))
+      }, filterAt)
+      await sleep(1600)
+    }
+
     if (still) {
       await page.evaluate(() => {
         const box = document.querySelector('.toggle input[type="checkbox"], input[type="checkbox"]')
@@ -232,6 +248,15 @@ async function main() {
           calyptra: 'Calyptra',
           gliding: 'Gliding motility',
           reproduction: 'Reproduction by fragmentation',
+          // Chlorella's wet mount. `wall` is not here: both specimens use that
+          // id and the entry above is Spirulina's, so `--select wall` on a
+          // Chlorella shot finds nothing. Everything else is unambiguous.
+          cellBody: 'The cell',
+          chloroplast: 'Chloroplast',
+          pyrenoid: 'Pyrenoid',
+          granules: 'Refractile granules',
+          autospores: 'Autospores',
+          identification: 'Which species is this?',
         }
         const item = [...document.querySelectorAll('.item')].find((b) =>
           b.textContent.includes(names[id] ?? id),
