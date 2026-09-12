@@ -216,3 +216,68 @@ And two things the plates settle about the shape of it:
   daughters and the wall that holds them, because the daughters have built their
   own walls already. Drawn as green balls in a sac, they had no anatomy; drawn as
   cells, which is what they are, each one carries its own chloroplast.
+
+## Euglena gracilis — NIES protist morphology reference
+
+https://www.nies.go.jp/chiiki1/protoz/morpho/flagella/euglena.htm — the National
+Institute for Environmental Studies (Japan) culture collection's own
+morphological description of the genus. A collection describing the strains it
+holds is about as close to a primary source as a morphological account gets, and
+it is where every dimension on the Euglena cards comes from:
+
+- **E. gracilis: 35–55 × 6–25 µm.** The width range is the interesting half. It
+  is not a sloppily reported population spread — it is *one cell at different
+  moments*, because a euglenoid has no wall and changes shape as it swims. The
+  atlas draws organisms to measured dimensions, and this is the case where a
+  single measured dimension does not exist, so the cells are drawn travelling
+  along the range rather than sitting at a point on it.
+- **Numerous chloroplasts, "discoid, band-form, or fusiform"**, scattered through
+  the cytoplasm rather than lining the wall. That is the character that separates
+  a euglenoid from a green coccoid at a glance.
+- **Paramylon "rod-like to ovoid", commonly two flanking the nucleus.**
+- **One emergent flagellum from the anterior reservoir, a quarter to the full
+  body length**; a second stays inside and never emerges.
+- **A conspicuous anterior stigma**, and a nucleus central to posterior.
+
+## Euglena pellicle — strip architecture
+
+The pellicle is overlapping proteinaceous strips under the plasma membrane, each
+with a ridge along one edge and a groove along the other, interlocking with its
+neighbours so the sheet holds together while still sliding. They arise at the
+flagellar canal and run to the posterior.
+
+**The number this specimen's honesty turns on: in *E. gracilis* the strips are
+240 nm groove to groove** — among the finest striation in the genus — against an
+Abbe limit of about 220 nm for the objective this atlas draws with. Not
+comfortably resolved and not safely invisible: *at* the limit. So the strips are
+drawn at the contrast an objective's transfer function passes that close to its
+cut-off — about three per cent — which at the working zoom is nothing, and closed
+in on a cell in focus is a faint ribbing that comes and goes with the fine focus. A view that showed
+countable strips would be making a claim about the microscope rather than about
+the organism — the same kind of statement as the Spirulina sheath, which is
+invisible in transmitted light for the same reason and visible in the
+reconstruction.
+
+**No Euglena micrographs are kept in this repository.** The reference the look
+is drawn against is a clip of euglenids at 200× from *Journey to the
+Microcosmos* (James Weiss), supplied by the project owner, consulted and not
+copied. Frames were pulled out of it and measured rather than eyeballed:
+
+- **The illumination is DIC, not Rheinberg.** Every cell is in relief, bright on
+  one side and shadowed on the other in the same direction across the frame —
+  and so is the air bubble, which has no pigment and could not be drawn that way
+  by anything absorbing. That is Nomarski differential interference contrast,
+  and it is the `dic` entry in `FILTERS` in `src/microscope.js`.
+- **Its colours are a grade.** A plain DIC image is grey; the footage has a blue
+  ground (25, 89, 109) with the cells luminous yellow-green — dark, middle and
+  bright cell tones (28, 74, 6), (57, 107, 17), (100, 140, 20). The atlas's DIC
+  entry is tuned to those numbers and says that they are a grade.
+- **What it shows about the organism**: a mount crowded enough that 22% of the
+  frame is empty ground; about half the cells dissolved into a soft haze above
+  and below focus; cells in focus finely pebbled rather than patchy, with a
+  pointed colourless tail and a red stigma; swimming, and rolling as they go.
+- **What it does not settle: the size.** Against the footage's own 100 µm bar
+  its euglenids are 30–40 µm long, the small end of *E. gracilis* or under it.
+  The atlas keeps the NIES dimensions, so its cells stand a little larger in the
+  frame than these do.
+

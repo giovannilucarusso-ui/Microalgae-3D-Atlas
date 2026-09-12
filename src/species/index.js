@@ -6,8 +6,14 @@
 import limnospiraPlatensis from './limnospira-platensis.js'
 import chlorellaVulgaris from './chlorella-vulgaris.js'
 import chlorellaSorokiniana from './chlorella-sorokiniana.js'
+import euglenaGracilis from './euglena-gracilis.js'
 
-export const SPECIES = [limnospiraPlatensis, chlorellaVulgaris, chlorellaSorokiniana]
+export const SPECIES = [
+  limnospiraPlatensis,
+  chlorellaVulgaris,
+  chlorellaSorokiniana,
+  euglenaGracilis,
+]
 
 export const DEFAULT_SPECIES = limnospiraPlatensis.id
 
