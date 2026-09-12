@@ -5,11 +5,12 @@ import { OrbitControls } from '@react-three/drei'
 import Trichome from './Trichome.jsx'
 import CellField from './CellField.jsx'
 import CellField2D from './CellField2D.jsx'
+import EuglenaField from './EuglenaField.jsx'
 import Debris from './specimen.jsx'
 import CellSection from './CellSection.jsx'
 import { SWATCH } from './materials.js'
 import { Optics, brightFieldTexture, darkFieldTexture } from './optics.jsx'
-import { BRIGHTFIELD, FILTERS, TOMOGRAM, filterById, stage } from './microscope.js'
+import { BRIGHTFIELD, TOMOGRAM, filterById, filtersFor, stage } from './microscope.js'
 import { DEFAULT_SPECIES, SPECIES, speciesById } from './species/index.js'
 import { CLICK_SLOP, CameraRig, KeyboardPan, MicroscopeLights, ScaleBarDriver } from './scene.jsx'
 import { confidenceFor, SOURCES } from './structures.js'
@@ -423,7 +424,14 @@ export default function App() {
           <>
             {/* No lights: in transmitted light nothing is lit from the front —
                 the specimen is what is left of the lamp after the crossing. */}
-            {config.form.kind === 'coccoid-field' ? (
+            {config.form.kind === 'euglenoid-field' ? (
+              <EuglenaField
+                form={config.form}
+                focus={focus}
+                optics={config.optics}
+                swimming={gliding}
+              />
+            ) : config.form.kind === 'coccoid-field' ? (
               RENDER_2D ? (
                 <CellField2D
                   form={config.form}
@@ -448,13 +456,13 @@ export default function App() {
                 life={life}
               />
             )}
-            {/* A coccoid field gets no neighbouring trichomes: a Spirulina
+            {/* Only a trichome gets neighbouring trichomes: a Spirulina
                 filament is four hundred micrometres of another organism, and
-                two of them arcing across a field of Chlorella read as hairs on
-                the lens. See Debris. */}
+                two of them arcing across a field of Chlorella or Euglena read
+                as hairs on the lens. See Debris. */}
             <Debris
               field={config.form.fieldUm}
-              neighbours={config.form.kind === 'coccoid-field' ? 0 : 2}
+              neighbours={config.form.kind === 'helical-trichome' ? 2 : 0}
             />
           </>
         ) : (
@@ -623,7 +631,8 @@ export default function App() {
                 would reasonably read the result as a bug rather than as a gap.
                 It comes back the moment specimenMaterial grows the second
                 pass. */}
-            {config.form?.kind === 'coccoid-field' && (
+            {(config.form?.kind === 'coccoid-field' ||
+              config.form?.kind === 'euglenoid-field') && (
             <div className="cycle">
               <label htmlFor="condenser">Condenser filter</label>
               <select
@@ -631,7 +640,7 @@ export default function App() {
                 value={condenser.id}
                 onChange={(event) => setChosenFilter(event.target.value)}
               >
-                {FILTERS.map((f) => (
+                {filtersFor(config.form?.kind).map((f) => (
                   <option key={f.id} value={f.id}>
                     {f.label}
                   </option>
@@ -798,6 +807,23 @@ export default function App() {
                   {LIFE_CYCLE.stages[0].text}
                 </p>
               </div>
+            </>
+            ) : config.form?.kind === 'euglenoid-field' ? (
+            <>
+              <label className="toggle">
+                <input
+                  type="checkbox"
+                  checked={gliding}
+                  onChange={(e) => setGliding(e.target.checked)}
+                />
+                Swimming
+              </label>
+              <p className="note">
+                Each cell swims forward at a few body lengths a second, rolling
+                about its long axis once or twice a second as it goes. Switch it
+                off to hold the culture still and rack the focus through one
+                cell.
+              </p>
             </>
             ) : null
           ) : (

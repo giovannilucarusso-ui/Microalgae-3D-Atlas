@@ -190,6 +190,25 @@ export const SOURCES = {
     text: 'Ikeda & Takeda (1995) J Phycol 31:813–818 — “Species-specific differences of pyrenoids in Chlorella (Chlorophyta)”',
     url: 'https://doi.org/10.1111/j.0022-3646.1995.00813.x',
   },
+  // The morphology reference the Euglena record is drawn to: the NIES protist
+  // collection's own description of the genus, which is where the measured
+  // 35–55 by 6–25 µm for E. gracilis comes from, along with the chloroplast
+  // forms, the paramylon arrangement, the flagellar length range and the
+  // anterior stigma. A culture collection describing its own strains is about
+  // as close to a primary source as a morphological description gets.
+  r49: {
+    text: 'NIES Microbial Culture Collection (National Institute for Environmental Studies, Japan) — Euglena morphology reference. E. gracilis: 35–55 × 6–25 µm; numerous discoid to band-form chloroplasts; rod-like to ovoid paramylon, commonly two flanking the nucleus; one emergent flagellum from a quarter to the full body length; conspicuous anterior stigma.',
+    url: 'https://www.nies.go.jp/chiiki1/protoz/morpho/flagella/euglena.htm',
+  },
+  // The pellicle, and the one number this specimen's honesty turns on: the
+  // strips of E. gracilis are 240 nm groove to groove — among the finest
+  // striation in the genus — against an Abbe limit of about 220 nm for the
+  // objective this atlas draws with. Right at the edge of resolution, which is
+  // why the striation is drawn as an unresolved ribbing rather than as lines.
+  r50: {
+    text: 'Pellicle strip architecture in Euglena: overlapping proteinaceous strips with interlocking ridge and groove, arising at the flagellar canal and running to the posterior; E. gracilis among the most metabolic species, strip width (groove to groove) 240 nm.',
+    url: 'https://doi.org/10.1016/j.protis.2017.02.001',
+  },
   r43: {
     text: 'Deschoenmaeker, Facchini, Cabrera Pino, Bayon-Vicente, Sachdeva, Flammang & Wattiez (2016) J Struct Biol 196:385–393 — “Nitrogen depletion in Arthrospira sp. PCC 8005, an ultrastructural point of view”',
     url: 'https://doi.org/10.1016/j.jsb.2016.08.007',

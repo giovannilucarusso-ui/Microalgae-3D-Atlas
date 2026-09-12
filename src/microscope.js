@@ -75,9 +75,46 @@ export const FILTERS = [
     direct: '#07161d',
     oblique: '#f4f7ff',
   },
+  // Differential interference contrast, which is not a filter but a pair of
+  // prisms — one under the condenser, one over the objective — and is here
+  // because it sits in the same place on the instrument and is chosen for the
+  // same reason: it suits some specimens and not others.
+  //
+  // The beam is split in two, the halves are sheared a fraction of a micrometre
+  // apart across the slide, and they are recombined. Where the optical path is
+  // the same under both nothing happens; where it *changes* across that shear,
+  // one half is retarded against the other and the pixel brightens or darkens.
+  // So what DIC draws is the slope of the optical path along one direction —
+  // `shear`, in the image — and a smooth body comes out as if lit from one side,
+  // bright where its thickness rises and shadowed where it falls. `relief` is
+  // how much brighter per unit of slope.
+  //
+  // It is the look of the reference footage for Euglena — Journey to the
+  // Microcosmos, at 200× — and the colours are taken from the same frames. They
+  // are **not DIC's own colours**: a plain DIC image is grey, and that footage
+  // is graded. The ground here is the blue measured off it, and the luminous
+  // yellow-green the cells glow with is drawn by the same two-beam arithmetic
+  // as a Rheinberg filter — the light the cell deviates arriving warm — because
+  // that is the one mechanism in this model that can make a green absorber
+  // brighter in the red than the ground it sits on, which the footage is.
+  {
+    id: 'dic',
+    label: 'DIC · blue ground',
+    note: 'Nomarski differential interference contrast. What it draws is not the optical path but its slope along one direction, so every cell comes out in relief — bright on the side its thickness rises, shadowed on the side it falls. The blue ground and the warm, luminous green are the grade of the reference footage (Journey to the Microcosmos, 200×) rather than DIC’s own colours, which are grey.',
+    direct: '#37708d',
+    oblique: '#dcff2a',
+    shear: [1, -1],
+    relief: 6,
+    // Only the euglenoid field computes the slope. Elsewhere this entry would
+    // be a Rheinberg pair wearing a DIC label.
+    renderers: ['euglenoid-field'],
+  },
 ]
 
 export const filterById = (id) => FILTERS.find((f) => f.id === id) ?? FILTERS[0]
+
+// The entries a renderer can actually deliver.
+export const filtersFor = (kind) => FILTERS.filter((f) => !f.renderers || f.renderers.includes(kind))
 
 export const BRIGHTFIELD = {
   id: 'brightfield',
