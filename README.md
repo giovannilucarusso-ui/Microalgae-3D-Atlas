@@ -1,5 +1,7 @@
 # Microalgae 3D Atlas
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22738179.svg)](https://doi.org/10.5281/zenodo.22738179)
+
 An interactive 3D cell atlas of microalgae and cyanobacteria that says where
 every number came from.
 
@@ -125,9 +127,14 @@ figures from Nowicka-Krawczyk et al. (2019) are included under their own CC BY
 
 ## Citing it
 
-See [`CITATION.cff`](CITATION.cff). Where you rely on a specific measurement,
-cite the primary source the card names as well — a figure reused without its
-sources loses the one thing that separates it from an illustration.
+Every release is archived on Zenodo.
+[doi:10.5281/zenodo.22738179](https://doi.org/10.5281/zenodo.22738179) always
+resolves to the newest version, and each version has its own DOI on its Zenodo
+page. The full reference is in [`CITATION.cff`](CITATION.cff).
+
+Where you rely on a specific measurement, cite the primary source the card names
+as well — a figure reused without its sources loses the one thing that separates
+it from an illustration.
 
 ## Audited
 

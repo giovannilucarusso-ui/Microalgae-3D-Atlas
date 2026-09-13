@@ -46,6 +46,8 @@ keywords:
   - interactive 3D
   - scientific visualisation
   - WebGL
-# Once the repository is archived on Zenodo, add the DOI it mints here and the
-# citation becomes permanent rather than a link that can move:
-# doi: 10.5281/zenodo.XXXXXXX
+# The concept DOI: it resolves to the newest archived release, so it stays right
+# from one version to the next, and each release also has a DOI of its own on
+# its Zenodo page. Zenodo does not read this key when it archives a release, so
+# it cannot collide with the DOI the new release is given.
+doi: 10.5281/zenodo.22738179
