@@ -10,21 +10,24 @@ abstract: >-
   An interactive 3D cell atlas of microalgae and cyanobacteria, drawn from
   primary sources and stating the provenance of every measurement. The first
   specimen is Spirulina (Limnospira platensis), from the helical trichome under
-  transmitted light down to a nanometre-scale cutaway of one cell. Each of the
+  transmitted light down to a nanometre-scale cutaway of one cell. Each of its
   19 clickable structures carries dated dimensions marked at one of three
   confidence tiers — measured in Spirulina itself, taken from model
   cyanobacteria, or not yet established — so a reader can tell what is known
-  from what is inferred. The constraints those numbers have to satisfy are
-  asserted in code rather than left as prose.
+  from what is inferred. Chlorella vulgaris, Chlorella sorokiniana and Euglena
+  gracilis follow as wet mounts, exterior only, seen through the same simulated
+  light microscope. The constraints the numbers have to satisfy, and the shape
+  every specimen record must have, are asserted in code rather than left as
+  prose.
 type: software
 authors:
   - family-names: Russo
     given-names: Giovanni Luca
-    # orcid: "https://orcid.org/0000-0000-0000-0000"   ← add yours here
+    orcid: "https://orcid.org/0000-0002-4072-0331"
 repository-code: https://github.com/giovannilucarusso-ui/Microalgae-3D-Atlas
 url: https://giovannilucarusso-ui.github.io/Microalgae-3D-Atlas/
-version: 0.6.0
-date-released: 2026-09-09
+version: 0.7.0
+date-released: 2026-09-13
 # One licence here, although the atlas has two and the format allows a list.
 # Zenodo reads this file when it archives a release and rejects a list for this
 # key with "Citation metadata load failed" (zenodo/zenodo#2515), so the release
@@ -37,6 +40,8 @@ keywords:
   - Spirulina
   - Limnospira platensis
   - Arthrospira
+  - Chlorella
+  - Euglena gracilis
   - cell ultrastructure
   - interactive 3D
   - scientific visualisation
