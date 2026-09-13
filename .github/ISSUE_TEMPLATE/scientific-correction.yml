@@ -1,0 +1,45 @@
+name: Scientific correction
+description: A card misreads a source, cites the wrong one, or marks a number at the wrong tier.
+title: "[Correction] "
+labels: ["correction"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Corrections are the most useful thing a reader can send. They are kept in public, and a card changes against a source — if you only suspect something is wrong, start a discussion instead.
+  - type: input
+    id: where
+    attributes:
+      label: Where
+      description: The specimen, the card, and the row if it is one.
+      placeholder: Spirulina → Four-layered cell wall → Total thickness
+    validations:
+      required: true
+  - type: textarea
+    id: now
+    attributes:
+      label: What the atlas says
+    validations:
+      required: true
+  - type: textarea
+    id: should
+    attributes:
+      label: What it should say
+    validations:
+      required: true
+  - type: textarea
+    id: source
+    attributes:
+      label: Source
+      description: DOI or stable link, with the page, table or figure.
+    validations:
+      required: true
+  - type: dropdown
+    id: tier
+    attributes:
+      label: Does the tier change?
+      options:
+        - "No"
+        - To measured in this species
+        - To borrowed from a relative
+        - To not yet established

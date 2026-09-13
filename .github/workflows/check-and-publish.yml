@@ -1,0 +1,53 @@
+# Every pull request and every push to main runs the checks and builds the site;
+# only main publishes it, and only once the checks have passed.
+#
+# The build uses a relative base, so the same files are right at
+# https://<owner>.github.io/Microalgae-3D-Atlas/, on a fork under another name,
+# or on a custom domain, without this file having to know which.
+name: Check and publish
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  check:
+    name: Check and build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+      - run: npm ci
+      - name: Science constraints, specimen records, shaders
+        run: npm run check
+      - name: Build
+        run: npm run build -- --base=./
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: dist
+
+  publish:
+    name: Publish to GitHub Pages
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    needs: check
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5

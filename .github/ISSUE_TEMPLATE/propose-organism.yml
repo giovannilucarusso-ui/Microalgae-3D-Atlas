@@ -1,0 +1,87 @@
+name: Propose an organism
+description: Suggest a microalga or cyanobacterium for the atlas, with the literature it can be built from. No code needed.
+title: "[Organism] "
+labels: ["specimen"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Every number in the atlas carries a source and one of three tiers: **measured in this species**, **borrowed from a relative**, or **not yet established**. A species with little literature is welcome — it will carry more of the second and third tier, and that is an honest entry.
+
+        Every specimen starts from what a light microscope shows, and most have nothing else, so ultrastructure is not needed. Fill in what you can; the rest can be worked out in the thread.
+  - type: input
+    id: species
+    attributes:
+      label: Species
+      description: Scientific name with authority, and the common name if it has one.
+      placeholder: Chlamydomonas reinhardtii P.A.Dangeard 1888
+    validations:
+      required: true
+  - type: input
+    id: group
+    attributes:
+      label: Group
+      placeholder: Chlorophyta · Chlorophyceae
+  - type: textarea
+    id: why
+    attributes:
+      label: Why this organism
+      description: Research, industry, teaching, ecology — or simply that people meet it under the microscope.
+  - type: textarea
+    id: light-microscope
+    attributes:
+      label: What a light microscope shows
+      description: Shape, size range, colour, motility, colonies, what changes through its life cycle.
+      placeholder: |
+        Single cells, ellipsoid, about 10 µm long; two flagella about as long as the cell.
+        One cup-shaped chloroplast with a pyrenoid; a red eyespot.
+    validations:
+      required: true
+  - type: textarea
+    id: measurements
+    attributes:
+      label: Measurements
+      description: One row per number. Tier is `species` (measured in this organism), `model` (borrowed from a relative) or `unverified` (not yet established).
+      value: |
+        | Structure | What is measured | Value | Tier | Source |
+        |---|---|---|---|---|
+        |  |  |  |  |  |
+  - type: textarea
+    id: sources
+    attributes:
+      label: Sources
+      description: DOI or stable link for each work, with the page, table or figure where it matters. Please do not attach PDFs or figures you do not have the right to share — a link is enough.
+      placeholder: https://doi.org/10.xxxx/xxxxx — Table 2, cell dimensions
+    validations:
+      required: true
+  - type: textarea
+    id: images
+    attributes:
+      label: Reference images
+      description: Links to micrographs of the organism, with their licence. Your own are very welcome — say the strain if you know it, the objective and the illumination (brightfield, phase contrast, DIC…).
+  - type: dropdown
+    id: body-plan
+    attributes:
+      label: Closest body plan already in the atlas
+      description: A species that fits an existing generator can be added without new rendering code.
+      options:
+        - A helical filament, like Spirulina
+        - A field of round single cells, like Chlorella
+        - A flexible, spindle-shaped flagellate, like Euglena
+        - None of these — it needs a new generator
+        - Not sure
+  - type: checkboxes
+    id: help
+    attributes:
+      label: Would you help build it?
+      options:
+        - label: I can check the cards against the literature
+        - label: I can provide micrographs
+        - label: I can write code (JavaScript, three.js)
+  - type: checkboxes
+    id: licence
+    attributes:
+      label: Licence
+      options:
+        - label: What I contribute here may be published under CC BY 4.0, and I have only shared material I have the right to share.
+          required: true
