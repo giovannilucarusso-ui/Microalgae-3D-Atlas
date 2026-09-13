@@ -23,6 +23,9 @@ import {
   coilCount,
   SPECIES_HELIX,
 } from './science.js'
+// The version on the panel is the one the release is tagged with. It used to be
+// typed in by hand, and it still said v0.6 when the next release was cut.
+import { version } from '../package.json'
 
 const BACKGROUND = '#04100f'
 
@@ -529,7 +532,7 @@ export default function App() {
             scrolls. On a short window the whole panel used to scroll as one
             block and the title was the first thing to leave. */}
         <div className="panel-head">
-          <p className="eyebrow">Interactive 3D atlas · prototype v0.6</p>
+          <p className="eyebrow">Interactive 3D atlas · prototype v{version}</p>
           <h1>{species.name}</h1>
           <p className="species">
             <i>{species.latin}</i>
