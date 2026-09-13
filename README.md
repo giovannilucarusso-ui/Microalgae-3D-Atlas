@@ -3,6 +3,9 @@
 An interactive 3D cell atlas of microalgae and cyanobacteria that says where
 every number came from.
 
+**[Open the atlas](https://giovannilucarusso-ui.github.io/Microalgae-3D-Atlas/)**.
+It runs in the browser, with nothing to install.
+
 Anatomical illustrations do not carry their provenance. You cannot tell, looking
 at one, whether a spacing was measured in the organism drawn, borrowed from a
 relative, or invented to make the picture read. This atlas is built the other way
@@ -75,6 +78,9 @@ long time. That is what the confidence tiers are for: a specimen whose literatur
 supports the outside and little else still belongs here, carrying more of the
 second and third tier, and how little is known about it is itself worth showing.
 
+[`CONTRIBUTING.md`](CONTRIBUTING.md) is the full guide. It also covers how to
+propose an organism, or correct a card, without writing any code.
+
 ## Run it
 
 ```bash
@@ -90,7 +96,8 @@ npm run share        # builds, then folds it into share/spirulina-3d.html
 npm run share:check  # opens that file in headless Chrome and proves it stands alone
 ```
 
-There is no hosted copy yet.
+The [hosted copy](https://giovannilucarusso-ui.github.io/Microalgae-3D-Atlas/)
+is rebuilt from `main` on every push, once `npm run check` has passed.
 
 ## What it is not
 

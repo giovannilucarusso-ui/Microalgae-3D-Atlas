@@ -1,0 +1,30 @@
+name: Rendering problem
+description: The atlas does not load, looks wrong, or is too slow on your device.
+title: "[Rendering] "
+labels: ["bug"]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What you did, what you expected and what you saw. A screenshot helps more than anything else.
+    validations:
+      required: true
+  - type: input
+    id: specimen
+    attributes:
+      label: Specimen and view
+      placeholder: Euglena, wet mount, DIC
+  - type: input
+    id: device
+    attributes:
+      label: Device, operating system and browser
+      placeholder: iPhone 13, iOS, Safari
+    validations:
+      required: true
+  - type: textarea
+    id: console
+    attributes:
+      label: Console output
+      description: If you can open the browser's developer tools, paste any errors shown in red.
+      render: text
