@@ -6,6 +6,7 @@ import Trichome from './Trichome.jsx'
 import CellField from './CellField.jsx'
 import CellField2D from './CellField2D.jsx'
 import EuglenaField from './EuglenaField.jsx'
+import HaptophyteField from './HaptophyteField.jsx'
 import Debris from './specimen.jsx'
 import CellSection from './CellSection.jsx'
 import { SWATCH } from './materials.js'
@@ -434,6 +435,13 @@ export default function App() {
                 optics={config.optics}
                 swimming={gliding}
               />
+            ) : config.form.kind === 'haptophyte-field' ? (
+              <HaptophyteField
+                form={config.form}
+                focus={focus}
+                optics={config.optics}
+                swimming={gliding}
+              />
             ) : config.form.kind === 'coccoid-field' ? (
               RENDER_2D ? (
                 <CellField2D
@@ -635,7 +643,8 @@ export default function App() {
                 It comes back the moment specimenMaterial grows the second
                 pass. */}
             {(config.form?.kind === 'coccoid-field' ||
-              config.form?.kind === 'euglenoid-field') && (
+              config.form?.kind === 'euglenoid-field' ||
+              config.form?.kind === 'haptophyte-field') && (
             <div className="cycle">
               <label htmlFor="condenser">Condenser filter</label>
               <select
@@ -811,22 +820,20 @@ export default function App() {
                 </p>
               </div>
             </>
-            ) : config.form?.kind === 'euglenoid-field' ? (
+            ) : config.form?.motion ? (
             <>
+              {/* A swimmer's own clock. What the motion is differs by organism
+                  — a Euglena crossing the field, a Braarudosphaera holding
+                  station — so the words come from the specimen's record. */}
               <label className="toggle">
                 <input
                   type="checkbox"
                   checked={gliding}
                   onChange={(e) => setGliding(e.target.checked)}
                 />
-                Swimming
+                {config.form.motion.label}
               </label>
-              <p className="note">
-                Each cell swims forward at a few body lengths a second, rolling
-                about its long axis once or twice a second as it goes. Switch it
-                off to hold the culture still and rack the focus through one
-                cell.
-              </p>
+              <p className="note">{config.form.motion.note}</p>
             </>
             ) : null
           ) : (

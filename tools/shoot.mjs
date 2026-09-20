@@ -257,6 +257,14 @@ async function main() {
           granules: 'Refractile granules',
           autospores: 'Autospores',
           identification: 'Which species is this?',
+          // Braarudosphaera's motile stage.
+          nitroplast: 'Nitroplast',
+          plastids: 'Plastids',
+          flagella: 'Flagella',
+          haptonema: 'Haptonema',
+          scales: 'Scales and spines',
+          diel: 'Day and night',
+          lifeCycle: 'Two stages, several species',
         }
         const item = [...document.querySelectorAll('.item')].find((b) =>
           b.textContent.includes(names[id] ?? id),

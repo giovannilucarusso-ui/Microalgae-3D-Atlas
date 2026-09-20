@@ -39,6 +39,18 @@ import { useEffect, useMemo, useRef } from 'react'
 import * as THREE from 'three'
 import { useFrame, useThree } from '@react-three/fiber'
 import { RESOLUTION_UM, buildEuglena } from './euglenoid.js'
+import {
+  CHORD_GLSL,
+  LayerComposite,
+  absorbFrom,
+  createLayers,
+  directBeam,
+  disposeLayers,
+  drawLayers,
+  obliqueBeam,
+  shearOf,
+  transfer,
+} from './twoBeam.jsx'
 
 // Refractive indices, as in the coccoid field: the reason anything unstained is
 // visible at all, and measured rather than chosen.
@@ -259,39 +271,7 @@ const FRAGMENT = /* glsl */ `
     return r * wave;
   }
 
-  // The integral of the half chord √(R² − x²) from 0 to x — the area under a
-  // quarter circle — clamped so it stays flat outside the body.
-  float capArea(float x, float R) {
-    float r = max(R, 1e-4);
-    float xc = clamp(x, -r, r);
-    return 0.5 * (xc * sqrt(max(r * r - xc * xc, 0.0)) + r * r * asin(clamp(xc / r, -1.0, 1.0)));
-  }
-
-  // The half chord at c, averaged over [c - w, c + w]. At w -> 0 it is the
-  // half chord itself; at any w it conserves what the body holds.
-  float halfChord(float c, float R, float w) {
-    return (capArea(c + w, R) - capArea(c - w, R)) / (2.0 * w);
-  }
-
-  // Its slope across the cell. Bounded by the blur, which is what an image of
-  // an edge is: the steepness of a margin is never more than the point-spread
-  // function lets it be.
-  float halfChordSlope(float c, float R, float w) {
-    float a = sqrt(max(R * R - (c + w) * (c + w), 0.0));
-    float b = sqrt(max(R * R - (c - w) * (c - w), 0.0));
-    return (a - b) / (2.0 * w);
-  }
-
-  // Its curvature, for the phase term. The same average taken once more, with
-  // the slope's singularity at the margin held to the blur.
-  float halfChordCurve(float c, float R, float w) {
-    float floorR = w * R;
-    float xa = c + w;
-    float xb = c - w;
-    float sa = abs(xa) < R ? -xa / sqrt(max(R * R - xa * xa, floorR)) : 0.0;
-    float sb = abs(xb) < R ? -xb / sqrt(max(R * R - xb * xb, floorR)) : 0.0;
-    return (sa - sb) / (2.0 * w);
-  }
+  ${CHORD_GLSL}
 
   // Value noise with its gradient. The lattice index is hashed as an integer
   // would be — small, positive coordinates, well inside float precision.
@@ -711,103 +691,6 @@ const FRAGMENT = /* glsl */ `
   }
 `
 
-// The two beams, laid over the frame.
-//
-// The cells are not drawn into the scene directly. They were, and on the
-// machine this was tuned on it cost a third of the frame rate for nothing: the
-// scene renders into a four-times-multisampled buffer, so every fragment of
-// every cell was written four times — and a crowded culture seen through a deep
-// drop is cells over cells, most of them blurred wide. None of that
-// multisampling was doing anything. Every edge in this field is antialiased in
-// the shader, from the pixel footprint, so four samples of it are four copies
-// of the same number.
-//
-// So the field is drawn once into two plain buffers — what it multiplies the
-// light by, and what it adds to it — and each is laid over the frame with a
-// single full-screen pass, which is one write per pixel however many cells are
-// stacked there. The arithmetic is exactly the arithmetic of drawing them
-// directly: multiplying the buffer's product in is multiplying each cell in.
-const COMPOSITE_VERTEX = /* glsl */ `
-  varying vec2 vUv;
-  void main() {
-    vUv = uv;
-    gl_Position = vec4(position.xy * 2.0, 0.0, 1.0);
-  }
-`
-
-const COMPOSITE_FRAGMENT = /* glsl */ `
-  uniform sampler2D uLayer;
-  uniform float uFocusDepth;
-  varying vec2 vUv;
-  void main() {
-    vec4 layer = texture2D(uLayer, vUv);
-    #ifdef MULTIPLY
-      // Where there is no cell the pixel keeps the depth it had, so the
-      // debris far behind still dissolves in the depth-of-field pass. Where
-      // there is one, the defocus has already been integrated through it, and
-      // the pass is told it is in focus so it is not blurred a second time.
-      if (all(lessThan(abs(layer.rgb - 1.0), vec3(0.002)))) discard;
-      gl_FragDepth = uFocusDepth;
-    #endif
-    gl_FragColor = vec4(layer.rgb, 1.0);
-  }
-`
-
-function absorbFrom(color, band, weak) {
-  const c = new THREE.Color(color)
-  const solve = (value) => {
-    const target = Math.min(0.999, Math.max(0.0015, value))
-    const at = (a) => (1 - band) * Math.exp(-a) + band * Math.exp(-weak * a)
-    let lo = 0
-    let hi = 1
-    while (at(hi) > target && hi < 4096) hi *= 2
-    for (let i = 0; i < 64; i++) {
-      const mid = 0.5 * (lo + hi)
-      if (at(mid) > target) lo = mid
-      else hi = mid
-    }
-    return 0.5 * (lo + hi)
-  }
-  return new THREE.Vector3(solve(c.r), solve(c.g), solve(c.b))
-}
-
-// The condenser ring's beam, in the same absolute units the field is in. Equal
-// filters give zero and the whole Rheinberg term disappears.
-function obliqueBeam(illumination) {
-  const direct = new THREE.Color(illumination?.direct ?? '#ffffff')
-  const oblique = new THREE.Color(illumination?.oblique ?? '#ffffff')
-  return new THREE.Vector3(
-    Math.max(0, oblique.r - direct.r),
-    Math.max(0, oblique.g - direct.g),
-    Math.max(0, oblique.b - direct.b),
-  )
-}
-
-function directBeam(illumination) {
-  const direct = new THREE.Color(illumination?.direct ?? '#ffffff')
-  return new THREE.Vector3(direct.r, direct.g, direct.b)
-}
-
-// The incoherent optical transfer function of a circular pupil, at a spatial
-// frequency given as a fraction of the cut-off: how much of a pattern's contrast
-// the objective passes. Zero at and beyond the cut-off.
-function transfer(nu) {
-  if (nu >= 1) return 0
-  return (2 / Math.PI) * (Math.acos(nu) - nu * Math.sqrt(1 - nu * nu))
-}
-
-// The shear of the DIC prism, as a unit vector in the image.
-function shearOf(illumination) {
-  const [x, y] = illumination?.shear ?? [1, -1]
-  const n = Math.hypot(x, y) || 1
-  return new THREE.Vector2(x / n, y / n)
-}
-
-const WHITE = new THREE.Color(1, 1, 1)
-const BLACK = new THREE.Color(0, 0, 0)
-const SAVED = new THREE.Color()
-const BUFFER = new THREE.Vector2()
-
 export default function EuglenaField({ form, focus, optics = {}, swimming = true }) {
   const { cells, tile } = useMemo(() => buildEuglena(form), [form])
   const gl = useThree((s) => s.gl)
@@ -918,61 +801,14 @@ export default function EuglenaField({ form, focus, optics = {}, swimming = true
     [material, oblique],
   )
 
-  // The two buffers and the private scenes that fill them. Half-float, so a
-  // relief highlight above one survives to be added; no depth, because every
-  // cell is composited at the plane of focus and none hides another.
+  // The two buffers and the private scenes that fill them. See createLayers in
+  // twoBeam.jsx.
   const layers = useMemo(() => {
-    const make = () =>
-      new THREE.WebGLRenderTarget(1, 1, { type: THREE.HalfFloatType, depthBuffer: false })
-    const absorbed = make()
-    const deviated = make()
-    const sceneA = new THREE.Scene()
-    const sceneB = new THREE.Scene()
     const meshA = new THREE.InstancedMesh(geometry, material, Math.max(1, cells.length))
     const meshB = new THREE.InstancedMesh(geometry, oblique, Math.max(1, cells.length))
-    for (const mesh of [meshA, meshB]) mesh.frustumCulled = false
-    sceneA.add(meshA)
-    sceneB.add(meshB)
-    const composite = (multiply, target) =>
-      new THREE.ShaderMaterial({
-        defines: multiply ? { MULTIPLY: '' } : {},
-        uniforms: {
-          uLayer: { value: target.texture },
-          uFocusDepth: { value: 0.5 },
-        },
-        vertexShader: COMPOSITE_VERTEX,
-        fragmentShader: COMPOSITE_FRAGMENT,
-        blending: multiply ? THREE.MultiplyBlending : THREE.AdditiveBlending,
-        premultipliedAlpha: multiply,
-        transparent: true,
-        depthTest: multiply,
-        depthFunc: THREE.AlwaysDepth,
-        depthWrite: multiply,
-      })
-    return {
-      absorbed,
-      deviated,
-      sceneA,
-      sceneB,
-      meshA,
-      meshB,
-      overAbsorbed: composite(true, absorbed),
-      overDeviated: composite(false, deviated),
-      quad: new THREE.PlaneGeometry(1, 1),
-    }
+    return createLayers([meshA], [meshB])
   }, [geometry, material, oblique, cells.length])
-  useEffect(
-    () => () => {
-      layers.absorbed.dispose()
-      layers.deviated.dispose()
-      layers.meshA.dispose()
-      layers.meshB.dispose()
-      layers.overAbsorbed.dispose()
-      layers.overDeviated.dispose()
-      layers.quad.dispose()
-    },
-    [layers],
-  )
+  useEffect(() => () => disposeLayers(layers), [layers])
 
   useFrame((state, delta) => {
     // The culture's own clock, which stops when swimming is switched off —
@@ -991,8 +827,6 @@ export default function EuglenaField({ form, focus, optics = {}, swimming = true
     // viewer can find.
     const scale = Math.min(1, Math.max(0.5, 1.5 / state.viewport.dpr))
     const perUm = (size.height * state.viewport.dpr * scale) / Math.max(2 * halfHeight, 1e-6)
-    const { near, far } = camera
-    const ndc = (far + near) / (far - near) - (2.0 * far * near) / ((far - near) * plane)
     for (const m of [material, oblique]) {
       const u = m.uniforms
       camera.matrixWorld.extractBasis(u.uRight.value, u.uUp.value, u.uForward.value)
@@ -1002,36 +836,10 @@ export default function EuglenaField({ form, focus, optics = {}, swimming = true
       u.uTime.value = clock.current
       u.uStage.value.set(camera.position.x, camera.position.y)
     }
-    layers.overAbsorbed.uniforms.uFocusDepth.value = ndc * 0.5 + 0.5
 
     // Fill the two buffers, at the size of the frame they will be laid over.
-    gl.getDrawingBufferSize(BUFFER).multiplyScalar(scale).round()
-    if (layers.absorbed.width !== BUFFER.x || layers.absorbed.height !== BUFFER.y) {
-      layers.absorbed.setSize(BUFFER.x, BUFFER.y)
-      layers.deviated.setSize(BUFFER.x, BUFFER.y)
-    }
-    const target = gl.getRenderTarget()
-    const autoClear = gl.autoClear
-    const alpha = gl.getClearAlpha()
-    gl.getClearColor(SAVED)
-    gl.autoClear = false
-    gl.setRenderTarget(layers.absorbed)
-    gl.setClearColor(WHITE, 1)
-    gl.clear(true, false, false)
-    gl.render(layers.sceneA, camera)
-    gl.setRenderTarget(layers.deviated)
-    gl.setClearColor(BLACK, 0)
-    gl.clear(true, false, false)
-    gl.render(layers.sceneB, camera)
-    gl.setRenderTarget(target)
-    gl.setClearColor(SAVED, alpha)
-    gl.autoClear = autoClear
+    drawLayers(gl, layers, camera, plane, scale)
   })
 
-  return (
-    <>
-      <mesh geometry={layers.quad} material={layers.overAbsorbed} frustumCulled={false} renderOrder={0} />
-      <mesh geometry={layers.quad} material={layers.overDeviated} frustumCulled={false} renderOrder={1} />
-    </>
-  )
+  return <LayerComposite layers={layers} />
 }

@@ -281,3 +281,85 @@ copied. Frames were pulled out of it and measured rather than eyeballed:
   The atlas keeps the NIES dimensions, so its cells stand a little larger in the
   frame than these do.
 
+
+## Braarudosphaera bigelowii — the motile stage and the nitroplast
+
+No PDFs are kept for this specimen; every source below is linked from its card.
+What each one settles:
+
+- **Suzuki et al. 2021**, *Front. Plant Sci.* 12:749895 (CC BY 4.0) — the motile
+  stage in culture, three strains. Genotype III cells 15–22 × 5–9 µm; two
+  flagella of equal length; a haptonema with a basal swelling, never seen to
+  coil; oval scales of three kinds in several layers; 3–6 spine-like scales at
+  both ends; "a distinctive projecting structure at the posterior end"; the
+  endosymbiont "between two plastids at the posterior of the cell", one per
+  cell and two in a dividing one. And one genotype III strain lost it in culture.
+- **Green & Leadbeater 1972**, *J. Mar. Biol. Assoc. UK* 52:469–474 — the
+  flagellate described as *Chrysochromulina parkeae*. Flagella 8–20 µm, haptonema
+  2.5–4.5 µm, spines 20–31 µm, two golden-brown lateroparietal plastids with
+  refractive droplets, dorsoventral compression, slow revolution about the long
+  axis. **Since Hagino et al. 2026 the name *parkeae* belongs to the large form
+  (genotypes IV and V)**, so these are a sister species' measurements and sit at
+  the second tier.
+- **Hagino et al. 2026**, *Phycologia* 65:159–176 — the formal split of the
+  complex: *B. bigelowii* (genotype III, pentaliths 8–10.5 µm, motile cells
+  10–20 µm), *B. parkeae* (IV, V) and *B. okadae* (I, II). Paywalled; its
+  motile-cell and scale dimensions were read from **Nannotax3**, which compiles
+  them: motile cells 9–19.2 × 3.9–8.7 µm, plate scales 0.9–2.9 µm in three kinds,
+  spines 6.4–22.5 µm.
+- **Hagino et al. 2013**, *PLoS ONE* 8:e81749 (CC BY 3.0) — UCYN-A inside the
+  calcified stage by TEM, a spheroid body about 2 µm across with up to thirty
+  lamellae; *C. parkeae* inside the *B. bigelowii* clade by 18S (99.89 %
+  similarity to genotype III), which is what joined the two stages.
+- **Coale et al. 2024**, *Science* 384:217–222 — the nitroplast: division in step
+  with the host by soft X-ray tomography, import of host-encoded proteins by
+  proteomics, strain FR-21. Paywalled; its abstract and the Dryad record
+  (doi:10.5061/dryad.2z34tmptf, CC0 — the tomograms themselves, ~0.4 GB each)
+  were read, not the paper.
+- **Cornejo-Castillo et al. 2024**, *Cell* 187:1762–1768 — host to UCYN-A
+  effective radius 2.33 ± 0.20, conserved across lineages.
+- **Li et al. 2026**, bioRxiv 2026.04.11.717942 (preprint, CC BY-NC-ND, **not
+  peer reviewed**) — FIB-SEM of three whole motile FR-21 cells: volume
+  130.5 ± 8.2 µm³, plastids 35 %, nitroplast 10.2 ± 0.5 %, an electron-dense
+  vacuole 11.5 %, nucleus 6.5 %, mitochondria 4 %; calcified cells from the sea
+  570 µm³ with four plastids and two nitroplasts; chloroplast to nitroplast
+  volume about 3.2 in both stages. Cryo-ET: nitroplasts 2–4 µm across, internal
+  membranes 10–160 nm, a four-layer cyanobacterial envelope with a 12 nm outer
+  membrane inside two host-derived layers that open by day. Culture density about
+  10⁵ cells/mL. The card that leans on the envelope finding says it is a preprint.
+- **Mak et al. 2024**, *Environ. Microbiol. Rep.* 16:e13312 (CC BY 4.0) — FR-21
+  grazes bacteria, 6–7 per cell per hour, at night; cell division mostly at night.
+- **Thompson et al. 2012**, *Science* 337:1546–1550 — the symbiosis as first
+  found, in a small open-ocean prymnesiophyte host.
+
+**What the atlas derives rather than types.** The cell's length is the one at
+which the footage's proportions give the FIB-SEM volume (14.4 µm, inside the
+species' range); the nitroplast is the sphere of 10.2 % of that volume (2.9 µm,
+inside the cryo-ET range) and comes out 0.59 of the cell's width — the footage
+shows 0.6, which is two independent measurements agreeing; the plastid plates are
+the thickness that makes them 35 %. `tools/check-braarudosphaera.mjs` holds each
+of these to its source.
+
+**No Braarudosphaera images are kept in this repository.** The reference is a
+brightfield clip of a living FR-21 cell from the Zehr Lab (UC Santa Cruz) and a
+labelled light micrograph of the same organism, both supplied by the project
+owner, consulted and not copied. Frames were pulled out of the clip and measured:
+
+- **The ground is neutral grey, (208, 209, 206).** Brightfield, no filter.
+- **The outline, at thirty-odd stations along the axis on two frames**: a
+  truncated front about half the full width, widening almost linearly to the
+  widest point at 62 % of the length, then a point behind. Length to width 2.9.
+- **The cell is pale.** Its interior transmits about (0.96, 0.91, 0.67) of the
+  field — golden, blue taken more than green — and the long path through a
+  plate at the margin is brown rather than orange, which is why the pigment
+  model's blue channel saturates early.
+- **What draws it is its edges**: a pale halo outside (+10 %), a dark rim
+  (−50 %, red-brown), a bright yellow line just inside it (+15 %, brighter than
+  the empty field), then a darker band and the pale interior with a narrow pale
+  streak down the axis — the seam between the two plates. Spines show a bright
+  core with dark flanks (+9 / −4 %), flagella a few per cent either way. Every
+  one of those has the sign of a phase object a micrometre beyond the plane of
+  focus, and the atlas draws the cell there. The halo is the first Fresnel fringe,
+  which the transport-of-intensity term cannot make and is added as such.
+- **The cell holds station**: against the debris it drifts about a micrometre a
+  second, turns now and then, and revolves slowly while the flagella beat.

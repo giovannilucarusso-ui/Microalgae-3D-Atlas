@@ -51,7 +51,7 @@ credited on it (see [Licence and credit](#licence-and-credit)).
 
 ### Add a specimen on an existing generator
 
-There are three body generators. A species whose body fits one of them needs a
+There are four body generators. A species whose body fits one of them needs a
 species file, some cards and some bibliography entries, and no rendering code.
 
 | `exterior.kind` | draws | built for |
@@ -59,6 +59,7 @@ species file, some cards and some bibliography entries, and no rendering code.
 | `helical-trichome` | one helical filament of cells | Spirulina — [`limnospira-platensis.js`](src/species/limnospira-platensis.js) |
 | `coccoid-field` | a wet-mount field of round single cells | Chlorella — [`chlorella.js`](src/species/chlorella.js) |
 | `euglenoid-field` | a field of flexible, spindle-shaped flagellates | Euglena — [`euglena-gracilis.js`](src/species/euglena-gracilis.js) |
+| `haptophyte-field` | a scaly flagellate with a flattened body, parietal plastids, flagella, haptonema and spine-scales | Braarudosphaera — [`braarudosphaera-bigelowii.js`](src/species/braarudosphaera-bigelowii.js) |
 
 1. **Start from the closest record** in [`src/species/`](src/species/) and give
    it its own `id`, `name`, `latin`, `authority` and `group`. The parameters
@@ -93,9 +94,13 @@ species file, some cards and some bibliography entries, and no rendering code.
 
 A chain-forming diatom, a dinoflagellate or a colony each needs a new generator.
 It sits beside [`Trichome.jsx`](src/Trichome.jsx),
-[`CellField.jsx`](src/CellField.jsx) and [`EuglenaField.jsx`](src/EuglenaField.jsx),
-is selected by a new `exterior.kind` in `App.jsx`, and that kind is added to the
-list in [`tools/check-atlas.mjs`](tools/check-atlas.mjs). Open an issue before you
+[`CellField.jsx`](src/CellField.jsx), [`EuglenaField.jsx`](src/EuglenaField.jsx)
+and [`HaptophyteField.jsx`](src/HaptophyteField.jsx), is selected by a new
+`exterior.kind` in `App.jsx`, and that kind is added to the list in
+[`tools/check-atlas.mjs`](tools/check-atlas.mjs). A field that integrates its
+cells along the ray can take the condenser's two beams, the pigment calibration
+and the offscreen compositing from [`src/twoBeam.jsx`](src/twoBeam.jsx) rather
+than writing them again. Open an issue before you
 start, so that two people do not build the same one.
 
 Two things to know first:

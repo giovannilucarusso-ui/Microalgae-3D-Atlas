@@ -187,6 +187,16 @@ export const BRIGHTFIELD = {
     phase: 0.26,
     maxBlur: 0.015,
     aberration: 0.0024,
+    // Axial chromatic aberration: how far each channel's plane of focus sits
+    // from green's, in micrometres. No objective brings three colours to one
+    // plane, and the part left over shows at exactly the place a phase image
+    // lives — the fringes of a slightly defocused edge — because a fringe's
+    // strength goes with the defocus. Red focusing short of green makes every
+    // dark rim a little red-brown and every fringe outside it a little cold,
+    // which is what the Braarudosphaera footage shows round every cell.
+    // Read by renderers that compute the phase term from the optical path;
+    // the others do not see it yet.
+    axialChromaUm: [-0.5, 0, 0.1],
     // Veiling glare and field falloff, both pulled back.
     //
     // They were set when this view was standing in for a microscope with a

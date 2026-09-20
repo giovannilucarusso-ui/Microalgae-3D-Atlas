@@ -109,6 +109,12 @@ export default {
       workingFraction: 0.18,
       workingUmPerS: [0, 6],
     },
+    // The words beside the panel's swimming switch, which belong to the
+    // organism: what the motion is differs from specimen to specimen.
+    motion: {
+      label: 'Swimming',
+      note: 'Each cell swims forward at a few body lengths a second, rolling about its long axis once or twice a second as it goes. Switch it off to hold the culture still and rack the focus through one cell.',
+    },
     // How far out of the plane of the slide a cell points: a Laplace spread of
     // this many radians. See orientation() in euglenoid.js.
     tiltSpread: 0.22,

@@ -209,6 +209,76 @@ export const SOURCES = {
     text: 'Pellicle strip architecture in Euglena: overlapping proteinaceous strips with interlocking ridge and groove, arising at the flagellar canal and running to the posterior; E. gracilis among the most metabolic species, strip width (groove to groove) 240 nm.',
     url: 'https://doi.org/10.1016/j.protis.2017.02.001',
   },
+  // --- Braarudosphaera bigelowii -----------------------------------------
+  // The motile stage in culture: three strains, light microscopy and TEM, and
+  // the paper that found one genotype III strain losing its endosymbiont. Its
+  // Fig. 1 caption is the source for the "distinctive projecting structure at
+  // the posterior end". CC BY 4.0.
+  r51: {
+    text: 'Suzuki, Kawachi, Tsukakoshi, Nakamura, Hagino, Inouye & Ishida (2021) Front Plant Sci 12:749895 — “Unstable relationship between Braarudosphaera bigelowii (= Chrysochromulina parkeae) and its nitrogen-fixing endosymbiont”',
+    url: 'https://doi.org/10.3389/fpls.2021.749895',
+  },
+  // The 1972 description of the flagellate as Chrysochromulina parkeae. Since
+  // the 2026 revision (r53) that name belongs to the large form, genotypes IV
+  // and V — so everything measured here is a sister species' measurement.
+  r52: {
+    text: 'Green & Leadbeater (1972) J Mar Biol Assoc UK 52:469–474 — “Chrysochromulina parkeae sp. nov. [Haptophyceae] a new species recorded from S.W. England and Norway”',
+    url: 'https://doi.org/10.1017/S002531540001883X',
+  },
+  // The formal split of the complex into B. bigelowii (genotype III),
+  // B. parkeae (IV, V) and B. okadae (I, II). Paywalled; its motile-cell and
+  // scale dimensions were read from Nannotax (r60), which compiles them.
+  r53: {
+    text: 'Hagino, Takano, Wakeman, Horiguchi, Tomioka, Ishida, Tsukakoshi, Nakamura, Turk-Kubo, Cabello et al. (2026) Phycologia 65:159–176 — “Taxonomic re-evaluation of the Braarudosphaera bigelowii species complex (Prymnesiophyceae)”',
+    url: 'https://doi.org/10.1080/00318884.2026.2660260',
+  },
+  // The nitroplast: division in step with the host by soft X-ray tomography,
+  // and import of host-encoded proteins by proteomics. Strain FR-21.
+  r54: {
+    text: 'Coale, Loconte, Turk-Kubo, Vanslembrouck, Mak, Cheung, Ekman, Chen, Hagino, Takano, Nishimura, Adachi, Le Gros, Larabell & Zehr (2024) Science 384:217–222 — “Nitrogen-fixing organelle in a marine alga”',
+    url: 'https://doi.org/10.1126/science.adk1075',
+  },
+  // The conserved size ratio between UCYN-A and its hosts, RH/RD = 2.33 ± 0.20,
+  // and the metabolic model that explains it.
+  r55: {
+    text: 'Cornejo-Castillo, Inomura, Zehr & Follows (2024) Cell 187:1762–1768 — “Metabolic trade-offs constrain the cell size ratio in a nitrogen-fixing symbiosis”',
+    url: 'https://doi.org/10.1016/j.cell.2024.02.016',
+  },
+  // FIB-SEM volumes of whole cultured motile cells (FR-21) and of calcified
+  // cells from the sea, cryo-ET of the nitroplast envelope and its diel
+  // remodelling. A preprint, and the cards that lean on it say so.
+  r56: {
+    text: 'Li, Coale, Toullec, Czajkowski, Jouneau, Dederichs, Bhickta, Raymond, Hagino, Serrão, Austin, Figueroa-Cuilan, Schwab, Cornejo-Castillo, Zehr, Decelle & Kaplan (2026) bioRxiv 2026.04.11.717942 (preprint, not peer reviewed) — “Diel remodeling and cellular integration of the nitroplast”',
+    url: 'https://pmc.ncbi.nlm.nih.gov/articles/PMC13104995/',
+  },
+  // UCYN-A found inside the calcified stage by TEM, and C. parkeae placed
+  // inside the B. bigelowii clade by 18S — the paper that joined the stages.
+  // CC BY 3.0.
+  r57: {
+    text: 'Hagino, Onuma, Kawachi & Horiguchi (2013) PLoS ONE 8:e81749 — “Discovery of an endosymbiotic nitrogen-fixing cyanobacterium UCYN-A in Braarudosphaera bigelowii (Prymnesiophyceae)”',
+    url: 'https://doi.org/10.1371/journal.pone.0081749',
+  },
+  // Grazing on bacteria by FR-21, by night. CC BY 4.0.
+  r58: {
+    text: 'Mak, Turk-Kubo, Caron, Harbeitner, Magasin, Coale, Hagino, Takano, Nishimura, Adachi & Zehr (2024) Environ Microbiol Rep 16:e13312 — “Phagotrophy in the nitrogen-fixing haptophyte Braarudosphaera bigelowii”',
+    url: 'https://doi.org/10.1111/1758-2229.13312',
+  },
+  // The symbiosis as first described, with UCYN-A in a small prymnesiophyte
+  // host from the open ocean.
+  r59: {
+    text: 'Thompson, Foster, Krupke, Carter, Musat, Vaulot, Kuypers & Zehr (2012) Science 337:1546–1550 — “Unicellular cyanobacterium symbiotic with a single-celled eukaryotic alga”',
+    url: 'https://doi.org/10.1126/science.1222700',
+  },
+  // The nannoplankton taxonomy database's pages for the species and its
+  // motile (S-cell) stage, compiling Hagino et al. 2026: motile cells
+  // 9–19.2 × 3.9–8.7 µm, flagella and haptonema at the anterior end, the
+  // three scale types with their sizes, spines 6.4–22.5 µm, and the table of
+  // forms, genotypes and names. Where r53 could not be read, this is where its
+  // numbers were read.
+  r60: {
+    text: 'Young, Bown & Lees (eds.) Nannotax3 — Braarudosphaera bigelowii, species and motile (S-cell) stage, compiling Hagino et al. (2026)',
+    url: 'https://www.mikrotax.org/Nannotax3/index.php?id=20107',
+  },
   r43: {
     text: 'Deschoenmaeker, Facchini, Cabrera Pino, Bayon-Vicente, Sachdeva, Flammang & Wattiez (2016) J Struct Biol 196:385–393 — “Nitrogen depletion in Arthrospira sp. PCC 8005, an ultrastructural point of view”',
     url: 'https://doi.org/10.1016/j.jsb.2016.08.007',
