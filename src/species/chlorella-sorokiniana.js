@@ -8,7 +8,7 @@
 // can carry is the size distribution, and it is carried at the same field of
 // view as its sibling so that the difference is the organism's and not the
 // framing's.
-import { CHLORELLA_CARDS, CHLORELLA_GENUS, CHLORELLA_TIERS } from './chlorella.js'
+import { CHLORELLA_CARDS, CHLORELLA_GENUS, CHLORELLA_LINEAGE, CHLORELLA_TIERS } from './chlorella.js'
 
 export default {
   id: 'chlorella-sorokiniana',
@@ -16,6 +16,8 @@ export default {
   latin: 'Chlorella sorokiniana',
   authority: 'Shihira & Krauss 1965',
   group: CHLORELLA_GENUS.group,
+  lineage: CHLORELLA_LINEAGE,
+  tagline: 'The one grown when a culture has to be fast and warm: about 9.2 doublings a day at 39 °C. Its cells run smaller than C. vulgaris’s.',
   structures: CHLORELLA_CARDS,
   tiers: CHLORELLA_TIERS,
 

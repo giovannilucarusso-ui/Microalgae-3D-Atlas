@@ -35,6 +35,9 @@ export const CHLORELLA_TIERS = {
   model: 'From the genus or a close relative',
 }
 
+// Where the genus sits on the landing page's tree (src/tree.js).
+export const CHLORELLA_LINEAGE = { domain: 'Eukaryota', supergroup: 'Archaeplastida', phylum: 'Chlorophyta' }
+
 export const CHLORELLA_GENUS = {
   group: 'Chlorophyta · Trebouxiophyceae',
   // Bock, Krienitz & Pröschold (2011), emended diagnosis of the genus, quoted:

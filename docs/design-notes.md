@@ -202,6 +202,48 @@ mounts, sizes its canvas, lists its structures and reaches the network for
 nothing. That last check is the point: anything the bundle still tries to fetch
 is a dependency the recipient discovers and you do not.
 
+The bundle carries the atlas's fonts inside it, as data URIs in its stylesheet,
+and is built in Vite's `share` mode, which is how the microscope knows its link
+back to the atlas has to point at the published site: the recipient has no
+landing page beside the file.
+
+## The landing page, and the type
+
+The site opens on a tree of life, `index.html`, and the microscope moved to
+`microscope.html#/<species-id>`. What was decided, and what was drawn and set
+aside on the way (September 2026):
+
+- **The tree is radial.** Four layouts were drawn against the real records: a
+  cladogram with a column per rank, the radial, a collapsible key, and an
+  illustrated plate with each specimen as a round slide. The radial reads as the
+  atlas's image and was chosen. Its costs are known: a leaf has room for a name
+  and a tier bar and no more, so the rest goes in the card beside it; past 25 or
+  30 specimens the rim will crowd; and on a phone it is a picture, so the
+  specimens are listed again under it as links.
+- **Higher taxa are lettered along the ray that leads into them.** Horizontal
+  labels at the nodes collided with a branch in every placement tried. A phylum
+  sits on the same ray as its supergroup, so the two go on opposite sides of the
+  line, and so do the two domains, which share the diameter through the root.
+  Genera are not lettered at all: the leaves already carry the genus name.
+- **The endosymbioses are numbered arrows with a key.** Four sentences dropped
+  across a tree land on its labels whatever the layout; a number does not, and
+  the key has room for each sentence and its sources.
+- **The empty slots stay.** A lineage with no specimen is drawn as a dashed slot
+  that leads to the proposal form. The gaps are the atlas's to-do list.
+- **The counts are read from the records when the site is built**
+  (`tools/atlas-index.mjs`), because the cards sit behind three.js and the landing
+  page should not load a megabyte to count table rows.
+- **The type is "Oculare"** (`src/fonts/oculare.css`): Sofia Sans Extra Condensed
+  for titles in capitals, Sofia Sans Semi Condensed italic for every Latin name,
+  Martian Mono for ranks, labels and figures, Sofia Sans for running text — the
+  language engraved on an objective. It was chosen over three other identities
+  set on the same radial tree: a lab notebook (Recursive), a herbarium label
+  (Brygada 1918 with Familjen Grotesk) and a star chart (Bodoni Moda with Josefin
+  Sans). The faces generated pages reach for by default — Inter, Space Grotesk,
+  Instrument Serif, Fraunces, Playfair, DM Sans, IBM Plex, Geist — were ruled out
+  before any of them was tried, because the atlas should not look like one of
+  those pages. The fonts are served from the site, not from a font service.
+
 ## Stack
 
 Vite · React 19 · Three.js · React Three Fiber · drei

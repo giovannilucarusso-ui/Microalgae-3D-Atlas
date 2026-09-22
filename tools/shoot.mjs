@@ -47,7 +47,8 @@ async function findChrome() {
   )
 }
 const PORT = process.env.PORT ?? process.env.VITE_PORT ?? 5173
-const URL = process.env.SHOT_URL ?? `http://localhost:${PORT}`
+// The microscope, not the landing page the site now opens on.
+const URL = process.env.SHOT_URL ?? `http://localhost:${PORT}/microscope.html`
 const OUT = 'docs/shots'
 const SIZE = { width: 1400, height: 900 }
 

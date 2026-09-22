@@ -3,11 +3,63 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌀</text></svg>" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Microalgae 3D Atlas — Spirulina (Limnospira platensis)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Microalgae 3D Atlas</title>
+    <meta name="description" content="An interactive 3D cell atlas of microalgae and cyanobacteria that says where every number came from." />
+    <link rel="stylesheet" href="/src/fonts/oculare.css" />
   </head>
   <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
+    <main class="landing">
+      <header class="hero">
+        <p class="eyebrow">Microalgae 3D Atlas<span id="version"></span></p>
+        <h1>Microalgae, cell by cell, and where every number came from.</h1>
+        <p class="lede">
+          An interactive 3D atlas of microalgae and cyanobacteria. Every dimension on every card is
+          dated, sourced and marked at one of three confidence tiers. Pick an organism on the tree to
+          open it at the microscope.
+        </p>
+        <ul class="legend">
+          <li><i class="swatch tier-species"></i>Measured in the species</li>
+          <li><i class="swatch tier-model"></i>Borrowed from a relative</li>
+          <li><i class="swatch tier-unverified"></i>Not yet established</li>
+        </ul>
+      </header>
+
+      <section class="atlas" aria-label="The tree of the atlas">
+        <div class="tree-col">
+          <div class="tree-tools">
+            <label class="switch" for="endo">
+              <input type="checkbox" id="endo" />
+              <span>Where the plastids came from</span>
+            </label>
+          </div>
+          <div id="tree" class="tree"></div>
+          <div id="endo-key"></div>
+          <p id="schematic" class="schematic"></p>
+        </div>
+        <aside id="card" class="card" aria-live="polite"></aside>
+      </section>
+
+      <section class="roster-wrap" aria-labelledby="roster-title">
+        <h2 id="roster-title" class="label">Every specimen</h2>
+        <ol id="roster" class="roster"></ol>
+      </section>
+
+      <footer class="foot">
+        <span>Cite: <a href="https://doi.org/10.5281/zenodo.22738179">doi:10.5281/zenodo.22738179</a></span>
+        <a href="https://github.com/giovannilucarusso-ui/Microalgae-3D-Atlas/issues/new?template=propose-organism.yml">Propose an organism</a>
+        <a href="https://github.com/giovannilucarusso-ui/Microalgae-3D-Atlas/blob/main/CONTRIBUTING.md">Contribute</a>
+        <a href="https://github.com/giovannilucarusso-ui/Microalgae-3D-Atlas">Source</a>
+        <span>Code MIT · content CC BY 4.0 · fonts SIL OFL</span>
+      </footer>
+    </main>
+
+    <noscript>
+      <p class="noscript">
+        The tree needs JavaScript. The specimens themselves are at the
+        <a href="microscope.html">microscope</a>, which needs it too.
+      </p>
+    </noscript>
+    <script type="module" src="/src/landing/main.js"></script>
   </body>
 </html>

@@ -65,10 +65,15 @@ species file, some cards and some bibliography entries, and no rendering code.
    it its own `id`, `name`, `latin`, `authority` and `group`. The parameters
    under `exterior` belong to the generator, and the record you copied explains
    each of them.
-2. **Name your tiers.** `tiers.species` and `tiers.model` are the two labels that
+2. **Place it on the tree.** `lineage: { domain, supergroup, phylum }` says
+   where the landing page hangs it (a bacterium has no supergroup), and
+   `tagline` is the one sentence it is introduced with there. If the tree in
+   [`src/tree.js`](src/tree.js) shows your phylum as an empty slot, the specimen
+   fills it; if the phylum is not there at all, add it to `LINEAGES`.
+3. **Name your tiers.** `tiers.species` and `tiers.model` are the two labels that
    have to name an organism. Chlorella's are *Measured in Chlorella* and *From
    the genus or a close relative*. The third label is the same everywhere.
-3. **Write the cards**, one for each structure a reader can pick:
+4. **Write the cards**, one for each structure a reader can pick:
 
    | field | |
    |---|---|
@@ -84,10 +89,10 @@ species file, some cards and some bibliography entries, and no rendering code.
 
    List every card in one of the `exterior.groups`. The groups are the panel's
    table of contents and the order of the tour.
-4. **Add the sources** to `SOURCES` in `src/structures.js`, under the next free
+5. **Add the sources** to `SOURCES` in `src/structures.js`, under the next free
    `rNN`. Use a DOI link wherever one exists.
-5. **Register the record** in [`src/species/index.js`](src/species/index.js).
-6. **Check it and look at it.** Run `npm run check`, then `npm run dev`, and open
+6. **Register the record** in [`src/species/index.js`](src/species/index.js).
+7. **Check it and look at it.** Run `npm run check`, then `npm run dev`, and open
    the pull request with a screenshot.
 
 ### Draw a new body plan
@@ -97,7 +102,9 @@ It sits beside [`Trichome.jsx`](src/Trichome.jsx),
 [`CellField.jsx`](src/CellField.jsx), [`EuglenaField.jsx`](src/EuglenaField.jsx)
 and [`HaptophyteField.jsx`](src/HaptophyteField.jsx), is selected by a new
 `exterior.kind` in `App.jsx`, and that kind is added to the list in
-[`tools/check-atlas.mjs`](tools/check-atlas.mjs). A field that integrates its
+[`tools/check-atlas.mjs`](tools/check-atlas.mjs). Give it a disc on the landing
+page too, in `organism()` in [`src/landing/main.js`](src/landing/main.js); until
+then it is shown as an empty ring. A field that integrates its
 cells along the ray can take the condenser's two beams, the pigment calibration
 and the offscreen compositing from [`src/twoBeam.jsx`](src/twoBeam.jsx) rather
 than writing them again. Open an issue before you

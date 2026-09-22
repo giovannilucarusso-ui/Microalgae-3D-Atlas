@@ -1,0 +1,750 @@
+/* The landing page. It wears the microscope's colours — the same dark glass,
+   the same tier colours as the evidence bar on a card — so that opening a
+   specimen reads as walking up to the instrument, not as leaving the site.
+   The type is the atlas's own, from src/fonts/oculare.css. */
+
+:root {
+  color-scheme: dark;
+  --ground: #040d10;
+  --glass: rgba(10, 30, 34, 0.72);
+  --ink: #d8eeea;
+  --muted: #88a8a2;
+  --faint: #58756f;
+  --line: #173236;
+  --branch: #4b9b90;
+  --hot: #c4fff0;
+  --accent: #7ff0d8;
+  --on-accent: #041012;
+  --field: #e4eee9;
+  --hover: rgba(127, 240, 216, 0.07);
+
+  /* The three tiers, as the microscope's evidence bar draws them. */
+  --tier-species: #d8e6df;
+  --tier-model: #7cb2e0;
+  --tier-unverified: #9aa8a4;
+
+  /* One colour per endosymbiosis, round the circle of the page's palette. */
+  --endo-primary: #56d2f0;
+  --endo-green: #98e07a;
+  --endo-red: #ff8a78;
+  --endo-nitro: #ffcd5a;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+}
+
+html {
+  background: var(--ground);
+}
+
+body {
+  min-height: 100vh;
+  background: radial-gradient(ellipse 70% 60% at 50% 55%, #0c2a2e 0%, #071a1f 45%, var(--ground) 100%) var(--ground);
+  color: var(--ink);
+  font-family: var(--font-text);
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+a {
+  color: inherit;
+}
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+.leaf:focus-visible {
+  outline: 2px solid var(--hot);
+  outline-offset: 2px;
+}
+
+.latin {
+  font-family: var(--font-latin);
+  font-style: italic;
+  font-weight: 500;
+}
+
+.label,
+.eyebrow,
+.rank,
+.facts dt,
+.ring-label {
+  font-family: var(--font-mono);
+  font-stretch: var(--mono-stretch);
+  font-weight: 400;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.num {
+  font-family: var(--font-mono);
+  font-stretch: var(--mono-stretch);
+  font-variant-numeric: tabular-nums;
+}
+
+.landing {
+  max-width: 1360px;
+  margin: 0 auto;
+  padding-block: 52px 36px;
+  padding-inline: clamp(16px, 4vw, 56px);
+}
+
+/* ── Hero ──────────────────────────────────────────────────────────────── */
+
+.hero {
+  max-width: 860px;
+  margin: 0 auto 30px;
+  text-align: center;
+}
+
+.eyebrow {
+  font-size: 10px;
+  color: var(--accent);
+  margin-bottom: 14px;
+}
+
+.hero h1 {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(42px, 5.6vw, 66px);
+  line-height: 0.93;
+  letter-spacing: 0.005em;
+  text-transform: uppercase;
+  text-wrap: balance;
+}
+
+.lede {
+  max-width: 62ch;
+  margin: 16px auto 0;
+  font-size: 16px;
+  line-height: 1.58;
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px 20px;
+  margin-top: 18px;
+  padding: 0;
+  list-style: none;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.swatch {
+  display: inline-block;
+  width: 16px;
+  height: 5px;
+  margin-right: 7px;
+  border-radius: 99px;
+  vertical-align: middle;
+}
+
+.swatch.tier-species { background: var(--tier-species); }
+.swatch.tier-model { background: var(--tier-model); }
+.swatch.tier-unverified { background: var(--tier-unverified); }
+
+/* ── The tree and the card ────────────────────────────────────────────── */
+
+.atlas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 28px;
+  align-items: flex-start;
+}
+
+.tree-col {
+  flex: 1 1 560px;
+  min-width: 0;
+}
+
+.tree-tools {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--muted);
+  cursor: pointer;
+  user-select: none;
+}
+
+.switch input {
+  width: 15px;
+  height: 15px;
+  accent-color: var(--accent);
+}
+
+.tree svg {
+  display: block;
+  width: 100%;
+  max-width: 980px;
+  height: auto;
+  margin: 0 auto;
+  overflow: visible;
+}
+
+.card {
+  flex: 0 1 330px;
+  min-width: min(280px, 100%);
+  position: sticky;
+  top: 24px;
+  padding: 20px 20px 22px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--glass);
+  backdrop-filter: blur(6px);
+}
+
+/* ── SVG ───────────────────────────────────────────────────────────────── */
+
+.sector-bacteria { fill: rgba(76, 200, 230, 0.06); }
+.sector-eukaryota { fill: rgba(143, 216, 114, 0.035); }
+
+.ring {
+  fill: none;
+  stroke: var(--line);
+  stroke-dasharray: 2 7;
+}
+
+.ring-label {
+  fill: var(--faint);
+  font-size: 10px;
+}
+
+.edge {
+  fill: none;
+  stroke: var(--branch);
+  stroke-width: 2;
+  stroke-linecap: round;
+  transition: stroke 0.15s, opacity 0.15s;
+}
+
+.edge.missing {
+  stroke-dasharray: 3 6;
+  opacity: 0.55;
+}
+
+.edge.on {
+  stroke: var(--accent);
+  stroke-width: 3.2;
+  opacity: 1;
+}
+
+.edge.hot {
+  stroke: var(--hot);
+  stroke-width: 3.2;
+  opacity: 1;
+}
+
+/* With the endosymbioses drawn over it, the tree steps back. */
+.endo-on .edges,
+.endo-on .dot {
+  opacity: 0.55;
+}
+
+.node {
+  cursor: pointer;
+}
+
+.dot {
+  fill: var(--ground);
+  stroke: var(--branch);
+  stroke-width: 1.6;
+}
+
+.node.lit .dot { stroke: var(--hot); }
+.node.selected .dot { stroke: var(--hot); fill: var(--hot); }
+
+.taxon {
+  fill: var(--muted);
+  font-family: var(--font-mono);
+  font-stretch: var(--mono-stretch);
+  font-size: 13.5px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  paint-order: stroke;
+  stroke: var(--ground);
+  stroke-width: 6px;
+  stroke-linejoin: round;
+}
+
+.taxon.missing { fill: var(--faint); }
+.node:hover .taxon { fill: var(--hot); }
+
+.leaf {
+  cursor: pointer;
+  outline: none;
+}
+
+.leaf .hit {
+  fill: transparent;
+  transition: fill 0.15s;
+}
+
+.leaf:hover .hit,
+.leaf:focus-visible .hit,
+.leaf.selected .hit {
+  fill: var(--hover);
+}
+
+.disc { fill: var(--field); }
+
+.disc-ring {
+  fill: none;
+  stroke: var(--branch);
+  stroke-width: 1.5;
+}
+
+.leaf:hover .disc-ring,
+.leaf:focus-visible .disc-ring,
+.leaf.selected .disc-ring {
+  stroke: var(--hot);
+  stroke-width: 2.4;
+}
+
+.leaf-name {
+  fill: var(--ink);
+  font-size: 23.5px;
+}
+
+.leaf-name .common {
+  fill: var(--accent);
+  font-family: var(--font-mono);
+  font-stretch: var(--mono-stretch);
+  font-size: 10px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.bar-species { fill: var(--tier-species); background: var(--tier-species); }
+.bar-model { fill: var(--tier-model); background: var(--tier-model); }
+.bar-unverified { fill: var(--tier-unverified); background: var(--tier-unverified); }
+
+.slot-ring {
+  fill: none;
+  stroke: var(--faint);
+  stroke-dasharray: 3 3;
+  stroke-width: 1.3;
+}
+
+.slot-plus {
+  stroke: var(--faint);
+  stroke-width: 1.3;
+}
+
+.slot-name {
+  fill: var(--faint);
+  font-size: 19px;
+}
+
+.slot-note { font-size: 14px; }
+
+.slot:hover .slot-name,
+.slot.selected .slot-name { fill: var(--muted); }
+
+.slot:hover .slot-ring,
+.slot.selected .slot-ring { stroke: var(--hot); }
+
+.arrow {
+  fill: none;
+  stroke-width: 3;
+  stroke-dasharray: 7 5;
+  stroke-linecap: round;
+}
+
+.arrow-primary { stroke: var(--endo-primary); }
+.arrow-green { stroke: var(--endo-green); }
+.arrow-red { stroke: var(--endo-red); }
+.arrow-nitro { stroke: var(--endo-nitro); }
+.head-primary { fill: var(--endo-primary); }
+.head-green { fill: var(--endo-green); }
+.head-red { fill: var(--endo-red); }
+.head-nitro { fill: var(--endo-nitro); }
+
+.badge circle {
+  stroke: var(--ground);
+  stroke-width: 2.5;
+}
+
+.badge text {
+  fill: var(--ground);
+  font-family: var(--font-mono);
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.badge-primary circle, .num.badge-primary { fill: var(--endo-primary); background: var(--endo-primary); }
+.badge-green circle, .num.badge-green { fill: var(--endo-green); background: var(--endo-green); }
+.badge-red circle, .num.badge-red { fill: var(--endo-red); background: var(--endo-red); }
+.badge-nitro circle, .num.badge-nitro { fill: var(--endo-nitro); background: var(--endo-nitro); }
+
+.ink-primary { color: var(--endo-primary); }
+.ink-green { color: var(--endo-green); }
+.ink-red { color: var(--endo-red); }
+.ink-nitro { color: var(--endo-nitro); }
+
+/* ── Under the tree ───────────────────────────────────────────────────── */
+
+#endo-key {
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+}
+
+.label {
+  font-size: 10px;
+  color: var(--faint);
+}
+
+.endo-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px 26px;
+  margin-top: 10px;
+  padding: 0;
+  list-style: none;
+  font-size: 13.5px;
+  line-height: 1.45;
+  color: var(--muted);
+}
+
+.endo-list li {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.endo-list .num {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  margin-top: 1px;
+  border-radius: 50%;
+  color: var(--ground);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.endo-list b { font-weight: 600; }
+
+.cites,
+.schematic {
+  color: var(--faint);
+}
+
+.cites a,
+.schematic a {
+  color: var(--muted);
+  text-decoration-color: var(--faint);
+  text-underline-offset: 2px;
+}
+
+.schematic {
+  max-width: 78ch;
+  margin-top: 16px;
+  font-size: 12.5px;
+  line-height: 1.55;
+}
+
+/* ── The card ─────────────────────────────────────────────────────────── */
+
+.crumbs {
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.crumbs i { color: var(--ink); }
+
+.rank {
+  font-size: 10px;
+  color: var(--faint);
+}
+
+.card h2 {
+  margin-top: 6px;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 30px;
+  line-height: 0.98;
+  text-transform: uppercase;
+  text-wrap: balance;
+}
+
+.card h2.latin {
+  font-family: var(--font-latin);
+  font-style: italic;
+  font-weight: 600;
+  font-size: 25px;
+  line-height: 1.1;
+  text-transform: none;
+}
+
+.card-disc { margin: 12px 0 6px; }
+
+.common-name {
+  font-family: var(--font-mono);
+  font-stretch: var(--mono-stretch);
+  font-size: 10px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.authority {
+  margin-top: 3px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.tagline {
+  margin-top: 11px;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.note {
+  margin-top: 10px;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--muted);
+}
+
+.facts {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 5px 14px;
+  margin-top: 14px;
+  font-size: 13px;
+}
+
+.facts dt {
+  padding-top: 2px;
+  font-size: 9.5px;
+  color: var(--faint);
+}
+
+.bar {
+  display: flex;
+  gap: 2px;
+  width: 120px;
+  height: 5px;
+  overflow: hidden;
+  border-radius: 99px;
+}
+
+.bar > span { border-radius: 99px; }
+
+.tiers { margin-top: 16px; }
+.tiers .bar { width: 100%; height: 6px; }
+
+.tiers ul {
+  display: grid;
+  gap: 3px;
+  margin-top: 8px;
+  padding: 0;
+  list-style: none;
+  font-size: 12.5px;
+  color: var(--muted);
+}
+
+.tiers li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tiers .swatch {
+  width: 9px;
+  height: 9px;
+  margin: 0;
+  border-radius: 50%;
+}
+
+.tiers b {
+  margin-left: auto;
+  color: var(--ink);
+  font-weight: 500;
+}
+
+.history {
+  margin-top: 16px;
+  padding-left: 10px;
+  border-left: 2px solid var(--line);
+}
+
+.history ul {
+  display: grid;
+  gap: 4px;
+  margin-top: 6px;
+  padding: 0;
+  list-style: none;
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--muted);
+}
+
+.history b { font-weight: 600; }
+
+.open {
+  display: block;
+  margin-top: 18px;
+  padding: 12px;
+  border-radius: 9px;
+  background: var(--accent);
+  color: var(--on-accent);
+  font-family: var(--font-mono);
+  font-stretch: var(--mono-stretch);
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  text-align: center;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+.open:hover { background: var(--hot); }
+
+.open.ghost {
+  background: transparent;
+  border: 1px solid var(--accent);
+  color: var(--accent);
+}
+
+.open.ghost:hover {
+  background: var(--hover);
+}
+
+.pick {
+  display: grid;
+  gap: 6px;
+  margin-top: 12px;
+  padding: 0;
+  list-style: none;
+}
+
+.pick button {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  font-size: 15px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.pick button:hover { border-color: var(--accent); }
+
+/* ── The list ─────────────────────────────────────────────────────────── */
+/* A phone gets the specimens as a list of links as well as the tree, which
+   is a picture at that width; a wider screen keeps the list for screen
+   readers only. */
+
+.roster-wrap {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.roster {
+  display: grid;
+  gap: 8px;
+  margin-top: 10px;
+  padding: 0;
+  list-style: none;
+}
+
+.roster a {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--glass);
+  text-decoration: none;
+}
+
+.roster a:hover { border-color: var(--accent); }
+
+.roster svg { flex: 0 0 auto; }
+
+.roster-text {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
+.roster-name .latin { font-size: 17px; }
+.roster-tag { font-size: 13px; line-height: 1.4; color: var(--muted); }
+.roster .bar { margin-top: 4px; }
+
+/* ── Footer ───────────────────────────────────────────────────────────── */
+
+.foot {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 22px;
+  margin-top: 44px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.foot a {
+  color: var(--muted);
+  text-underline-offset: 2px;
+}
+
+.foot a:hover { color: var(--ink); }
+
+.noscript {
+  max-width: 60ch;
+  margin: 0 auto 40px;
+  padding-inline: 16px;
+  color: var(--muted);
+  text-align: center;
+}
+
+@media (max-width: 900px) {
+  .card {
+    position: static;
+    flex-basis: 100%;
+  }
+}
+
+@media (max-width: 700px) {
+  .endo-list { grid-template-columns: 1fr; }
+
+  .roster-wrap {
+    position: static;
+    width: auto;
+    height: auto;
+    overflow: visible;
+    clip-path: none;
+    white-space: normal;
+    margin-top: 32px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; }
+}

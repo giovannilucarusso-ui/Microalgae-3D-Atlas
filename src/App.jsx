@@ -26,9 +26,23 @@ import {
 } from './science.js'
 // The version on the panel is the one the release is tagged with. It used to be
 // typed in by hand, and it still said v0.6 when the next release was cut.
-import { version } from '../package.json'
+import { homepage, version } from '../package.json'
 
 const BACKGROUND = '#04100f'
+
+// Which specimen the address names. The landing page's tree opens the
+// microscope as microscope.html#/<species-id>, and the address then follows the
+// specimen on the stage, so what is on screen can be linked to and cited.
+function speciesFromHash() {
+  const id = decodeURIComponent(window.location.hash.replace(/^#\/?/, ''))
+  return SPECIES.some((s) => s.id === id) ? id : null
+}
+
+// The way back to the atlas: the landing page beside this one. The one-file
+// bundle (`npm run share`, built in the `share` mode) travels alone and has no
+// page beside it, so it points at the published atlas instead.
+const SHARED = import.meta.env.MODE === 'share'
+const ATLAS_HOME = SHARED ? homepage : './'
 
 // One probe at load. Without WebGL2 there is nothing to draw, and a black
 // rectangle with no explanation is the least useful thing to show for it.
@@ -116,7 +130,7 @@ const RENDER_2D =
 
 export default function App() {
   const [view, setView] = useState('filament')
-  const [speciesId, setSpeciesId] = useState(DEFAULT_SPECIES)
+  const [speciesId, setSpeciesId] = useState(() => speciesFromHash() ?? DEFAULT_SPECIES)
   const [gliding, setGliding] = useState(true)
   const [showLabels, setShowLabels] = useState(true)
   const [selected, setSelected] = useState(null)
@@ -316,6 +330,30 @@ export default function App() {
     setSpeciesId(id)
     setFocus(0)
   }
+
+  // The address and the tab's title follow the specimen. The address is
+  // replaced rather than pushed: the back button leaves the microscope for the
+  // page that opened it, instead of walking back through every specimen tried.
+  useEffect(() => {
+    const hash = `#/${speciesId}`
+    if (window.location.hash !== hash) window.history.replaceState(null, '', hash)
+    const genus = species.latin.split(/\s+/)[0]
+    document.title =
+      (species.name === genus ? species.latin : `${species.name} · ${species.latin}`) + ' — Microalgae 3D Atlas'
+  }, [speciesId, species])
+
+  // And an address typed or pasted in changes the specimen. One that names no
+  // specimen is put back, so the address never claims something the stage
+  // is not showing.
+  useEffect(() => {
+    function onHash() {
+      const id = speciesFromHash()
+      if (!id) window.history.replaceState(null, '', `#/${speciesId}`)
+      else if (id !== speciesId) switchSpecies(id)
+    }
+    window.addEventListener('hashchange', onHash)
+    return () => window.removeEventListener('hashchange', onHash)
+  })
 
   // Picking a structure that has been switched off brings it back — otherwise
   // the camera flies to something invisible.
@@ -540,7 +578,16 @@ export default function App() {
             scrolls. On a short window the whole panel used to scroll as one
             block and the title was the first thing to leave. */}
         <div className="panel-head">
-          <p className="eyebrow">Interactive 3D atlas · prototype v{version}</p>
+          <p className="eyebrow">
+            <a
+              className="home"
+              href={ATLAS_HOME}
+              {...(SHARED ? { target: '_blank', rel: 'noopener' } : {})}
+            >
+              ← Microalgae 3D Atlas
+            </a>{' '}
+            · prototype v{version}
+          </p>
           <h1>{species.name}</h1>
           <p className="species">
             <i>{species.latin}</i>

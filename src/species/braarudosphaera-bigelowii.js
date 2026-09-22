@@ -34,6 +34,8 @@ export default {
   latin: 'Braarudosphaera bigelowii',
   authority: '(Gran & Braarud) Deflandre 1947',
   group: 'Haptophyta · Prymnesiophyceae',
+  lineage: { domain: 'Eukaryota', supergroup: 'Haptista', phylum: 'Haptophyta' },
+  tagline: 'The alga that carries the nitroplast, the first nitrogen-fixing organelle known in any eukaryote. Drawn as its motile stage.',
   structures: BRAARUDOSPHAERA_CARDS,
   // The second tier is the sister species B. parkeae — the original 1972
   // description of the motile stage — and the haptophytes at large.

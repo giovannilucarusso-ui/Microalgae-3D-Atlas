@@ -1,6 +1,6 @@
 // Chlorella vulgaris Beijerinck 1890 — the type species of the genus, and the
 // one every "chlorella" on a supplement label is nominally referring to.
-import { CHLORELLA_CARDS, CHLORELLA_GENUS, CHLORELLA_TIERS } from './chlorella.js'
+import { CHLORELLA_CARDS, CHLORELLA_GENUS, CHLORELLA_LINEAGE, CHLORELLA_TIERS } from './chlorella.js'
 
 export default {
   id: 'chlorella-vulgaris',
@@ -8,6 +8,8 @@ export default {
   latin: 'Chlorella vulgaris',
   authority: 'Beijerinck 1890',
   group: CHLORELLA_GENUS.group,
+  lineage: CHLORELLA_LINEAGE,
+  tagline: 'The type species of the genus, and the one every “chlorella” on a supplement label is nominally referring to.',
   structures: CHLORELLA_CARDS,
   tiers: CHLORELLA_TIERS,
 

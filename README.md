@@ -90,6 +90,14 @@ npm install
 npm run dev
 ```
 
+The site has two pages. The landing page, `index.html`, draws the atlas as a
+tree of life: every specimen is a leaf, and the lineages the atlas does not
+cover yet are empty slots that lead to the proposal form. It is built from the
+species records and [`src/tree.js`](src/tree.js), so a new specimen appears on
+it without the page being touched. The microscope, `microscope.html`, opens any
+specimen by its id, as in `microscope.html#/euglena-gracilis`, and the address
+follows the specimen on the stage, so what is on screen can be linked to.
+
 To produce a copy you can send to someone — one self-contained HTML file, no
 server, no npm, no network, a double-click is enough:
 
@@ -124,6 +132,8 @@ figures from Nowicka-Krawczyk et al. (2019) are included under their own CC BY
 - **Anatomical data, card text, documentation and rendered images** — CC BY 4.0,
   in [`LICENSE-CONTENT`](LICENSE-CONTENT). Attribution required; the data is the
   part that took the reading rather than the typing.
+- **Fonts** — Sofia Sans and Martian Mono, under the SIL Open Font License 1.1,
+  each with its licence in [`src/fonts/`](src/fonts/).
 
 ## Citing it
 

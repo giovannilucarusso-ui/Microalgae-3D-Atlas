@@ -24,6 +24,10 @@ export default {
   name: 'Spirulina',
   latin: 'Limnospira (Arthrospira) platensis',
   group: 'Cyanobacteria',
+  // Where it sits on the landing page's tree (src/tree.js). A bacterium has no
+  // supergroup, so the key is left out rather than set to something empty.
+  lineage: { domain: 'Bacteria', phylum: 'Cyanobacteria' },
+  tagline: 'The cyanobacterium behind the commercial product: a helical filament in a wet mount, and one cell opened up down to the nanometre.',
   // The cards. They stay in structures.js, where they sit beside the shared
   // bibliography every species draws on; the record points at them, the way it
   // points at science.js for the measurements.

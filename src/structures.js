@@ -279,6 +279,25 @@ export const SOURCES = {
     text: 'Young, Bown & Lees (eds.) Nannotax3 — Braarudosphaera bigelowii, species and motile (S-cell) stage, compiling Hagino et al. (2026)',
     url: 'https://www.mikrotax.org/Nannotax3/index.php?id=20107',
   },
+  // The four below are cited by the tree on the landing page (src/tree.js)
+  // rather than by a card: where the plastids came from, and how the eukaryotes
+  // are grouped.
+  r61: {
+    text: 'Keeling (2010) Philos Trans R Soc B 365:729–748 — “The endosymbiotic origin, diversification and fate of plastids”',
+    url: 'https://doi.org/10.1098/rstb.2009.0103',
+  },
+  r62: {
+    text: 'Burki, Roger, Brown & Simpson (2020) Trends Ecol Evol 35:43–55 — “The new tree of eukaryotes”',
+    url: 'https://doi.org/10.1016/j.tree.2019.08.008',
+  },
+  r63: {
+    text: 'Stiller, Schreiber, Yue, Guo, Ding & Huang (2014) Nat Commun 5:5764 — “The evolution of photosynthesis in chromist algae through serial endosymbioses”',
+    url: 'https://doi.org/10.1038/ncomms6764',
+  },
+  r64: {
+    text: 'Cornejo-Castillo, Cabello, Salazar, Sánchez-Baracaldo, Lima-Mendez, Hingamp, Alberti, Sunagawa, Bork, de Vargas, Raes, Bowler, Wincker, Zehr, Gasol, Massana & Acinas (2016) Nat Commun 7:11071 — “Cyanobacterial symbionts diverged in the late Cretaceous towards lineage-specific nitrogen fixation factories in single-celled phytoplankton”',
+    url: 'https://doi.org/10.1038/ncomms11071',
+  },
   r43: {
     text: 'Deschoenmaeker, Facchini, Cabrera Pino, Bayon-Vicente, Sachdeva, Flammang & Wattiez (2016) J Struct Biol 196:385–393 — “Nitrogen depletion in Arthrospira sp. PCC 8005, an ultrastructural point of view”',
     url: 'https://doi.org/10.1016/j.jsb.2016.08.007',

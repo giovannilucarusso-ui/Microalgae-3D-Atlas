@@ -4,6 +4,11 @@
   "license": "MIT",
   "version": "0.7.0",
   "description": "Interactive 3D cell atlas of microalgae and cyanobacteria, sourced and confidence-tiered. First specimen: Spirulina (Limnospira platensis).",
+  "homepage": "https://giovannilucarusso-ui.github.io/Microalgae-3D-Atlas/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/giovannilucarusso-ui/Microalgae-3D-Atlas"
+  },
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -12,7 +17,7 @@
     "check": "node tools/check-science.mjs && node tools/check-atlas.mjs && node tools/check-braarudosphaera.mjs && node tools/check-shaders.mjs",
     "shots": "node tools/shoot.mjs",
     "lamellae": "node tools/lamellae.mjs",
-    "share": "vite build && node tools/bundle-single.mjs",
+    "share": "vite build --mode share && node tools/bundle-single.mjs",
     "share:check": "node tools/check-bundle.mjs share/spirulina-3d.html"
   },
   "dependencies": {

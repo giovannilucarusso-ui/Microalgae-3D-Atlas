@@ -9,6 +9,7 @@
 // up, not printed. Run with `npm run check`.
 import { SPECIES } from '../src/species/index.js'
 import { CONFIDENCE, SOURCES } from '../src/structures.js'
+import { ENDOSYMBIOSES, LINEAGES, RANKS, TREE_SOURCES } from '../src/tree.js'
 
 let failures = 0
 let checks = 0
@@ -31,6 +32,16 @@ const isDirection = (v) =>
   Array.isArray(v) && v.length === 3 && v.every(Number.isFinite) && v.some((n) => n !== 0)
 
 const TIERS = Object.keys(CONFIDENCE)
+
+// Whether a species' lineage is a path the landing page's tree has: a domain,
+// then a supergroup where the domain has them, then a phylum.
+function onTree(lineage) {
+  const domain = LINEAGES.find((l) => l.name === lineage?.domain)
+  const under = lineage?.supergroup
+    ? domain?.children?.find((l) => l.rank === 'supergroup' && l.name === lineage.supergroup)
+    : domain
+  return Boolean(under?.children?.some((l) => l.rank === 'phylum' && l.name === lineage?.phylum))
+}
 
 // The body generators App.jsx dispatches on. An exterior kind it does not know
 // is not an error there: it falls through to the trichome, which is why it is
@@ -58,6 +69,14 @@ for (const species of SPECIES) {
 
   check('it has a name, a Latin name and a group',
     [species.name, species.latin, species.group].every(isText))
+  // Where it hangs on the landing page's tree, and the sentence it is
+  // introduced with there. A lineage the tree does not have would leave the
+  // specimen off the page altogether, without an error anywhere.
+  check('it names its lineage — at least a domain and a phylum',
+    isText(species.lineage?.domain) && isText(species.lineage?.phylum))
+  check('its lineage is a path on the tree in src/tree.js', onTree(species.lineage),
+    `${[species.lineage?.domain, species.lineage?.supergroup, species.lineage?.phylum].filter(Boolean).join(' › ')} — add it to LINEAGES`)
+  check('it has a tagline for the landing page', isText(species.tagline))
   check('it has cards', cards.length > 0)
   // confidenceFor() reads these two and no others: the third label, "not yet
   // established", names no organism and stays the same across the atlas.
@@ -113,6 +132,48 @@ for (const species of SPECIES) {
   every('every source a card cites is in the bibliography', cards,
     (c) => (c.sources ?? []).every((id) => SOURCES[id]))
 }
+
+// ── The tree ───────────────────────────────────────────────────────────────
+//
+// src/tree.js, as the landing page draws it. The page gives every lineage and
+// genus an id made from its name, and finds the ends of an endosymbiosis by
+// name, so a name used twice or misspelt is a node drawn in the wrong place or
+// an arrow drawn nowhere.
+
+console.log('tree')
+const lineages = []
+;(function walk(list) {
+  for (const l of list ?? []) {
+    lineages.push(l)
+    walk(l.children)
+  }
+})(LINEAGES)
+const slug = (s) => s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
+const genera = [...new Set(SPECIES.map((s) => s.latin.split(/\s+/)[0]))]
+every('every lineage has a name and a rank the tree draws', lineages.map((l) => [l.name ?? '?', l]),
+  (l) => isText(l.name) && RANKS.includes(l.rank))
+every('every "more" slot has a name and a note', lineages.filter((l) => l.more).map((l) => [l.name, l]),
+  (l) => isText(l.more.name) && isText(l.more.note))
+const treeIds = [
+  ...lineages.map((l) => slug(l.name)),
+  ...lineages.filter((l) => l.more).map((l) => slug(l.more.name)),
+  ...genera.map(slug),
+  ...SPECIES.map((s) => s.id),
+]
+check('every lineage, genus and species has an id of its own on the landing page',
+  new Set(treeIds).size === treeIds.length, treeIds.filter((id, i) => treeIds.indexOf(id) !== i).join(', '))
+
+// The landing page colours the four; a fifth kind would be drawn in none.
+const ENDO_KINDS = ['primary', 'green', 'red', 'nitro']
+const ends = new Set([...lineages.map((l) => l.name), ...genera])
+const endos = ENDOSYMBIOSES.map((e) => [`${e.from} → ${e.to}`, e])
+every('every endosymbiosis runs between lineages on the tree or genera in the atlas', endos,
+  (e) => ends.has(e.from) && ends.has(e.to))
+every(`every endosymbiosis is a kind the landing page colours — ${ENDO_KINDS.join(', ')}`, endos,
+  (e) => ENDO_KINDS.includes(e.kind))
+every('every endosymbiosis says what it is and cites the bibliography', endos,
+  (e) => isText(e.label) && isText(e.note) && e.sources?.length > 0 && e.sources.every((id) => SOURCES[id]))
+check('every source the tree itself rests on is in the bibliography', TREE_SOURCES.every((id) => SOURCES[id]))
 
 // ── The bibliography ───────────────────────────────────────────────────────
 

@@ -33,6 +33,8 @@ export default {
   latin: 'Euglena gracilis',
   authority: 'Klebs 1883',
   group: 'Euglenozoa · Euglenida',
+  lineage: { domain: 'Eukaryota', supergroup: 'Discoba', phylum: 'Euglenozoa' },
+  tagline: 'A flexible, swimming spindle with a red eyespot, and a food: grown commercially in Japan for its paramylon.',
   structures: EUGLENA_CARDS,
   // Unlike the Chlorella pair, most of what is drawn here *is* measured in this
   // species — it is a heavily studied laboratory organism. The second tier is

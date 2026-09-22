@@ -4,7 +4,11 @@
 // `<script type="module" src=...>` from file://. Inlined, there is nothing to
 // fetch, so a double-click is enough.
 //
-//   npm run share      → vite build, then share/spirulina-3d.html
+//   npm run share      → vite build --mode share, then share/spirulina-3d.html
+//
+// The `share` mode is how the microscope knows it will travel alone: its link
+// back to the atlas then points at the published site instead of at a landing
+// page beside it that the recipient does not have.
 //
 // The build is part of the script rather than a step to remember. This reads
 // `dist/` and never writes it, so run on its own it will happily bundle
@@ -26,6 +30,21 @@ const OUT_ARTIFACT = join(OUT_DIR, 'spirulina-3d.artifact.html')
 
 const read = (href) => readFile(join(DIST, href.replace(/^\//, '')), 'utf8')
 
+// The fonts are files the stylesheet points at, and a file that travels alone
+// cannot point at anything: each goes into the sheet as a data: URI. About a
+// quarter of a megabyte on a bundle already several times that, which is the
+// price of the recipient seeing the atlas in its own type.
+const MIME = { woff2: 'font/woff2', woff: 'font/woff', ttf: 'font/ttf', png: 'image/png', svg: 'image/svg+xml' }
+async function inlineAssets(sheet) {
+  const refs = [...new Set([...sheet.matchAll(/url\(\s*(['"]?)(\/?assets\/[^'")]+)\1\s*\)/g)].map((m) => m[2]))]
+  for (const ref of refs) {
+    const bytes = await readFile(join(DIST, ref.replace(/^\//, '')))
+    const type = MIME[ref.split('.').pop()] ?? 'application/octet-stream'
+    sheet = sheet.replaceAll(ref, `data:${type};base64,${bytes.toString('base64')}`)
+  }
+  return sheet
+}
+
 // A `</script>` anywhere inside the bundle would close the tag early. It can
 // only ever appear inside a string literal, where the escape is a no-op to JS.
 const safeJs = (js) => js.replace(/<\/script/gi, '<\/script')
@@ -36,7 +55,9 @@ const safeCss = (css) => css.replace(/<\/style/gi, '<\/style')
 // in as a function, or the bundle rewrites itself with copies of its own tag.
 const sub = (haystack, tag, replacement) => haystack.replace(tag, () => replacement)
 
-let html = await readFile(join(DIST, 'index.html'), 'utf8')
+// The microscope's page, not the site's front door: index.html is the landing
+// page, which links out to other pages and has nothing to show on its own.
+let html = await readFile(join(DIST, 'microscope.html'), 'utf8')
 
 // Preloads point at files that are about to stop existing.
 html = html.replace(/\s*<link[^>]+rel="modulepreload"[^>]*>/gi, '')
@@ -53,7 +74,7 @@ for (const [tag, href] of scripts) {
 
 const styles = [...html.matchAll(/<link\b[^>]*\bhref="(\/assets\/[^"]+\.css)"[^>]*>/gi)]
 for (const [tag, href] of styles) {
-  const sheet = safeCss(await read(href))
+  const sheet = safeCss(await inlineAssets(await read(href)))
   css.push(sheet)
   html = sub(html, tag, `<style>\n${sheet}\n</style>`)
 }
