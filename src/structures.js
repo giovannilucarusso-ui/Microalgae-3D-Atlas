@@ -384,6 +384,18 @@ export const SOURCES = {
     text: 'von der Heyde, Srinivasan, Birwa, von der Heyde, Höhn, Goldstein & Hallmann (2025) Proc Natl Acad Sci USA — “Spatiotemporal distribution of the glycoprotein pherophorin II reveals stochastic geometry of the growing ECM of Volvox carteri”',
     url: 'https://doi.org/10.1073/pnas.2425759122',
   },
+  // Colonies turning at about a radian a second at 150 µm radius, more slowly
+  // when larger, and a small density excess over water — V. carteri.
+  r80: {
+    text: 'Drescher, Leptos, Tuval, Ishikawa, Pedley & Goldstein (2009) Phys Rev Lett 102:168101 — “Dancing Volvox: hydrodynamic bound states of swimming algae”',
+    url: 'https://doi.org/10.1103/PhysRevLett.102.168101',
+  },
+  // The volvocine algae reviewed, with the history: van Leeuwenhoek's "great
+  // round particles" of 1700, and Linnaeus naming the genus in 1758.
+  r81: {
+    text: 'Herron (2016) Mol Ecol 25 — “Origins of multicellular complexity: Volvox and the volvocine algae”',
+    url: 'https://doi.org/10.1111/mec.13551',
+  },
   r43: {
     text: 'Deschoenmaeker, Facchini, Cabrera Pino, Bayon-Vicente, Sachdeva, Flammang & Wattiez (2016) J Struct Biol 196:385–393 — “Nitrogen depletion in Arthrospira sp. PCC 8005, an ultrastructural point of view”',
     url: 'https://doi.org/10.1016/j.jsb.2016.08.007',

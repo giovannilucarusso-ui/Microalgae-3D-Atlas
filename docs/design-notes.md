@@ -237,27 +237,25 @@ decided, and what was tried and set aside:
   is a singularity; three boxes of different widths spread it into a shoulder.
 - **The drop is packed, not dropped.** Colonies placed one at a time where they fit
   jam with nearly half the frame still empty, and the ones that failed to fit were
-  the large ones, which tilted the drop towards the young. The footage's frame is
-  28 % empty with its colonies nearly touching. So every colony is made first —
+  the large ones, which tilted the drop towards the young. A crowded drop has its
+  colonies nearly touching. So every colony is made first —
   stage, size, cells, brood — scattered, and pushed apart until no two share any
   water; when the block is too full for that, the smallest colony in a clash is
   taken out and the rest relaxed again.
-- **Darkfield, and the colour is the light's path.** The footage's ground is
-  (3.4, 16, 20.5) and its specks are exactly neutral, so its ring is white and
-  the green is the colonies' own: light a cell scatters has crossed its own
-  chloroplast on the way out. That one idea gives the haze of a colony's faces,
-  the brighter rim, and the young as the most saturated green in the field
-  (their light crosses more plastid), and the drawn frame lands within a few
-  levels of the footage on its ground, its haze, the share of empty ground and the
-  share of bright pixels. The rim over the middle comes out at 2.6–2.7 times
-  over the ground against the footage's 2.4–2.5, without being tuned for it: it
-  depends only on the layer's thickness against the ball.
-- **Aureus, at the species' size.** The footage is labelled only "Volvox". Its
-  young — four to ten showing, in one half of each colony — are V. aureus's and
-  not V. carteri's sixteen; its colonies, on its own bar, are a quarter of V.
-  aureus's mature size. The atlas keeps the species' size, as it kept Euglena's,
-  and frames the drop so a colony spans the share of the frame it spans in the
-  footage. The card "Which Volvox is this?" leaves the question open.
+- **Darkfield, and the colour is the light's path.** Under the darkfield
+  filter the ring's light is white and the green is the colonies' own: light a
+  cell scatters has crossed its own chloroplast on the way out. That one idea
+  gives the haze of a colony's faces, the brighter rim, and the young as the
+  most saturated green in the field (their light crosses more plastid), while a
+  colourless mote comes out white. The rim over the middle comes out at about
+  2.6 times over the ground without being tuned for it: it depends only on the
+  layer's thickness against the ball.
+- **Aureus, not carteri.** V. carteri is the laboratory's Volvox and lends the
+  cards most of what is known about how a Volvox works, at the second tier; V.
+  aureus is the one a pond gives, the most commonly reported species, with four
+  to twelve young a colony where V. carteri has sixteen. What its description
+  does not give — how crowded the drop is, which stage its colonies are at, the
+  framing — is stated on the record as a choice and sits at the third tier.
 - **`half` is a reserved word in GLSL.** A local variable of that name does not
   compile, the whole field draws nothing, and the only sign is a shader log in
   the console — which is why `npm run shots` reports console errors.

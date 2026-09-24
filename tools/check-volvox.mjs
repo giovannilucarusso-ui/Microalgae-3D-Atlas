@@ -1,5 +1,5 @@
 // Assertions over the Volvox drop as drawn — the numbers its cards state, held
-// to the description of the species and to what the footage measured.
+// to the description of the species and to the choices the record declares.
 //
 // The drop is built, not typed: every colony's size, cell count and brood are
 // drawn from the record, and the drop is packed until no two colonies share any
@@ -35,7 +35,7 @@ const { colonies, tile } = buildColonies(x)
 const mature = colonies.filter((c) => c.stage !== 'young')
 const all = (list, ok) => list.every(ok)
 
-console.log('volvox-aureus — the drawn drop against the species and the footage')
+console.log('volvox-aureus — the drawn drop against the species and its record')
 
 // ── The lattice ────────────────────────────────────────────────────────────
 //
@@ -120,11 +120,10 @@ check('no two offspring of one colony overlap',
 check('an offspring’s cells do not overlap either',
   all(kids.filter((o) => o.layer), (o) => o.layer.cellUm <= o.layer.spacingUm * 1.1 + 1e-9))
 
-// ── Against the footage ────────────────────────────────────────────────────
+// ── The choices the record declares ────────────────────────────────────────
 
-// The footage: in twelve colonies with young showing, ten carry juveniles a
-// sixth to a fifth of the parent's diameter and one a third; one colony
-// carries small bright bodies; one shows none.
+// The embryos card: juveniles are drawn early in their expansion, most of
+// them, and none past release; four colonies in five carry them.
 {
   const ratios = colonies
     .filter((c) => c.stage === 'juveniles')
@@ -135,16 +134,18 @@ check('an offspring’s cells do not overlap either',
     within(median, 1 / 6, 1 / 4), f(median, 3))
   check('and none is much more than a third', ratios[ratios.length - 1] <= 0.4, f(ratios[ratios.length - 1], 3))
   const share = (s) => colonies.filter((c) => c.stage === s).length / colonies.length
-  check('four colonies in five carry juveniles, as in the footage', within(share('juveniles'), 0.7, 0.9), f(share('juveniles'), 2))
+  check('about four colonies in five carry juveniles, as the embryos card says', within(share('juveniles'), 0.7, 0.9), f(share('juveniles'), 2))
 }
-// The framing: a mature colony spans about 0.43 of the frame's height.
+// The framing the record states: a mature colony spans about four tenths of
+// the frame's height.
 {
   const mean = mature.reduce((s, c) => s + 2 * c.radiusUm, 0) / mature.length
-  check('a colony spans about four tenths of the frame, as in the footage',
+  check('a colony spans about four tenths of the frame',
     within(mean / x.fieldUm, 0.38, 0.48), f(mean / x.fieldUm, 2))
 }
-// The crowding: 28 % of the footage's frame is empty ground. Counted here over
-// frames of the drawn size and the widest desktop aspect, across the block.
+// The crowding the record states: about a quarter of the frame is empty
+// ground. Counted over frames of the drawn size and the widest desktop aspect,
+// across the block.
 {
   const H = x.fieldUm
   const W = H * 1.75
@@ -169,7 +170,7 @@ check('an offspring’s cells do not overlap either',
       }
     }
   }
-  check('about the footage’s 28 % of the frame is empty ground', within(empty / n, 0.2, 0.36), f(empty / n, 2))
+  check('about a quarter of the frame is empty ground', within(empty / n, 0.18, 0.34), f(empty / n, 2))
 }
 // Packed, not piled: no two colonies share any water, and every one fits
 // between the slide and the coverslip.
@@ -196,21 +197,14 @@ check('an offspring’s cells do not overlap either',
 
 // ── Movement ───────────────────────────────────────────────────────────────
 
-// The footage: a turn every ten to twenty seconds, anticlockwise on screen.
-check('every colony turns once every 10–20 s', all(colonies, (c) => within((2 * Math.PI) / Math.abs(c.spinRate), 10, 20.5)))
+// r80: about a radian a second at 150 µm radius, slower when larger; these are
+// larger, and the swimming card says a turn every 8–18 s.
+check('every colony turns once every 8–18 s, slower than 1 rad/s',
+  all(colonies, (c) => within((2 * Math.PI) / Math.abs(c.spinRate), 7.8, 18) && Math.abs(c.spinRate) < 1))
 check('all in the same sense', new Set(colonies.map((c) => Math.sign(c.spinRate))).size === 1)
 // r72: colonies swim upwards — the anterior pole tipped towards the objective.
 check('every colony’s anterior points up, towards the objective',
   all(colonies, (c) => colonyPose(c, 0, newPose()).axis.z > Math.cos(x.axis.tiltRad + 0.1)))
-{
-  // Anticlockwise on screen, with the anterior towards the lens: a point on the
-  // colony moves from +x towards +y. Checked on a colony turned to face the
-  // lens exactly.
-  const c = { ...colonies[0], axis: [0, 0, 1], wobble: 0, spin: 0, spinRate: Math.abs(colonies[0].spinRate) * Math.sign(x.spin.sense) }
-  const a = colonyPose(c, 0, newPose()).e1.clone()
-  const b = colonyPose(c, 0.5, newPose()).e1
-  check('and anticlockwise on screen, as in the footage', a.x * b.y - a.y * b.x > 0)
-}
 
 console.log()
 if (failures) {

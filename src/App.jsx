@@ -487,6 +487,7 @@ export default function App() {
                 focus={focus}
                 optics={config.optics}
                 swimming={gliding}
+                onSelect={select}
               />
             ) : config.form.kind === 'coccoid-field' ? (
               RENDER_2D ? (
@@ -636,6 +637,67 @@ export default function App() {
           {config.caption}
         </p>
 
+        {/* The structures come straight after the caption: they are what a
+            reader came for, and below the instrument's controls they sat under
+            the fold on an ordinary laptop screen, where nobody found them. */}
+        <div className="control list">
+          <p className="list-title">
+            <span>Structures</span>
+            <span className="stepper">
+              <button onClick={() => step(-1)} aria-label="Previous structure">‹</button>
+              <button onClick={() => step(1)} aria-label="Next structure">›</button>
+            </span>
+          </p>
+
+          {config.groups.map((group) => {
+            const allOff = group.ids.every((id) => hidden.has(id))
+            return (
+              <div className="group" key={group.title}>
+                <p className="group-title">
+                  <span>{group.title}</span>
+                  {view === 'cell' && (
+                    <button
+                      className={allOff ? 'peek off' : 'peek'}
+                      onClick={() => toggleLayer(group.ids)}
+                      aria-label={`${allOff ? 'Show' : 'Hide'} ${group.title}`}
+                      title={`${allOff ? 'Show' : 'Hide'} this layer`}
+                    >
+                      <Eye off={allOff} />
+                    </button>
+                  )}
+                </p>
+                {group.ids.map((id) => (
+                  <button
+                    key={id}
+                    className={[
+                      'item',
+                      selected === id ? 'active' : '',
+                      hidden.has(id) ? 'muted' : '',
+                    ]
+                      .filter(Boolean)
+                      .join(' ')}
+                    onClick={() => select(id)}
+                  >
+                    <span className="dot" style={{ background: SWATCH[id] ?? '#7fd4b8' }} />
+                    {species.structures[id].name}
+                  </button>
+                ))}
+              </div>
+            )
+          })}
+
+          {(selected || hidden.size > 0) && (
+            <button
+              className="clear"
+              onClick={() => {
+                setSelected(null)
+                setHidden(new Set())
+              }}
+            >
+              {selected ? 'clear focus' : 'show every layer'}
+            </button>
+          )}
+        </div>
         {config.fineFocus && (
           <div className="control">
             {/* The fine focus belongs to the objective, not to the organism: any
@@ -732,64 +794,6 @@ export default function App() {
 
 
 
-        <div className="control list">
-          <p className="list-title">
-            <span>Structures</span>
-            <span className="stepper">
-              <button onClick={() => step(-1)} aria-label="Previous structure">‹</button>
-              <button onClick={() => step(1)} aria-label="Next structure">›</button>
-            </span>
-          </p>
-
-          {config.groups.map((group) => {
-            const allOff = group.ids.every((id) => hidden.has(id))
-            return (
-              <div className="group" key={group.title}>
-                <p className="group-title">
-                  <span>{group.title}</span>
-                  {view === 'cell' && (
-                    <button
-                      className={allOff ? 'peek off' : 'peek'}
-                      onClick={() => toggleLayer(group.ids)}
-                      aria-label={`${allOff ? 'Show' : 'Hide'} ${group.title}`}
-                      title={`${allOff ? 'Show' : 'Hide'} this layer`}
-                    >
-                      <Eye off={allOff} />
-                    </button>
-                  )}
-                </p>
-                {group.ids.map((id) => (
-                  <button
-                    key={id}
-                    className={[
-                      'item',
-                      selected === id ? 'active' : '',
-                      hidden.has(id) ? 'muted' : '',
-                    ]
-                      .filter(Boolean)
-                      .join(' ')}
-                    onClick={() => select(id)}
-                  >
-                    <span className="dot" style={{ background: SWATCH[id] ?? '#7fd4b8' }} />
-                    {species.structures[id].name}
-                  </button>
-                ))}
-              </div>
-            )
-          })}
-
-          {(selected || hidden.size > 0) && (
-            <button
-              className="clear"
-              onClick={() => {
-                setSelected(null)
-                setHidden(new Set())
-              }}
-            >
-              {selected ? 'clear focus' : 'show every layer'}
-            </button>
-          )}
-        </div>
         {view === 'filament' && helical && (
           <div className="control">
             <div className="readout">

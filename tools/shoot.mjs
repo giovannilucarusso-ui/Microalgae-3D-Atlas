@@ -276,6 +276,9 @@ async function main() {
           embryos: 'Embryos and juveniles',
           swimming: 'Swimming and turning',
           germSoma: 'Germ and soma',
+          organism: 'Volvox aureus',
+          habitat: 'Where it lives',
+          sexual: 'Sexual reproduction',
         }
         const item = [...document.querySelectorAll('.item')].find((b) =>
           b.textContent.includes(names[id] ?? id),

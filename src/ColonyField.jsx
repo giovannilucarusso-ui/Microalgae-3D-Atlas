@@ -17,7 +17,7 @@
 // same arithmetic the other fields use for a body, averaged over the blur. It is
 // what makes a colony bright at its rim and dim in its middle, because a ray at
 // the rim runs along the layer for tens of micrometres and a ray through the
-// middle crosses it twice, briefly. The footage's profile says exactly that.
+// middle crosses it twice, briefly.
 //
 // Near focus the cells are resolved, and there the shader finds them. The cells
 // sit on a spherical Fibonacci lattice (volvocine.js), whose nearest point to
@@ -44,12 +44,11 @@
 // condenser's blacked-out disc; everything bright is light from the ring that
 // something on the slide bent into the objective. A somatic cell scatters from
 // its whole body and more strongly from one small refractile point inside it —
-// the footage's rim is a string of bright points, not of discs — and what it
+// so a colony's rim is a string of bright points, not of discs — and what it
 // scatters has crossed its own chloroplast on the way out, so it is green. A
-// mote of bacterium or detritus scatters every colour alike, so it is white, as
-// the footage's are. An offspring colony is denser than its parent's layer and
-// its light has crossed more plastid, so it is the most saturated green in the
-// field, as the footage's are.
+// mote of bacterium or detritus scatters every colour alike, so it is white. An
+// offspring colony is denser than its parent's layer and its light has crossed
+// more plastid, so it is the most saturated green in the field.
 import { useEffect, useMemo, useRef } from 'react'
 import * as THREE from 'three'
 import { useFrame, useThree } from '@react-three/fiber'
@@ -66,9 +65,10 @@ import {
 
 // What each kind of body scatters, as an effective cross-section: the share of
 // the ring's light a body bends into the objective. None of these has been
-// measured for Volvox; each is set at the strength that returns the footage's
-// levels over its own ground — the haze of a colony's out-of-focus faces, its
-// rim, its young and its motes — and the cards say so. What is not chosen is
+// measured for Volvox; each is set so the haze of a colony's out-of-focus
+// faces, its rim, its young and its motes sit in a darkfield image the way
+// they do in darkfield micrographs of the genus — dim haze, bright rim, young
+// brightest — and the cards say the strengths are not established. What is not chosen is
 // the geometry they multiply: the count, the spacing, the layer and the defocus
 // are the organism's and the objective's.
 const SCATTER = {
@@ -76,7 +76,7 @@ const SCATTER = {
   // cell of an embryo or a juvenile. A cell scatters for its size, so a
   // juvenile's small cells scatter less each — and there are so many to the
   // square micrometre that a juvenile is still the brightest thing in a
-  // colony, as the footage's are.
+  // colony.
   perArea: 0.23,
   // A cell's refractile point, which in focus is under a pixel across and is
   // what makes the rim sparkle. For a somatic cell six micrometres across;
@@ -373,7 +373,35 @@ function instancesOf(colonies, motes) {
 const P = new THREE.Vector3()
 const Q = new THREE.Vector3()
 
-export default function ColonyField({ form, focus, optics = {}, swimming = true }) {
+// Which card a click on the stage opens: the young a colony carries if the
+// click lands on one, the colony if it lands anywhere else inside it, nothing
+// on empty ground. Read off the poses as they were on the last frame, in the
+// plane of the slide — a click is aimed at what is seen, and the stage is seen
+// straight down the optical axis.
+function pickAt(point, colonies, poses) {
+  let best = null
+  colonies.forEach((colony, ci) => {
+    const pose = poses[ci]
+    const d = Math.hypot(point.x - pose.centre.x, point.y - pose.centre.y)
+    if (d > colony.radiusUm) return
+    // Nearest centre wins where colonies overlap on screen.
+    if (best && best.d <= d) return
+    let card = 'colony'
+    for (const child of colony.offspring) {
+      const [x, y, z] = child.at
+      const cx = pose.centre.x + pose.e1.x * x + pose.e2.x * y + pose.axis.x * z
+      const cy = pose.centre.y + pose.e1.y * x + pose.e2.y * y + pose.axis.y * z
+      if (Math.hypot(point.x - cx, point.y - cy) <= child.radiusUm) {
+        card = child.kind === 'gonidium' ? 'gonidia' : 'embryos'
+        break
+      }
+    }
+    best = { d, card }
+  })
+  return best?.card ?? null
+}
+
+export default function ColonyField({ form, focus, optics = {}, swimming = true, onSelect }) {
   const { colonies, motes, tile } = useMemo(() => buildColonies(form), [form])
   const gl = useThree((s) => s.gl)
   const camera = useThree((s) => s.camera)
@@ -537,5 +565,32 @@ export default function ColonyField({ form, focus, optics = {}, swimming = true 
     drawLayers(gl, layers, camera, plane, scale)
   })
 
-  return <LayerComposite layers={layers} />
+  const [across, down] = tile
+  return (
+    <>
+      <LayerComposite layers={layers} />
+      {/* The stage's own plane, invisible, so a click has something to land
+          on: the colonies are drawn into buffers off to the side and are not
+          in the scene to be hit. */}
+      <mesh
+        position={[0, 0, 0]}
+        renderOrder={-1}
+        onClick={(e) => {
+          const card = pickAt(e.point, colonies, poses)
+          if (!card) return
+          e.stopPropagation()
+          onSelect?.(card)
+        }}
+        onPointerMove={(e) => {
+          document.body.style.cursor = pickAt(e.point, colonies, poses) ? 'pointer' : 'auto'
+        }}
+        onPointerOut={() => {
+          document.body.style.cursor = 'auto'
+        }}
+      >
+        <planeGeometry args={[across * 3, down * 3]} />
+        <meshBasicMaterial transparent opacity={0} depthWrite={false} colorWrite={false} />
+      </mesh>
+    </>
+  )
 }

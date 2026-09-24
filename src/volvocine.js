@@ -29,10 +29,10 @@
 //
 // Everything that could be taken from the species description is (Smith 1944,
 // r65): the colony's size, its cell count, the number, size and place of its
-// gonidia, and the size an embryo reaches before it is released. What the
-// footage settles is what a description cannot: which stage the colonies on a
-// slide are at, how crowded the drop is, and how fast a colony turns.
-// tools/check-volvox.mjs holds the drawn population to both.
+// gonidia, and the size an embryo reaches before it is released. What a
+// description cannot give — which stage the colonies on a slide are at, how
+// crowded the drop is — is stated on the record as a choice.
+// tools/check-volvox.mjs holds the drawn population to the description.
 import * as THREE from 'three'
 import { seededRandom } from './science.js'
 
@@ -135,8 +135,8 @@ export function tileOf(form) {
   return form.tileUm ?? [form.fieldUm * 5.4, form.fieldUm * 2.8]
 }
 
-// Which stage a colony is at, from the mix the footage shows. See `offspring` on
-// the record.
+// Which stage a colony is at, from the mix the record states. See `offspring`
+// on the record.
 function stageOf(rnd, mix) {
   const x = rnd()
   if (x < mix.juveniles) return 'juveniles'
@@ -263,8 +263,8 @@ function makeColony(rnd, form, home, stage) {
     // pole tipped towards the objective, which is up, by a spread of angles.
     axis: directionNear(rnd, [0, 0, 1], form.axis.tiltRad),
     spin: rnd() * Math.PI * 2,
-    // One turn every ten to twenty seconds, read off the footage, and all in
-    // one sense — the flagella of every colony beat at the same slant.
+    // Turning about its axis, at the rate the record gives, and all in one
+    // sense — the flagella of every colony beat at the same slant.
     spinRate: form.spin.sense * lerp(form.spin.radPerS, rnd()),
     // Wandering in a crowded drop rather than crossing it.
     wander: [lerp(form.drift.wanderUm, rnd()), lerp(form.drift.wanderUm, rnd()), lerp(form.drift.wanderUm, rnd()) * 0.3],
@@ -356,9 +356,9 @@ export function buildColonies(form) {
   const margin = 4 * form.drift.wanderUm[1] + 4
   const colonies = []
   // The colony the operator has centred and focused on — through its middle,
-  // where its rim is sharp, as the footage's are. A reproductive one, carrying
-  // young, because that is what nearly every colony in the footage is. It
-  // counts towards the density like any other; only its place is chosen.
+  // where its rim is sharp. A reproductive one, carrying young, like most of
+  // the drop. It counts towards the density like any other; only its place is
+  // chosen.
   if (form.centred) {
     const centred = makeColony(rnd, form, [0, 0, 0], 'juveniles')
     centred.wander = centred.wander.map((w) => w * 0.3)
@@ -366,10 +366,10 @@ export function buildColonies(form) {
   }
   // Every colony is made first — its stage, its size, its cells — and then
   // the drop is packed. Dropped in one at a time where they fit, spheres jam
-  // with nearly half the plane still empty, and the footage's drop is far
-  // closer than that: 28 % of its frame is empty ground, its colonies nearly
-  // touching, the small ones in the gaps between the large, the way colonies
-  // settle against each other in a crowded drop. So they are scattered
+  // with nearly half the plane still empty, and a crowded drop is far closer
+  // than that: its colonies nearly touching, the small ones in the gaps
+  // between the large, the way colonies settle against each other. So they
+  // are scattered
   // anywhere and then pushed apart until no two share any water — the
   // relaxation that packs a box of unequal spheres — and whatever cannot be
   // made to fit is left out, smallest first.
@@ -383,8 +383,8 @@ export function buildColonies(form) {
 
   // The motes: bacteria and fine detritus. In darkfield they are the
   // brightest things in an empty field, because a colourless particle
-  // scatters every colour alike — which is how the footage's specks can be
-  // told from pieces of colony: they are white.
+  // scatters every colour alike — which is how they can be told from pieces
+  // of colony: they are white.
   const motes = []
   const m = form.motes
   const count = Math.round(tile[0] * tile[1] * depth * m.perMl * 1e-12)
