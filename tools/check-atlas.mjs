@@ -46,7 +46,7 @@ function onTree(lineage) {
 // The body generators App.jsx dispatches on. An exterior kind it does not know
 // is not an error there: it falls through to the trichome, which is why it is
 // one here. A new generator adds its kind to this list.
-const EXTERIOR_KINDS = ['helical-trichome', 'coccoid-field', 'euglenoid-field', 'haptophyte-field']
+const EXTERIOR_KINDS = ['helical-trichome', 'coccoid-field', 'euglenoid-field', 'haptophyte-field', 'colony-field']
 // App.jsx draws every interior with CellSection, whatever the kind says. The
 // list is here so that a second interior arrives with its own kind and its own
 // dispatch, rather than quietly being given Spirulina's cell.

@@ -257,7 +257,9 @@ async function main() {
           pyrenoid: 'Pyrenoid',
           granules: 'Refractile granules',
           autospores: 'Autospores',
-          identification: 'Which species is this?',
+          // Chlorella's "Which species is this?" and Volvox's "Which Volvox
+          // is this?" share an id, so the name is the part they share.
+          identification: 'Which ',
           // Braarudosphaera's motile stage.
           nitroplast: 'Nitroplast',
           plastids: 'Plastids',
@@ -266,6 +268,14 @@ async function main() {
           scales: 'Scales and spines',
           diel: 'Day and night',
           lifeCycle: 'Two stages, several species',
+          // Volvox aureus.
+          colony: 'The colony',
+          somaticCells: 'Somatic cells',
+          matrix: 'Matrix',
+          gonidia: 'Gonidia',
+          embryos: 'Embryos and juveniles',
+          swimming: 'Swimming and turning',
+          germSoma: 'Germ and soma',
         }
         const item = [...document.querySelectorAll('.item')].find((b) =>
           b.textContent.includes(names[id] ?? id),

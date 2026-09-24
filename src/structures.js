@@ -298,6 +298,92 @@ export const SOURCES = {
     text: 'Cornejo-Castillo, Cabello, Salazar, Sánchez-Baracaldo, Lima-Mendez, Hingamp, Alberti, Sunagawa, Bork, de Vargas, Raes, Bowler, Wincker, Zehr, Gasol, Massana & Acinas (2016) Nat Commun 7:11071 — “Cyanobacterial symbionts diverged in the late Cretaceous towards lineage-specific nitrogen fixation factories in single-celled phytoplankton”',
     url: 'https://doi.org/10.1038/ncomms11071',
   },
+  // --- Volvox aureus ------------------------------------------------------
+  // The comparative monograph of the genus, and the source of the species'
+  // light-microscope figures: colonies 400–600 µm, 500–3200 cells in one layer,
+  // four to twelve gonidia of 18–22 µm in the posterior half, embryos released
+  // at 150–175 µm. The paper itself could not be opened from where this was
+  // written; its figures were read from compilations that cite it, and
+  // docs/fonti/README.md says so.
+  r65: {
+    text: 'Smith (1944) Trans Am Microsc Soc 63:265–310 — “A comparative study of the species of Volvox”',
+    url: 'https://doi.org/10.2307/3223302',
+  },
+  // The authority and date, and the species' standing as the most commonly
+  // reported Volvox, cosmopolitan in lowland fresh water.
+  r66: {
+    text: 'Guiry & Guiry, AlgaeBase — Volvox aureus Ehrenberg 1832',
+    url: 'https://www.algaebase.org/search/species/detail/?species_id=d5685c0aa1e876e01',
+  },
+  // The strands between the cells, and where they come from: division in the
+  // embryo that never quite finishes.
+  r67: {
+    text: 'Bisalputra & Stein (1966) Can J Bot 44:1697–1702 — “The development of cytoplasmic bridges in Volvox aureus”',
+    url: 'https://doi.org/10.1139/b66-182',
+  },
+  // Inversion in V. globator, and the second way of doing it, type B, which V.
+  // aureus shares.
+  r68: {
+    text: 'Höhn & Hallmann (2011) BMC Biol 9:89 — “There is more than one way to turn a spherical cellular monolayer inside out: type B embryo inversion in Volvox globator”',
+    url: 'https://doi.org/10.1186/1741-7007-9-89',
+  },
+  // Review of the volvocine algae: the matrix at about 99 % of a V. carteri
+  // colony's volume, and the cell types.
+  r69: {
+    text: 'Umen (2020) EvoDevo 11:13 — “Volvox and volvocine green algae”',
+    url: 'https://doi.org/10.1186/s13227-020-00158-7',
+  },
+  // V. carteri as a developmental model: about 2000 somatic cells and 16
+  // gonidia, asymmetric division, inversion, cell size and fate.
+  r70: {
+    text: 'Matt & Umen (2016) Dev Biol 419:99–113 — “Volvox: a simple algal model for embryogenesis, morphogenesis and cellular differentiation”',
+    url: 'https://doi.org/10.1016/j.ydbio.2016.07.014',
+  },
+  // The rule that makes a gonidium: over about 8 µm when cleavage ends.
+  r71: {
+    text: 'Kirk, Ransick, McRae & Kirk (1993) J Cell Biol 123:191–208 — “The relationship between cell size and cell fate in Volvox carteri”',
+    url: 'https://doi.org/10.1083/jcb.123.1.191',
+  },
+  // Colonies swim upwards and turn about vertical axes; a colony's radius grows
+  // with age while its cells' number and size do not.
+  r72: {
+    text: 'Ishikawa, Pedley, Drescher & Goldstein (2020) J Fluid Mech 903:A11 — “Stability of dancing Volvox”',
+    url: 'https://doi.org/10.1017/jfm.2020.613',
+  },
+  r73: {
+    text: 'Drescher, Goldstein & Tuval (2010) Proc Natl Acad Sci USA 107:11171–11176 — “Fidelity of adaptive phototaxis”',
+    url: 'https://doi.org/10.1073/pnas.1000901107',
+  },
+  // The eyespot gradient, about 2.5 µm at the anterior to 0.8 µm behind, and
+  // the flagella's matching gradient in calcium sensitivity.
+  r74: {
+    text: 'Ueki & Wakabayashi (2018) Proc Natl Acad Sci USA 115 — “Detergent-extracted Volvox model exhibits an anterior–posterior gradient in flagellar Ca2+ sensitivity”',
+    url: 'https://doi.org/10.1073/pnas.1715489115',
+  },
+  r75: {
+    text: 'Brumley, Polin, Pedley & Goldstein (2015) J R Soc Interface 12:20141358 — “Metachronal waves in the flagellar beating of Volvox and their hydrodynamic origin”',
+    url: 'https://doi.org/10.1098/rsif.2014.1358',
+  },
+  r76: {
+    text: 'Kirk (2005) BioEssays 27:299–310 — “A twelve-step program for evolving multicellularity and a division of labor”',
+    url: 'https://doi.org/10.1002/bies.20197',
+  },
+  // The multicellular volvocines split from single-celled relatives about 234
+  // million years ago; the three main lineages were there by 200.
+  r77: {
+    text: 'Herron, Hackett, Aylward & Michod (2009) Proc Natl Acad Sci USA 106:3254–3258 — “Triassic origin and early radiation of multicellular volvocine algae”',
+    url: 'https://doi.org/10.1073/pnas.0811205106',
+  },
+  r78: {
+    text: 'Prochnik, Umen, Nedelcu, Hallmann, Miller, Nishii, Ferris, Kuo, Mitros, Fritz-Laylin et al. (2010) Science 329:223–226 — “Genomic analysis of organismal complexity in the multicellular green alga Volvox carteri”',
+    url: 'https://doi.org/10.1126/science.1188800',
+  },
+  // The matrix's compartments, one per somatic cell, their areas gamma-
+  // distributed and their packing loosening as the colony grows.
+  r79: {
+    text: 'von der Heyde, Srinivasan, Birwa, von der Heyde, Höhn, Goldstein & Hallmann (2025) Proc Natl Acad Sci USA — “Spatiotemporal distribution of the glycoprotein pherophorin II reveals stochastic geometry of the growing ECM of Volvox carteri”',
+    url: 'https://doi.org/10.1073/pnas.2425759122',
+  },
   r43: {
     text: 'Deschoenmaeker, Facchini, Cabrera Pino, Bayon-Vicente, Sachdeva, Flammang & Wattiez (2016) J Struct Biol 196:385–393 — “Nitrogen depletion in Arthrospira sp. PCC 8005, an ultrastructural point of view”',
     url: 'https://doi.org/10.1016/j.jsb.2016.08.007',

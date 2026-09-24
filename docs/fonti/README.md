@@ -363,3 +363,93 @@ owner, consulted and not copied. Frames were pulled out of the clip and measured
   which the transport-of-intensity term cannot make and is added as such.
 - **The cell holds station**: against the debris it drifts about a micrometre a
   second, turns now and then, and revolves slowly while the flagella beat.
+
+
+## Volvox aureus — the colony, and what a Volvox is made of
+
+No PDFs are kept for this specimen; every source below is linked from its card.
+**None of the full texts could be opened from where this specimen was written**
+— the session's network allowed a search engine and nothing else — so each
+source was located, and its bibliographic record checked, through search
+results, and what it settles was read from its abstract and from compilations
+that cite it. Every figure below is one of those, and where a figure came
+second-hand it says so. A reader with the papers open can check each card row
+against its source in minutes, and the scientific-correction form is for that.
+
+- **Smith 1944**, *Trans. Am. Microsc. Soc.* 63:265–310 — the comparative
+  monograph of the genus, and the source of the species' light-microscope
+  figures: colonies 400–600 µm, 500–3200 cells in one layer at the surface of a
+  hollow sphere or ellipsoid, four to twelve gonidia of 18–22 µm irregularly in
+  the posterior half, embryos expanding to 150–175 µm before release. **Read from
+  compilations that cite it** (the encyclopaedic accounts of the species), not
+  from the paper.
+- **AlgaeBase** — the authority, Ehrenberg 1832, and the species' standing as the
+  commonest Volvox, cosmopolitan in lowland fresh water. Compilations give its
+  somatic cells as 5–8 µm; the card draws 6 and marks it unestablished.
+- **Bisalputra & Stein 1966**, *Can. J. Bot.* 44:1697–1702 — the cytoplasmic
+  strands between V. aureus's cells, from division in the embryo that never
+  quite finishes.
+- **Höhn & Hallmann 2011**, *BMC Biol.* 9:89 — type B inversion, described in V.
+  globator and shared by V. aureus: the posterior hemisphere contracts first,
+  the opening widens, the anterior half moves over it.
+- **Umen 2020**, *EvoDevo* 11:13 — the volvocine algae reviewed; the matrix at
+  about 99 % of a V. carteri colony's volume.
+- **Matt & Umen 2016**, *Dev. Biol.* 419:99–113 — V. carteri as a developmental
+  model: about 2000 somatic cells and 16 gonidia.
+- **Kirk et al. 1993**, *J. Cell Biol.* 123:191–208 — in V. carteri a cell's fate
+  is its size at the end of cleavage: over about 8 µm, a gonidium.
+- **Ishikawa et al. 2020**, *J. Fluid Mech.* 903:A11 — colonies swim upwards in
+  still water and turn about vertical axes; a V. carteri colony's radius grows
+  with age while the number and size of its cells do not.
+- **Drescher et al. 2010**, *PNAS* 107:11171–11176, and **Ueki & Wakabayashi
+  2018**, *PNAS* 115 — phototaxis, and the gradient of eyespot size from about
+  2.5 µm at the anterior to about 0.8 µm behind.
+- **Brumley et al. 2015**, *J. R. Soc. Interface* 12:20141358 — the flagella
+  beat in metachronal waves.
+- **Kirk 2005**, *BioEssays* 27:299–310; **Herron et al. 2009**, *PNAS*
+  106:3254–3258; **Prochnik et al. 2010**, *Science* 329:223–226 — the twelve
+  steps from a Chlamydomonas-like cell to Volvox; the multicellular volvocines
+  splitting from their single-celled relatives about 234 million years ago,
+  their three main lineages by 200; and V. carteri's genome, with much the same
+  protein-coding repertoire as Chlamydomonas's.
+- **von der Heyde et al. 2025**, *PNAS* — the matrix's compartments, one per
+  somatic cell, gamma-distributed, loosening as the colony grows.
+
+**How the colony is drawn**, and the one source that is not about biology: the
+cells sit on a spherical Fibonacci lattice, and the shader finds the ones near a
+ray with the closed-form inverse of Keinert, Innmann, Sänger & Stamminger
+(2015), *ACM Trans. Graph.* 34(6):193, "Spherical Fibonacci mapping".
+`tools/check-volvox.mjs` holds that lookup against a brute-force search.
+
+**No Volvox images are kept in this repository.** The reference is a clip
+labelled "Volvox, 200x" with a 100 µm scale bar, in darkfield, supplied by the
+project owner as a screen recording of a video player; its lower third is in the
+style of *Journey to the Microcosmos* (James Weiss), and its source should be
+cited by link once it is confirmed. Frames were pulled out of it and measured,
+consulted and not copied:
+
+- **It is darkfield.** The empty ground is (3.4, 16, 20.5) across four frames,
+  and the specks in it are exactly neutral — their excess over the local ground
+  is equal in red, green and blue — so the ring's light is white and the green
+  of the colonies is their own.
+- **The levels.** 28 % of the frame is empty ground; the out-of-focus faces of
+  the colonies are a haze averaging (12, 50, 12) over a third of the frame; 4.6 %
+  is brighter than 120 in green, averaging (47, 159, 12) — the young colonies.
+- **The rim is brighter than the middle** by about two and a half times over the
+  ground, on the lower fifth of each ring (so that the young inside do not count),
+  on two colonies. The drawn colony returns about the same, 2.6–2.7.
+- **What the colonies carry.** Of thirteen colonies in a frame, ten carry young a
+  sixth to a fifth of their diameter, one a third, one small bright bodies, and
+  one nothing that shows; four to ten show in each.
+- **How many cells.** Counted as points on in-focus faces against the area they
+  cover, in three places, roughly 600 to 2800 a colony. No scale bar enters a
+  count like that, and the three readings agree no more closely than that.
+- **How they move.** In a drop this crowded the colonies do not travel. Each
+  turns in place, once every ten to twenty seconds, anticlockwise on screen —
+  read by following young round inside colonies over seven seconds of
+  continuous footage.
+- **What it does not settle: the species, and the size.** Against its own bar
+  its colonies are 70–150 µm across — a quarter of V. aureus's mature size — so
+  either they are small colonies, or the organism is a smaller Volvox. The atlas
+  draws V. aureus at the species' size, framed so a colony spans the share of the
+  frame it spans in the footage, and the card "Which Volvox is this?" says so.
