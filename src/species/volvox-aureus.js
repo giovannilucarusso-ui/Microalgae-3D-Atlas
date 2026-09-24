@@ -11,27 +11,18 @@
 //
 // **Why aureus, and not carteri.** V. carteri is the laboratory's Volvox —
 // genome, cell counts, embryology, flagellar hydrodynamics — and most of what
-// the cards know about the genus comes from it, at the second tier. But the
-// reference footage, labelled only "Volvox", shows colonies each carrying four
-// to ten offspring in one half of the colony, and V. carteri carries sixteen; V.
-// aureus, the commonest Volvox of lowland ponds (r66), carries four to twelve,
-// in the posterior half (r65). The footage's organism is not identified by
-// anyone, and the card "Which Volvox is this?" says what matches and what does
-// not.
+// the cards know about how a Volvox works comes from it, at the second tier.
+// V. aureus is the one a pond gives you: the most commonly reported species of
+// the genus, cosmopolitan in lowland fresh water (r66), with four to twelve
+// young in each colony where V. carteri has sixteen (r65). So the specimen is
+// the common one, and the laboratory species lends it what has only been
+// measured there.
 //
-// **What does not match is the size.** Against the footage's own 100 µm bar its
-// colonies are 70–150 µm across; Smith gives 400–600 µm for mature V. aureus. The
-// atlas keeps the species' size, as it kept Euglena's, and frames the drop the
-// way the footage frames it: a colony spans about four tenths of the frame's
-// height. What the footage settles without any scale bar entering is kept as
-// measured: the stage the colonies are at, how many offspring show, how crowded
-// the drop is, how the light falls off from rim to middle, the ratio of a
-// colony's size to the spacing of its cells, and how fast it turns.
-//
-// The reference is a clip labelled "Volvox, 200x" with a 100 µm scale bar, in
-// darkfield, supplied by the project owner as a screen recording; its lower third
-// is in the style of Journey to the Microcosmos (James Weiss). Frames were
-// pulled out of it and measured, not copied — see docs/fonti/README.md.
+// Everything the species description gives is drawn to it: the colony's size,
+// its cell count, the number, size and place of its gonidia, the size its young
+// reach before they are released (r65). What a description cannot give — how
+// crowded a drop is, which stage its colonies are at, how the drop is framed —
+// is a choice, made here, and marked on the cards as not established.
 import { volvoxCards } from './volvox-cards.js'
 import { buildColonies } from '../volvocine.js'
 
@@ -54,25 +45,24 @@ const record = {
     kind: 'colony-field',
     label: 'Wet mount · darkfield',
     caption:
-      'A crowded drop of Volvox aureus in darkfield. Each colony is a hollow ball of cells: its rim a string of bright points where the plane of focus cuts it, its faces a green haze above and below, and in its back half the young colonies it will release. They turn slowly in place, as in the reference footage.',
+      'A crowded drop of Volvox aureus in darkfield. Each colony is a hollow ball of cells: its rim a string of bright points where the plane of focus cuts it, its faces a green haze above and below, and in its back half the young colonies it will release. Each turns slowly about its own axis. Pick a structure below, or click a colony, to read about it.',
 
-    // The framing of the footage, at the species' size. In the footage a
-    // colony spans 0.43 of the frame's height (120 of 276 µm on its own bar);
-    // a V. aureus colony of 500 µm spans the same share of 1150.
+    // How much of the slide is in frame: enough for a few mature colonies,
+    // each spanning about four tenths of the frame's height — close enough to
+    // see the cell layer as points, wide enough to see a drop and not one
+    // colony. A framing, not a measurement.
     fieldUm: 1150,
     view: [0, 0, 1],
     // A cavity a little deeper than the largest colony, so the colonies are
-    // not crushed and lie with their middles near one plane — which is why
-    // nearly every rim in the footage is sharp at once. Only the small young
-    // colonies have room to sit above or below, and they are the ones the
-    // footage shows as ghosts.
+    // not crushed and lie with their middles near one plane, and their rims
+    // come into focus together. Only the small young colonies have room to
+    // sit above or below it.
     depthUm: 650,
 
-    // Concentrated, and stated as such rather than passed off as a pond. The
-    // footage's frame is 28 % empty ground across four frames, with its
-    // colonies nearly touching; this density returns that coverage through a
-    // frame of the drawn size (tools/check-volvox.mjs). A pond holds far fewer
-    // — a sample like this is taken from where phototaxis has gathered them.
+    // Concentrated, and stated as such rather than passed off as a pond: the
+    // colonies nearly touch, and about a quarter of the frame is empty ground.
+    // A pond holds far fewer — a sample like this is taken from where
+    // phototaxis has gathered them to the lit side of a jar.
     coloniesPerMl: 6000,
     centred: true,
 
@@ -81,13 +71,10 @@ const record = {
       diameterUm: [400, 600],
       // Young ones, from the release size up (r65).
       youngDiameterUm: [175, 320],
-      // 500–3200 in the species (r65). The footage's colonies hold roughly
-      // 600 to 2800 — three readings of in-focus faces, counting points
-      // against the area they cover, which no scale bar enters and which agree
-      // no more closely than that. Drawn across the part of the species' range
-      // the readings share, log-uniform.
+      // 500–3200 in the species (r65). Drawn across the middle of that range,
+      // log-uniform, so a colony has a thousand to two and a half thousand.
       cells: [1000, 2400],
-      // A somatic cell, drawn at 6 µm; compilations give 5–8.
+      // A somatic cell, drawn at 6 µm; compilations give 5–8 (r66).
       cellUm: 6,
     },
 
@@ -97,20 +84,15 @@ const record = {
       count: [4, 12],
       gonidiumUm: [18, 22],
       releaseUm: [150, 175],
-      // Which stage the colonies are at, read off the footage: of thirteen
-      // colonies in its frame, all but two carry offspring well into
-      // expansion — a sixth to a third of the parent's diameter, their own
-      // cells showing as fine dots when in focus — one carries small bright
-      // bodies, and one shows none.
+      // Which stage the colonies are at. A drop in the middle of its asexual
+      // cycle: most colonies carrying juveniles as they expand, a few with
+      // embryos still cleaving, a few young colonies whose gonidia have not
+      // divided. A choice, and the cards say so.
       stages: { juveniles: 0.84, embryos: 0.08, young: 0.08 },
-      // The smallest juvenile drawn, as a share of its release size: the
-      // footage's smallest are a sixth of their parent, which at the species'
-      // sizes is about four tenths of 150–175 µm.
+      // The smallest juvenile drawn, as a share of its release size, and a
+      // skew of the brood's age towards it: most broods are drawn early in
+      // their expansion, a few close to release.
       juvenileFrom: 0.4,
-      // And most are near that: in ten of the twelve colonies with young
-      // showing, they are a sixth to a fifth of the parent's diameter, and only
-      // one colony carries young of a third. The brood's age is drawn with
-      // this skew towards the young end.
       ageSkew: 2.4,
       // A cell of an embryo just after cleavage, and of a juvenile about to be
       // released. Not measured; see the embryos card.
@@ -120,38 +102,44 @@ const record = {
     // Swimming upwards in still water, as colonies do (r72): the anterior
     // pole tipped towards the objective by up to this angle.
     axis: { tiltRad: 0.55 },
-    // One turn every ten to twenty seconds, read off the footage by following
-    // juveniles round inside a colony; anticlockwise on screen.
-    spin: { radPerS: [0.315, 0.625], sense: 1 },
+    // Turning about the axis. V. carteri colonies 150 µm in radius turn at
+    // about a radian a second, and larger ones more slowly (r80); these are
+    // larger, so slower — a turn every eight to eighteen seconds. All in one
+    // sense, since the flagella of every colony beat at the same slant;
+    // which sense is not established.
+    spin: { radPerS: [0.35, 0.8], sense: 1 },
     // In a drop this crowded the colonies do not travel: they stray a few
-    // micrometres from where they lie and turn in place, as in the footage.
+    // micrometres from where they lie and turn in place.
     drift: { wanderUm: [2, 6], rate: [0.04, 0.12] },
     // Bacteria and fine detritus. Colourless, so white in darkfield.
     motes: { perMl: 30000, diameterUm: [0.5, 2.2] },
 
     motion: {
       label: 'Swimming',
-      note: 'Each colony turns about its own axis, about once every ten to twenty seconds, as in the reference footage: in a drop this crowded they turn in place rather than travelling. Switch it off to hold the drop still and rack the focus through a colony.',
+      note: 'Each colony turns about its own axis, once every eight to eighteen seconds; in a drop this crowded they turn in place rather than travelling. Switch it off to hold the drop still and rack the focus through a colony.',
     },
 
     // The chloroplast's colour, as a transmittance at one micrometre of it.
-    // No brightfield reference was used for this specimen, so it is not
-    // measured: it is the chlorophyll a and b shape the atlas gives every
-    // green alga — red and blue well down, blue somewhat further — at the
-    // depth that returns the footage's greens when the light a cell scatters
+    // Not measured for this species: it is the chlorophyll a and b shape the
+    // atlas gives every green alga — red and blue well down, blue somewhat
+    // further — at a depth that makes the light a cell scatters green once it
     // has crossed its own plastid on the way out. See the somatic cells card.
     colour: '#c4ee8c',
     band: [0.09, 0.06, 0.03],
     bandWeak: [0.12, 0.12, 0.1],
 
-    // Darkfield, because that is the footage.
+    // Darkfield: it lights the colony by its cells and leaves the clear matrix
+    // dark, which is the organism's own structure made visible. Brightfield and
+    // the Rheinberg pairs are offered too.
     filter: 'darkfield',
 
     seed: 6131,
     groups: [
+      { title: 'The organism', ids: ['organism', 'habitat', 'germSoma'] },
       { title: 'The colony', ids: ['colony', 'somaticCells', 'matrix'] },
-      { title: 'Reproduction', ids: ['gonidia', 'embryos'] },
-      { title: 'The organism', ids: ['swimming', 'germSoma', 'identification'] },
+      { title: 'Reproduction', ids: ['gonidia', 'embryos', 'sexual'] },
+      { title: 'Behaviour', ids: ['swimming'] },
+      { title: 'Telling them apart', ids: ['identification'] },
     ],
   },
 }

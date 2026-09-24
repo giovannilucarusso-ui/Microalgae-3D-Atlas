@@ -401,6 +401,14 @@ against its source in minutes, and the scientific-correction form is for that.
 - **Ishikawa et al. 2020**, *J. Fluid Mech.* 903:A11 — colonies swim upwards in
   still water and turn about vertical axes; a V. carteri colony's radius grows
   with age while the number and size of its cells do not.
+- **Drescher et al. 2009**, *Phys. Rev. Lett.* 102:168101 — V. carteri colonies
+  150 µm in radius turn at about a radian a second, larger ones more slowly.
+- **Herron 2016**, *Mol. Ecol.* 25 — the volvocine algae reviewed, with van
+  Leeuwenhoek's first description (1700) and Linnaeus naming the genus (1758).
+- **Smith 1944, again**, for the sexual colonies: usually dioecious; males
+  330–360 µm with 1000–5000 cells and 600–1000 sperm packets of 32; females
+  340–415 µm with 7–21 eggs; zygotes 38–62 µm with a smooth wall. Read from
+  compilations, like the rest of Smith.
 - **Drescher et al. 2010**, *PNAS* 107:11171–11176, and **Ueki & Wakabayashi
   2018**, *PNAS* 115 — phototaxis, and the gradient of eyespot size from about
   2.5 µm at the anterior to about 0.8 µm behind.
@@ -421,35 +429,8 @@ ray with the closed-form inverse of Keinert, Innmann, Sänger & Stamminger
 (2015), *ACM Trans. Graph.* 34(6):193, "Spherical Fibonacci mapping".
 `tools/check-volvox.mjs` holds that lookup against a brute-force search.
 
-**No Volvox images are kept in this repository.** The reference is a clip
-labelled "Volvox, 200x" with a 100 µm scale bar, in darkfield, supplied by the
-project owner as a screen recording of a video player; its lower third is in the
-style of *Journey to the Microcosmos* (James Weiss), and its source should be
-cited by link once it is confirmed. Frames were pulled out of it and measured,
-consulted and not copied:
-
-- **It is darkfield.** The empty ground is (3.4, 16, 20.5) across four frames,
-  and the specks in it are exactly neutral — their excess over the local ground
-  is equal in red, green and blue — so the ring's light is white and the green
-  of the colonies is their own.
-- **The levels.** 28 % of the frame is empty ground; the out-of-focus faces of
-  the colonies are a haze averaging (12, 50, 12) over a third of the frame; 4.6 %
-  is brighter than 120 in green, averaging (47, 159, 12) — the young colonies.
-- **The rim is brighter than the middle** by about two and a half times over the
-  ground, on the lower fifth of each ring (so that the young inside do not count),
-  on two colonies. The drawn colony returns about the same, 2.6–2.7.
-- **What the colonies carry.** Of thirteen colonies in a frame, ten carry young a
-  sixth to a fifth of their diameter, one a third, one small bright bodies, and
-  one nothing that shows; four to ten show in each.
-- **How many cells.** Counted as points on in-focus faces against the area they
-  cover, in three places, roughly 600 to 2800 a colony. No scale bar enters a
-  count like that, and the three readings agree no more closely than that.
-- **How they move.** In a drop this crowded the colonies do not travel. Each
-  turns in place, once every ten to twenty seconds, anticlockwise on screen —
-  read by following young round inside colonies over seven seconds of
-  continuous footage.
-- **What it does not settle: the species, and the size.** Against its own bar
-  its colonies are 70–150 µm across — a quarter of V. aureus's mature size — so
-  either they are small colonies, or the organism is a smaller Volvox. The atlas
-  draws V. aureus at the species' size, framed so a colony spans the share of the
-  frame it spans in the footage, and the card "Which Volvox is this?" says so.
+**No Volvox images are kept in this repository**, and none was used to draw
+it: every dimension comes from the sources above, and what they do not give —
+the crowding of the drop, the stage its colonies are at, the framing, the
+strength of darkfield scattering — is stated on the record and on the cards as
+a choice, at the third tier.
