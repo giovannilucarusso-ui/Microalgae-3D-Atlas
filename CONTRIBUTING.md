@@ -51,7 +51,7 @@ credited on it (see [Licence and credit](#licence-and-credit)).
 
 ### Add a specimen on an existing generator
 
-There are four body generators. A species whose body fits one of them needs a
+There are five body generators. A species whose body fits one of them needs a
 species file, some cards and some bibliography entries, and no rendering code.
 
 | `exterior.kind` | draws | built for |
@@ -60,6 +60,7 @@ species file, some cards and some bibliography entries, and no rendering code.
 | `coccoid-field` | a wet-mount field of round single cells | Chlorella — [`chlorella.js`](src/species/chlorella.js) |
 | `euglenoid-field` | a field of flexible, spindle-shaped flagellates | Euglena — [`euglena-gracilis.js`](src/species/euglena-gracilis.js) |
 | `haptophyte-field` | a scaly flagellate with a flattened body, parietal plastids, flagella, haptonema and spine-scales | Braarudosphaera — [`braarudosphaera-bigelowii.js`](src/species/braarudosphaera-bigelowii.js) |
+| `colony-field` | a drop of hollow colonies, each a layer of cells on a sphere of matrix, carrying their young inside | Volvox — [`volvox-aureus.js`](src/species/volvox-aureus.js) |
 
 1. **Start from the closest record** in [`src/species/`](src/species/) and give
    it its own `id`, `name`, `latin`, `authority` and `group`. The parameters
@@ -97,10 +98,11 @@ species file, some cards and some bibliography entries, and no rendering code.
 
 ### Draw a new body plan
 
-A chain-forming diatom, a dinoflagellate or a colony each needs a new generator.
-It sits beside [`Trichome.jsx`](src/Trichome.jsx),
-[`CellField.jsx`](src/CellField.jsx), [`EuglenaField.jsx`](src/EuglenaField.jsx)
-and [`HaptophyteField.jsx`](src/HaptophyteField.jsx), is selected by a new
+A chain-forming diatom or a dinoflagellate each needs a new generator. It sits
+beside [`Trichome.jsx`](src/Trichome.jsx),
+[`CellField.jsx`](src/CellField.jsx), [`EuglenaField.jsx`](src/EuglenaField.jsx),
+[`HaptophyteField.jsx`](src/HaptophyteField.jsx) and
+[`ColonyField.jsx`](src/ColonyField.jsx), is selected by a new
 `exterior.kind` in `App.jsx`, and that kind is added to the list in
 [`tools/check-atlas.mjs`](tools/check-atlas.mjs). Give it a disc on the landing
 page too, in `organism()` in [`src/landing/main.js`](src/landing/main.js); until

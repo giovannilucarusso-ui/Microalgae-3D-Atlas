@@ -153,6 +153,21 @@ function organism(body) {
         `<path d="M50 33 L50 21" stroke="#8a7440" stroke-width="1.2"/><ellipse cx="50" cy="57" rx="26" ry="24" fill="#f1e7c9" stroke="#a88a4a" stroke-width="1.6"/>` +
         `<ellipse cx="36.5" cy="55" rx="8.5" ry="15.5" fill="#c79d3c" transform="rotate(12 36.5 55)"/><ellipse cx="63.5" cy="55" rx="8.5" ry="15.5" fill="#c79d3c" transform="rotate(-12 63.5 55)"/>` +
         `<circle cx="50" cy="70" r="7.5" fill="#aebfae" stroke="#6f8a78" stroke-width="1.3"/>`
+    case 'colony-field': {
+      // Seen as it is at the microscope, in darkfield: the disc goes dark, the
+      // colony is a green haze with its rim a ring of bright points, and its
+      // young sit in the back half, brighter and greener than anything else.
+      let rim = ''
+      for (let i = 0; i < 46; i++) {
+        const a = (i / 46) * Math.PI * 2 + (i % 2) * 0.03
+        const r = 37 + (i % 3) * 0.7
+        rim += `<circle cx="${f(50 + Math.cos(a) * r)}" cy="${f(50 + Math.sin(a) * r)}" r="1.1"/>`
+      }
+      const young = [[38, 60, 8.5], [58, 66, 9], [47, 44, 7.5], [66, 49, 7], [30, 44, 6.5], [50, 79, 6]]
+      return `<circle cx="50" cy="50" r="48" fill="#06161c"/><circle cx="50" cy="50" r="38" fill="#1c4a22" opacity=".85"/>` +
+        `<g fill="#c4f28a">${rim}</g>` +
+        young.map(([x, y, r]) => `<circle cx="${x}" cy="${y}" r="${r}" fill="#46b02c" stroke="#aef27a" stroke-width="1.2"/>`).join('')
+    }
     default:
       return `<circle cx="50" cy="50" r="22" fill="none" stroke="#6f8a78" stroke-width="2"/>`
   }

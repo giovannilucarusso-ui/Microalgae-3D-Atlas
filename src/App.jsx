@@ -7,6 +7,7 @@ import CellField from './CellField.jsx'
 import CellField2D from './CellField2D.jsx'
 import EuglenaField from './EuglenaField.jsx'
 import HaptophyteField from './HaptophyteField.jsx'
+import ColonyField from './ColonyField.jsx'
 import Debris from './specimen.jsx'
 import CellSection from './CellSection.jsx'
 import { SWATCH } from './materials.js'
@@ -480,6 +481,13 @@ export default function App() {
                 optics={config.optics}
                 swimming={gliding}
               />
+            ) : config.form.kind === 'colony-field' ? (
+              <ColonyField
+                form={config.form}
+                focus={focus}
+                optics={config.optics}
+                swimming={gliding}
+              />
             ) : config.form.kind === 'coccoid-field' ? (
               RENDER_2D ? (
                 <CellField2D
@@ -691,7 +699,8 @@ export default function App() {
                 pass. */}
             {(config.form?.kind === 'coccoid-field' ||
               config.form?.kind === 'euglenoid-field' ||
-              config.form?.kind === 'haptophyte-field') && (
+              config.form?.kind === 'haptophyte-field' ||
+              config.form?.kind === 'colony-field') && (
             <div className="cycle">
               <label htmlFor="condenser">Condenser filter</label>
               <select

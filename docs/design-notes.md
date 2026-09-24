@@ -207,6 +207,61 @@ and is built in Vite's `share` mode, which is how the microscope knows its link
 back to the atlas has to point at the published site: the recipient has no
 landing page beside the file.
 
+## The colony field, and Volvox
+
+The sixth specimen, *Volvox aureus* (September 2026), is the first whose unit on
+the slide is not a cell, and it needed a generator of its own,
+`src/ColonyField.jsx`, with the population in `src/volvocine.js`. What was
+decided, and what was tried and set aside:
+
+- **A colony is a function, not a thousand quads.** A quad per somatic cell would
+  be exact and ruinous: a colony half a millimetre across puts its faces a
+  quarter of a millimetre either side of focus, where each cell is blurred over
+  hundreds of its neighbours. So the layer is drawn twice over. As a density —
+  a shell, whose path along a ray is the difference of two chords, the same
+  arithmetic as every other body here — and, near focus, as cells: they sit on a
+  spherical Fibonacci lattice, whose nearest point to any direction has a closed
+  form (Keinert et al. 2015), so the shader finds the cells near a ray at the
+  front face, the back, and at the rim the tangent point, without being handed a
+  list. A cell is drawn as itself in proportion exp(−(blur / 0.28 spacing)²) and
+  the shell carries the rest, which keeps the mean and hands the texture over as
+  the objective loses it.
+- **Three rings, each an artefact, each removed.** The handover first sat at 0.45
+  of the spacing, where a cell's second neighbours already reach the pixel; the
+  four lattice points found fell short of the mean and every face coming into
+  focus had a dark annulus. The shell was first blurred at each pixel's own depth,
+  which steepened the ramp up to the rim wherever the blur grew towards it and
+  drew a false ring inside every defocused juvenile; it is now blurred at the
+  depth of the rim, which is what the blur has to get right. And a single box of
+  the blur's width puts a kink wherever its edge crosses a thin shell's rim, which
+  is a singularity; three boxes of different widths spread it into a shoulder.
+- **The drop is packed, not dropped.** Colonies placed one at a time where they fit
+  jam with nearly half the frame still empty, and the ones that failed to fit were
+  the large ones, which tilted the drop towards the young. The footage's frame is
+  28 % empty with its colonies nearly touching. So every colony is made first —
+  stage, size, cells, brood — scattered, and pushed apart until no two share any
+  water; when the block is too full for that, the smallest colony in a clash is
+  taken out and the rest relaxed again.
+- **Darkfield, and the colour is the light's path.** The footage's ground is
+  (3.4, 16, 20.5) and its specks are exactly neutral, so its ring is white and
+  the green is the colonies' own: light a cell scatters has crossed its own
+  chloroplast on the way out. That one idea gives the haze of a colony's faces,
+  the brighter rim, and the young as the most saturated green in the field
+  (their light crosses more plastid), and the drawn frame lands within a few
+  levels of the footage on its ground, its haze, the share of empty ground and the
+  share of bright pixels. The rim over the middle comes out at 2.6–2.7 times
+  over the ground against the footage's 2.4–2.5, without being tuned for it: it
+  depends only on the layer's thickness against the ball.
+- **Aureus, at the species' size.** The footage is labelled only "Volvox". Its
+  young — four to ten showing, in one half of each colony — are V. aureus's and
+  not V. carteri's sixteen; its colonies, on its own bar, are a quarter of V.
+  aureus's mature size. The atlas keeps the species' size, as it kept Euglena's,
+  and frames the drop so a colony spans the share of the frame it spans in the
+  footage. The card "Which Volvox is this?" leaves the question open.
+- **`half` is a reserved word in GLSL.** A local variable of that name does not
+  compile, the whole field draws nothing, and the only sign is a shader log in
+  the console — which is why `npm run shots` reports console errors.
+
 ## The landing page, and the type
 
 The site opens on a tree of life, `index.html`, and the microscope moved to
