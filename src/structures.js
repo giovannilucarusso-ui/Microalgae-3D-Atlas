@@ -384,6 +384,114 @@ export const SOURCES = {
     text: 'von der Heyde, Srinivasan, Birwa, von der Heyde, Höhn, Goldstein & Hallmann (2025) Proc Natl Acad Sci USA — “Spatiotemporal distribution of the glycoprotein pherophorin II reveals stochastic geometry of the growing ECM of Volvox carteri”',
     url: 'https://doi.org/10.1073/pnas.2425759122',
   },
+  // --- Aurantiochytrium mangrovei ---------------------------------------
+  // The protologue: sizes at every stage on pine pollen and in a nutrient
+  // medium, the division sequence, the zoospores and the two ways of making
+  // them, and the type cultures NIOCC 90, 97 and 98. Read in full, from the
+  // copy the Roscoff collection hosts.
+  r80: {
+    text: 'Raghu-Kumar (1988) Trans Br Mycol Soc 90:627–631 — “Schizochytrium mangrovei sp. nov., a thraustochytrid from mangroves in India”',
+    url: 'https://doi.org/10.1016/S0007-1536(88)80068-8',
+  },
+  // The genus erected, with its diagnosis — orange, thin-walled, globose,
+  // small colonies, DHA dominant — and the note that RCC893 is not the ex-type
+  // and that the ex-type is lost. Free on J-STAGE.
+  r81: {
+    text: 'Yokoyama & Honda (2007) Mycoscience 48:199–211 — “Taxonomic rearrangement of the genus Schizochytrium sensu lato based on morphology, chemotaxonomic characteristics, and 18S rRNA gene phylogeny (Thraustochytriaceae, Labyrinthulomycetes): emendation for Schizochytrium and erection of Aurantiochytrium and Oblongichytrium gen. nov.”',
+    url: 'https://doi.org/10.1007/s10267-006-0362-0',
+  },
+  // The collection's record of the strain: CKM1, Tsui, Sai Kung, 10 September
+  // 2002; clumps, coccoid, "length 20 µm", YEP at 22 °C; 18S AB973565. Its one
+  // micrograph (no licence stated, so consulted and not copied) is where the
+  // droplet size and the 20 µm come from, measured on its 5 µm bar.
+  r82: {
+    text: 'Roscoff Culture Collection — RCC893, Aurantiochytrium mangrovei, strain CKM1: strain record and micrograph',
+    url: 'https://roscoff-culture-collection.org/rcc-strain-details/893',
+  },
+  // RCC893 in the project owner's hands: YEP and the conditions it is grown in.
+  // CC BY 4.0.
+  r83: {
+    text: 'Russo, Langellotti, Blasco, Oliviero, Sacchi & Masi (2021) Processes 9:1834 — “Production of omega-3 oil by Aurantiochytrium mangrovei using spent osmotic solution from candied fruit industry as sole organic carbon source”',
+    url: 'https://doi.org/10.3390/pr9101834',
+  },
+  // RCC893 taken to pilot scale; its flask pre-cultures near 2 × 10⁷ cells/mL.
+  // CC BY 4.0.
+  r84: {
+    text: 'de la Broise, Ventura, Chauchat, Guerreiro, Michez, Vinet, Gautron, Le Grand, Bideau, Le Goïc, Bidault, Lambert et al. (2022) Mar Drugs 20:499 — “Scale-up to pilot of a non-axenic culture of thraustochytrids using digestate from methanization as nitrogen source”',
+    url: 'https://doi.org/10.3390/md20080499',
+  },
+  // Strain MP2 from Hong Kong: spherical cells full of lipid bodies, the size
+  // range at high glucose, floating cells, bursting in fresh water. Free on
+  // J-STAGE.
+  r85: {
+    text: 'Wong, Tsui, Au & Vrijmoed (2008) Mycoscience 49:266–270 — “Docosahexaenoic acid production and ultrastructure of the thraustochytrid Aurantiochytrium mangrovei MP2 under high glucose concentrations”',
+    url: 'https://doi.org/10.1007/s10267-008-0415-7',
+  },
+  // Strain KF6: zoospores at low salinity and their speed, and the species'
+  // lipid content. The article writes salinity in per cent; the values are per
+  // mille. Free on J-STAGE.
+  r86: {
+    text: 'Tsui, Fan, Chow, Jones & Vrijmoed (2012) Mycoscience 53:1–9 — “Zoospore production and motility of mangrove thraustochytrids from Hong Kong under various salinities”',
+    url: 'https://doi.org/10.1007/s10267-011-0127-2',
+  },
+  r87: {
+    text: 'Leyland, Leu & Boussiba (2017) Fungal Biol 121:835–840 — “Are Thraustochytrids algae?”',
+    url: 'https://doi.org/10.1016/j.funbio.2017.07.006',
+  },
+  // The stramenopiles' common ancestor as a heterotroph, the plastid taken in
+  // by the ochrophytes alone.
+  r88: {
+    text: 'Jirsová & Wideman (2024) ISME J 18:wrae150 — “Integrated overview of stramenopile ecology, taxonomy, and heterotrophic origin”',
+    url: 'https://doi.org/10.1093/ismejo/wrae150',
+  },
+  // "Schizochytrium sp. is a single-cell microalga", in the abstract. The
+  // strain is S. limacinum, which is A. limacinum.
+  r89: {
+    text: 'EFSA Panel on Nutrition, Novel Foods and Food Allergens (2021) EFSA J 19:6345 — “Safety of oil from Schizochytrium limacinum (strain FCC-3204) for use in food supplements as a novel food pursuant to Regulation (EU) 2015/2283”',
+    url: 'https://doi.org/10.2903/j.efsa.2021.6345',
+  },
+  // Accepted name and classification; it prints the basionym's year as 1998,
+  // after the misprint in r81.
+  r90: {
+    text: 'WoRMS Editorial Board — World Register of Marine Species: Aurantiochytrium mangrovei, AphiaID 1815282 (consulted 27 September 2026)',
+    url: 'https://www.marinespecies.org/aphia.php?p=taxdetails&id=1815282',
+  },
+  // Refractive-index tomography of single oleaginous microalgal cells: the
+  // lipid bodies above 1.46.
+  r91: {
+    text: 'Jung, Hong, Kim, Kim, Lee, Shin, Lee, Kim, Lee & Park (2018) Sci Rep 8:6524 — “Label-free non-invasive quantitative measurement of lipid contents in individual microalgal cells using refractive index tomography”',
+    url: 'https://doi.org/10.1038/s41598-018-24393-0',
+  },
+  // Strain BL10 of the species: division ends at about a day, then lipid
+  // accumulates. Open access.
+  r92: {
+    text: 'Chaung, Chu, Su & Chen (2012) AMB Express 2:42 — “Effect of culture conditions on growth, lipid content, and fatty acid composition of Aurantiochytrium mangrovei strain BL10”',
+    url: 'https://doi.org/10.1186/2191-0855-2-42',
+  },
+  // The sister species, described with the slug-like cells it is named for.
+  r93: {
+    text: 'Honda, Yokochi, Nakahara, Erata & Higashihara (1998) Mycol Res 102:439–448 — “Schizochytrium limacinum sp. nov., a new thraustochytrid from a mangrove area in the west Pacific Ocean”',
+    url: 'https://doi.org/10.1017/S0953756297005170',
+  },
+  // The carotenoid genes of thraustochytrids, fused and acquired sideways.
+  r94: {
+    text: 'Rius, Rest, Filloramo, Novák Vanclová, Archibald & Collier (2023) Genome Biol Evol 15:evad029 — “Horizontal gene transfer and fusion spread carotenogenesis among diverse heterotrophic protists”',
+    url: 'https://doi.org/10.1093/gbe/evad029',
+  },
+  // The group as a phylum, which is the rank and name the landing page's tree
+  // uses for it.
+  r95: {
+    text: 'Bennett, Honda, Beakes & Thines (2017) in Handbook of the Protists, 507–542 — “Labyrinthulomycota”',
+    url: 'https://doi.org/10.1007/978-3-319-28149-0_25',
+  },
+  // The reference photograph of the culture drawn — the project owner's, kept
+  // private by its author. Nothing of it is published but what was measured on
+  // it, and the measurements are recorded, with how they were taken, in the
+  // anatomical bill of materials, §2.10, which is what this links to.
+  r96: {
+    text: 'Project owner (2026) — unpublished observations of RCC893 in YEP, and a brightfield photograph of it after 72 h at 200× (kept private; measurements in the anatomical bill of materials, §2.10)',
+    url: 'https://github.com/giovannilucarusso-ui/Microalgae-3D-Atlas/blob/main/docs/distinta-anatomica-aurantiochytrium.md',
+  },
   r43: {
     text: 'Deschoenmaeker, Facchini, Cabrera Pino, Bayon-Vicente, Sachdeva, Flammang & Wattiez (2016) J Struct Biol 196:385–393 — “Nitrogen depletion in Arthrospira sp. PCC 8005, an ultrastructural point of view”',
     url: 'https://doi.org/10.1016/j.jsb.2016.08.007',

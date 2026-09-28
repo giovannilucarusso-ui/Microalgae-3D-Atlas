@@ -130,6 +130,56 @@ function coccoid(cell, seed) {
     .join('')
 }
 
+// A thraustochytrid culture: colourless cells full of oil, at their real sizes
+// in a field 60 µm across, most of them in pairs and small groups — pressed
+// together, so each is cut flat where it meets its neighbour — with the dark
+// rim inside and the bright line outside that every one of them shows at 200×.
+function thraustochytrids(cell, seed) {
+  const { minUm = 6, maxUm = 28, medianUm = 13 } = cell ?? {}
+  const perUm = 100 / 60
+  const rand = mulberry32(seed)
+  const size = () => {
+    // Around the median, with the long tail the measurement has.
+    const u = rand()
+    const d = medianUm * Math.exp((u - 0.5) * 0.55 + (u > 0.93 ? (u - 0.93) * 6 : 0))
+    return (Math.min(maxUm, Math.max(minUm, d)) / 2) * perUm
+  }
+  const cells = []
+  const fits = (x, y, r, pressed) =>
+    Math.hypot(x - 50, y - 50) < 49 - r * 0.4 &&
+    cells.every((c) => Math.hypot(c.x - x, c.y - y) > (c.r + r) * (pressed ? 0.86 : 1.08))
+  for (let i = 0; i < 400 && cells.length < 11; i++) {
+    const r = size()
+    const x = 12 + rand() * 76
+    const y = 12 + rand() * 76
+    if (!fits(x, y, r, false)) continue
+    cells.push({ x, y, r })
+    // A daughter pressed against it, more often than not.
+    if (rand() < 0.62) {
+      const r2 = size()
+      const a = rand() * Math.PI * 2
+      const d = (r + r2) * 0.9
+      const x2 = x + Math.cos(a) * d
+      const y2 = y + Math.sin(a) * d
+      if (fits(x2, y2, r2, true)) cells.push({ x: x2, y: y2, r: r2 })
+    }
+  }
+  let dots = ''
+  for (const c of cells) {
+    const n = Math.round(c.r * c.r * 0.09)
+    for (let k = 0; k < n; k++) {
+      const a = rand() * Math.PI * 2
+      const q = Math.sqrt(rand()) * c.r * 0.78
+      dots += `<circle cx="${f(c.x + Math.cos(a) * q)}" cy="${f(c.y + Math.sin(a) * q)}" r="${f(0.55 + rand() * 0.5)}" fill="${rand() < 0.5 ? '#c9c2ad' : '#f6f2e6'}"/>`
+    }
+  }
+  return (
+    cells.map((c) => `<circle cx="${f(c.x)}" cy="${f(c.y)}" r="${f(c.r + 0.9)}" fill="none" stroke="#fbf9f2" stroke-width="1.2"/>`).join('') +
+    cells.map((c) => `<circle cx="${f(c.x)}" cy="${f(c.y)}" r="${f(c.r)}" fill="#e3ddcb" stroke="#8d8672" stroke-width="1.1"/>`).join('') +
+    dots
+  )
+}
+
 function organism(body) {
   switch (body.kind) {
     case 'helical-trichome': {
@@ -143,6 +193,8 @@ function organism(body) {
     }
     case 'coccoid-field':
       return coccoid(body.cell, body.seed)
+    case 'thraustochytrid-field':
+      return thraustochytrids(body.cell, body.seed)
     case 'euglenoid-field':
       return `<g transform="rotate(-26 50 50)"><path d="M8 47 C0 40 -2 28 6 17" fill="none" stroke="#3b6f2e" stroke-width="1.8"/>` +
         `<path d="M8 50 C8 37 26 32 46 35 C64 38 82 46 97 51 C82 55 64 62 46 65 C26 68 8 63 8 50Z" fill="#5a9a44" stroke="#3b6f2e" stroke-width="1.5"/>` +

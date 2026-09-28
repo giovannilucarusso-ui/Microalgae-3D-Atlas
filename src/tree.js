@@ -13,7 +13,11 @@
 // point because the order in which they branched is not resolved: a drawing that
 // nested them would be claiming a result nobody has. Archaea are left out, since
 // none of them photosynthesise with chlorophyll; the tree is of the lineages an
-// atlas of microalgae could ever draw from.
+// atlas of microalgae could ever draw from — with one exception, made on purpose.
+// Labyrinthulomycota, the branch of Aurantiochytrium, has no plastid and never
+// had one, but its oil is sold as algal and its genus called a microalga, so it
+// is on the tree to show where the word stops, and no endosymbiosis arrow runs
+// into it.
 //
 // A lineage with no specimen under it is drawn as an empty slot. That is on
 // purpose: the gaps are the atlas's to-do list, and each one links to the form
@@ -57,6 +61,10 @@ export const LINEAGES = [
         common: 'stramenopiles, alveolates, rhizarians',
         children: [
           { name: 'Bacillariophyta', rank: 'phylum', common: 'diatoms' },
+          // Stramenopiles like the diatoms, but heterotrophs: no plastid, and so
+          // no arrow in ENDOSYMBIOSES. The phylum as Bennett et al. treat it
+          // (r95); WoRMS places the same group in Bigyra.
+          { name: 'Labyrinthulomycota', rank: 'phylum', common: 'thraustochytrids and slime nets' },
           { name: 'Dinoflagellata', rank: 'phylum', common: 'dinoflagellates' },
         ],
       },

@@ -147,6 +147,11 @@ async function main() {
   // that does not say which is not a record of anything.
   const filterFlag = args.indexOf('--filter')
   const filterAt = filterFlag === -1 ? null : args[filterFlag + 1]
+  // Where in its life cycle the specimen is shown, from 0 to 1 — for a
+  // specimen whose cycle is switched on in the panel, it is switched on first
+  // and then paused there.
+  const lifeFlag = args.indexOf('--life')
+  const lifeAt = lifeFlag === -1 ? null : Number(args[lifeFlag + 1])
   const [cx, cy, cw, ch] = cropFlag === -1 ? [] : (args[cropFlag + 1] ?? '').split(',').map(Number)
   const clip =
     cropFlag === -1
@@ -206,6 +211,23 @@ async function main() {
       await sleep(1600)
     }
 
+    if (lifeAt != null && Number.isFinite(lifeAt)) {
+      await page.evaluate(() => {
+        const toggle = [...document.querySelectorAll('label.toggle')].find((l) => l.textContent.includes('Life cycle'))
+        const box = toggle?.querySelector('input[type="checkbox"]')
+        if (box && !box.checked) box.click()
+      })
+      await sleep(600)
+      await page.evaluate((v) => {
+        const slider = document.querySelector('#life')
+        if (!slider) return
+        slider.value = String(v)
+        slider.dispatchEvent(new Event('input', { bubbles: true }))
+      }, lifeAt)
+      // the camera flies to the cell the cycle follows
+      await sleep(2600)
+    }
+
     if (still) {
       await page.evaluate(() => {
         const box = document.querySelector('.toggle input[type="checkbox"], input[type="checkbox"]')
@@ -252,7 +274,8 @@ async function main() {
           // Chlorella's wet mount. `wall` is not here: both specimens use that
           // id and the entry above is Spirulina's, so `--select wall` on a
           // Chlorella shot finds nothing. Everything else is unambiguous.
-          cellBody: 'The cell',
+          // Any of these; the specimens name their cell differently.
+          cellBody: ['The cell', 'The vegetative cell', 'The motile cell'],
           chloroplast: 'Chloroplast',
           pyrenoid: 'Pyrenoid',
           granules: 'Refractile granules',
@@ -276,9 +299,17 @@ async function main() {
           embryos: 'Embryos and juveniles',
           swimming: 'Swimming and turning',
           germSoma: 'Germ and soma',
+          // Aurantiochytrium mangrovei.
+          colour: 'Colour',
+          groups: 'Diads, tetrads',
+          culture: 'Three days in YEP',
+          zoospores: 'Zoospores',
+          identity: 'Which name',
+          notAnAlga: 'non-alga',
         }
+        const wanted = [names[id] ?? id].flat()
         const item = [...document.querySelectorAll('.item')].find((b) =>
-          b.textContent.includes(names[id] ?? id),
+          wanted.some((name) => b.textContent.includes(name)),
         )
         item?.click()
       }, shot.select)

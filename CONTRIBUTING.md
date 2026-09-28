@@ -51,7 +51,7 @@ credited on it (see [Licence and credit](#licence-and-credit)).
 
 ### Add a specimen on an existing generator
 
-There are five body generators. A species whose body fits one of them needs a
+There are six body generators. A species whose body fits one of them needs a
 species file, some cards and some bibliography entries, and no rendering code.
 
 | `exterior.kind` | draws | built for |
@@ -61,6 +61,7 @@ species file, some cards and some bibliography entries, and no rendering code.
 | `euglenoid-field` | a field of flexible, spindle-shaped flagellates | Euglena — [`euglena-gracilis.js`](src/species/euglena-gracilis.js) |
 | `haptophyte-field` | a scaly flagellate with a flattened body, parietal plastids, flagella, haptonema and spine-scales | Braarudosphaera — [`braarudosphaera-bigelowii.js`](src/species/braarudosphaera-bigelowii.js) |
 | `colony-field` | a drop of hollow colonies, each a layer of cells on a sphere of matrix, carrying their young inside | Volvox — [`volvox-aureus.js`](src/species/volvox-aureus.js) |
+| `thraustochytrid-field` | a settled culture of colourless round cells full of oil droplets, in groups pressed flat where they touch | Aurantiochytrium — [`aurantiochytrium-mangrovei.js`](src/species/aurantiochytrium-mangrovei.js) |
 
 1. **Start from the closest record** in [`src/species/`](src/species/) and give
    it its own `id`, `name`, `latin`, `authority` and `group`. The parameters

@@ -8,6 +8,7 @@ import CellField2D from './CellField2D.jsx'
 import EuglenaField from './EuglenaField.jsx'
 import HaptophyteField from './HaptophyteField.jsx'
 import ColonyField from './ColonyField.jsx'
+import ThraustochytridField from './ThraustochytridField.jsx'
 import Debris from './specimen.jsx'
 import CellSection from './CellSection.jsx'
 import { SWATCH } from './materials.js'
@@ -139,6 +140,10 @@ export default function App() {
 
   const [lostContext, setLostContext] = useState(false)
   const [lifePlaying, setLifePlaying] = useState(false)
+  // A specimen whose life cycle is shown on request rather than always: the
+  // thraustochytrid's culture is three days old and has no zoospores left, so
+  // its cycle is a thing to switch on.
+  const [cycleOn, setCycleOn] = useState(false)
   const [photosynthesis, setPhotosynthesis] = useState(false)
 
   const photoName = useRef(null)
@@ -330,6 +335,19 @@ export default function App() {
     setView('filament')
     setSpeciesId(id)
     setFocus(0)
+    setCycleOn(false)
+    setLifePlaying(false)
+  }
+
+  // Switching the life cycle on starts it from the beginning and opens its
+  // card, which is also what points the camera at the cell it follows.
+  function toggleCycle(on) {
+    setCycleOn(on)
+    life.current.progress = 0
+    if (lifeSlider.current) lifeSlider.current.value = '0'
+    setLifePlaying(on)
+    if (on && species.structures.lifeCycle) select('lifeCycle')
+    else if (!on && selected === 'lifeCycle') setSelected(null)
   }
 
   // The address and the tab's title follow the specimen. The address is
@@ -488,6 +506,13 @@ export default function App() {
                 optics={config.optics}
                 swimming={gliding}
               />
+            ) : config.form.kind === 'thraustochytrid-field' ? (
+              <ThraustochytridField
+                form={config.form}
+                focus={focus}
+                optics={config.optics}
+                life={cycleOn ? life : null}
+              />
             ) : config.form.kind === 'coccoid-field' ? (
               RENDER_2D ? (
                 <CellField2D
@@ -520,6 +545,7 @@ export default function App() {
             <Debris
               field={config.form.fieldUm}
               neighbours={config.form.kind === 'helical-trichome' ? 2 : 0}
+              {...config.form.debris}
             />
           </>
         ) : (
@@ -700,7 +726,8 @@ export default function App() {
             {(config.form?.kind === 'coccoid-field' ||
               config.form?.kind === 'euglenoid-field' ||
               config.form?.kind === 'haptophyte-field' ||
-              config.form?.kind === 'colony-field') && (
+              config.form?.kind === 'colony-field' ||
+              config.form?.kind === 'thraustochytrid-field') && (
             <div className="cycle">
               <label htmlFor="condenser">Condenser filter</label>
               <select
@@ -875,6 +902,55 @@ export default function App() {
                   {LIFE_CYCLE.stages[0].text}
                 </p>
               </div>
+            </>
+            ) : config.form?.lifeCycle ? (
+            <>
+              {/* A life cycle shown on request: the specimen's own record says
+                  what it is and names its stages. */}
+              <label className="toggle">
+                <input
+                  type="checkbox"
+                  checked={cycleOn}
+                  onChange={(e) => toggleCycle(e.target.checked)}
+                />
+                {config.form.lifeCycle.label}
+              </label>
+              <p className="note">{config.form.lifeCycle.note}</p>
+              {cycleOn && (
+                <div className="cycle">
+                  <label htmlFor="life">
+                    Stage
+                    <span className="value" ref={lifeName}>
+                      {config.form.lifeCycle.stages[0].name}
+                    </span>
+                  </label>
+                  <div className="cycle-row">
+                    <button
+                      className="play"
+                      onClick={() => setLifePlaying((on) => !on)}
+                      aria-label={lifePlaying ? 'Pause the life cycle' : 'Play the life cycle'}
+                    >
+                      {lifePlaying ? '❚❚' : '▶'}
+                    </button>
+                    <input
+                      id="life"
+                      type="range"
+                      min="0"
+                      max="1"
+                      step="0.002"
+                      defaultValue="0"
+                      ref={lifeSlider}
+                      onInput={(event) => {
+                        life.current.progress = Number(event.target.value)
+                        if (life.current.playing) setLifePlaying(false)
+                      }}
+                    />
+                  </div>
+                  <p className="note" ref={lifeText}>
+                    {config.form.lifeCycle.stages[0].text}
+                  </p>
+                </div>
+              )}
             </>
             ) : config.form?.motion ? (
             <>

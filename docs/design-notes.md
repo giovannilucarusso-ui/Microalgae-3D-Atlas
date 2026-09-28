@@ -262,6 +262,96 @@ decided, and what was tried and set aside:
   compile, the whole field draws nothing, and the only sign is a shader log in
   the console — which is why `npm run shots` reports console errors.
 
+## The thraustochytrid field, and Aurantiochytrium
+
+The seventh specimen, *Aurantiochytrium mangrovei* strain RCC893 (September
+2026), is the atlas's first non-alga, and its field is the project owner's own
+culture three days into YEP, drawn to a photograph of it at 200× that the owner
+keeps private. Nothing of the photograph is in the repository; what was measured
+on it is in `docs/distinta-anatomica-aurantiochytrium.md`, §2.10, and in
+`tools/check-aurantiochytrium.mjs`. The generator is `src/ThraustochytridField.jsx`,
+the population `src/thraustochytrid.js`. What was decided, and what was tried and
+set aside:
+
+- **One instrument, even against the reference.** The photograph's cells are
+  clearly yellow inside and faintly violet outside, and that is its objective,
+  not the cells: summed over a cell and its halo, blue loses 1.6 % of the light
+  against 0.3–0.8 % for red and green, so most of the yellow is blue moved
+  outwards by the lens, not taken. The pattern — red and blue both focusing
+  deeper than green, blue furthest — is an achromat's secondary spectrum, and
+  the atlas's objective, whose axial colour was fitted to the Braarudosphaera
+  footage, has blue on the other side of green. The two references were taken
+  through different objectives. A second objective on a nosepiece, fitted to the
+  photograph, was built and removed: the owner's call was that the atlas keeps
+  one instrument. The Roscoff collection's micrograph of the strain, taken on a
+  third microscope, shows its cell 5 % under its field in blue against green,
+  which is what is drawn: a few per cent of blue, taken by carotenoids in the oil.
+- **The culture is measured, not tuned.** Sizes are drawn straight from the
+  photograph's histogram of 230 cells; the density is its 1400 cells per mm².
+  Cells in groups are as large as cells alone there, so a group is cells that
+  divided and grew in place, not a mother cut into pieces. At that density
+  chance contacts are already common, so the share of cells in division groups
+  (60 %, some pressed, some a micrometre or two apart) is fitted to the
+  photograph's share of cells within 0.9, 2.4 and 3.9 µm of another (36, 61,
+  74 %) rather than set to it.
+- **Pressed cells share a face.** Two overlapping spheres are cut along their
+  radical plane, as a smooth step as wide as the blur, and the phase term is
+  taken through the cut by the product rule. The crease between two pressed
+  cells then appears by itself, from the valley the two chords make, rather than
+  as an outline drawn on.
+- **The oil is a mean and its departures.** Droplets are generated in the shader
+  from each cell's seed. The first version drew every droplet and dropped the
+  ones blurred past their lattice site, which took their share of the oil out of
+  the cell with them: every large cell came out with a clear margin where its
+  equator was out of focus. Now the oil's mean share is part of the cell's own
+  index, and each droplet is drawn as itself minus itself spread over its site,
+  which goes to nothing by itself as it leaves focus.
+- **Three textures that were the renderer, not the cell.** A cubic lattice seen
+  down its own axis is a grid, and the first interior was woven cloth; the layers
+  are now turned and shifted independently. At the opening magnification a
+  droplet is three pixels across and its rim a fraction of one, which drew a maze
+  of single pixels; the droplets are band-limited to a pixel and a half, and
+  resolve when zoomed in. And the first-order transport-of-intensity equation
+  overstates a droplet of oil a micrometre or two across, which is not a weak
+  phase object, printing every droplet near focus as a black or white blot; its
+  term is saturated so that a cell in focus through its middle has the texture
+  of the collection's micrograph — a standard deviation of 0.105 of the field
+  against its 0.103, at 14.4 px/µm.
+- **The plane of focus is fitted, and selects a size.** Every cell rests on the
+  glass with its middle one radius up. The plane is set just under the middle of
+  a median cell, where the 13–16 µm cells match the photograph's edges — a bright
+  line outside at +4.6 % against +4 % — with the interior at 0.94 of the field
+  against 0.96–0.99. Smaller cells then show the reverse edge and larger ones
+  ring more widely, which the photograph does less than the model: its contrast
+  is nearly the same at every size. The coarse, high-contrast mottle of the
+  photograph's interiors (0.16 at its 1.32 px/µm, against 0.06 here) is its
+  lower aperture and its camera's sharpening; it is not reproduced.
+- **The life cycle is one cell in a clearing, played on request.** The culture
+  is three days old and had no zoospores left, so the cycle is a switch in the
+  panel: a zoospore arrives and settles, the cyst grows to the culture's median
+  size, the protoplast cleaves inside the wall into sixteen, the masses become
+  zoospores, and the wall bursts — the release the project owner sees in RCC893
+  in YEP; the card gives the protologue's different account of the type strain,
+  a cell that sheds its wall before it cleaves. It is a pure function of the
+  phase (`cycleAt` in `src/thraustochytrid.js`), so the slider scrubs it. Growth
+  is compressed, a day into ten seconds; swimming is not, and the zoospores are
+  out of a close view within a second or two of the burst, which is the
+  measured speed of the species and not a choice.
+- **Cleavage is exact, and the first version was not.** A mass was first a
+  sphere of the right volume at its piece's centroid, and half-way through
+  cleavage those spheres stood almost a micrometre out of the wall; the check
+  caught it. Now each mass is the protoplast's own sphere cut by the furrows of
+  every division it came from — upright planes, one per division, so sixteen
+  masses need exactly the four faces the renderer carries — and a furrow opens
+  as it forms. All the masses share the protoplast's seed, so the oil does not
+  jump at each division, and the zoospores take shape where their masses were,
+  drawn in until the whole body is inside the wall.
+- **Nothing else on the slide.** The photograph holds thin rod bacteria, which
+  the owner chose to leave out, so the slide's furniture loses its passing cells
+  of other species and its detritus flakes — a flake seen edge-on is a rod of
+  just their size. `Debris` takes the two counts as props, and a species record
+  may set them.
+
 ## The landing page, and the type
 
 The site opens on a tree of life, `index.html`, and the microscope moved to

@@ -825,7 +825,11 @@ const COCCUS_UM = [1.1, 3.4]
 // than the biggest.
 const sized = (value, [lo, hi]) => Math.min(hi, Math.max(lo, value))
 
-export default function Debris({ field = 451.3, seed = 17, neighbours = 2 }) {
+// `flakes` and `cocci` are how many detritus flakes and passing cells of some
+// other organism the slide carries. A specimen may say its slide has none: the
+// Aurantiochytrium culture's bacteria are left out by the owner's choice, and a
+// detritus flake seen edge-on is a rod of just their size.
+export default function Debris({ field = 451.3, seed = 17, neighbours = 2, flakes = 7, cocci = 4 }) {
   const k = field / 451.3
   const spread = 320 * k
   const depth = 260 * k
@@ -881,7 +885,7 @@ export default function Debris({ field = 451.3, seed = 17, neighbours = 2 }) {
     }
 
     // detritus flakes: bigger, flatter, mostly well out of focus
-    for (let i = 0; i < 7; i++) {
+    for (let i = 0; i < flakes; i++) {
       items.push({
         kind: 'flake',
         geometry: geometries.flake,
@@ -901,7 +905,7 @@ export default function Debris({ field = 451.3, seed = 17, neighbours = 2 }) {
     }
 
     // a few single cells of something else
-    for (let i = 0; i < 4; i++) {
+    for (let i = 0; i < cocci; i++) {
       items.push({
         kind: 'coccus',
         geometry: geometries.coccus,
@@ -950,7 +954,7 @@ export default function Debris({ field = 451.3, seed = 17, neighbours = 2 }) {
     }
 
     return { items, geometries, materials }
-  }, [spread, depth, seed])
+  }, [spread, depth, seed, flakes, cocci])
 
   useEffect(
     () => () => {

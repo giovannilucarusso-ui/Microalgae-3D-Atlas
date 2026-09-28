@@ -22,6 +22,9 @@ docs/shots/adhoc*.png
 docs/fonti/*.pdf
 docs/fonti/*.txt
 docs/fonti/deschoenmaeker-2016-fig2-TEM.jpg
+# Foto del proprietario del progetto (Aurantiochytrium a 200x): resta locale
+# finche non decide di pubblicarla con una licenza.
+docs/fonti/utente-*.jpg
 
 # sistema
 .DS_Store

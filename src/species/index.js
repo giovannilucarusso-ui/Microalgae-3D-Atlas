@@ -9,6 +9,7 @@ import chlorellaSorokiniana from './chlorella-sorokiniana.js'
 import euglenaGracilis from './euglena-gracilis.js'
 import braarudosphaeraBigelowii from './braarudosphaera-bigelowii.js'
 import volvoxAureus from './volvox-aureus.js'
+import aurantiochytriumMangrovei from './aurantiochytrium-mangrovei.js'
 
 export const SPECIES = [
   limnospiraPlatensis,
@@ -17,6 +18,7 @@ export const SPECIES = [
   euglenaGracilis,
   braarudosphaeraBigelowii,
   volvoxAureus,
+  aurantiochytriumMangrovei,
 ]
 
 export const DEFAULT_SPECIES = limnospiraPlatensis.id

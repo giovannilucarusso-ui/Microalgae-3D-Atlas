@@ -5,6 +5,11 @@
 An interactive 3D cell atlas of microalgae and cyanobacteria that says where
 every number came from.
 
+One specimen is neither, on purpose. *Aurantiochytrium mangrovei* is a
+thraustochytrid: it has no plastid and never photosynthesises, but its oil is
+sold as "algal" and the EU's food-safety authority calls its genus a microalga,
+so it is here to show where the word stops.
+
 **[Open the atlas](https://giovannilucarusso-ui.github.io/Microalgae-3D-Atlas/)**.
 It runs in the browser, with nothing to install.
 

@@ -453,3 +453,108 @@ consulted and not copied:
   either they are small colonies, or the organism is a smaller Volvox. The atlas
   draws V. aureus at the species' size, framed so a colony spans the share of the
   frame it spans in the footage, and the card "Which Volvox is this?" says so.
+
+## Aurantiochytrium mangrovei RCC893 — the thraustochytrid
+
+The research record is `docs/distinta-anatomica-aurantiochytrium.md`; its
+numbered bibliography is the full list. This section keeps what is stored here
+and why.
+
+**The species is *A. mangrovei*, strain RCC893** — the project owner's
+organism (Russo et al. 2021, *Processes* 9:1834, CC BY). RCC893 (strain name
+CKM1) was isolated by K.M. Tsui on 10 September 2002 from decaying leaves in a
+brackish mangrove at Sai Kung, Hong Kong (Roscoff Culture Collection record).
+It is the only *A. mangrovei* in the 18S tree that erected the genus
+*Aurantiochytrium* (Yokoyama & Honda 2007), and those authors note that it is
+not the ex-type strain: the type cultures from Goa (NIOCC 90, 97, 98) have been
+lost.
+
+**Species-level sources, kept locally (PDFs are gitignored):**
+
+- `raghukumar-1988-schizochytrium-mangrovei.pdf` — Raghu-Kumar 1988, *Trans. Br.
+  Mycol. Soc.* 90:627–631, the protologue; © British Mycological Society, read
+  from the copy the Roscoff Culture Collection hosts. Young cell 3.7–4.4 µm;
+  mature cell 6.3–9.2 µm on pollen, 5–12 µm in nutrient medium; diad → tetrad →
+  6–8 → 12 cells, each becoming a zoospore; zoospores elliptical,
+  4.1–4.8 × 2.6–3.3 µm, long anterior and short posterior flagellum, lateral;
+  in nutrient medium the cell loses its wall and cleaves like an amoeba into
+  2–32 zoospores.
+- `yokoyama-honda-2007-aurantiochytrium.pdf` — Yokoyama & Honda 2007,
+  *Mycoscience* 48:199–211, free on J-STAGE: the genus diagnosis (thin-walled,
+  globose, orange thallus; five carotenoids up to astaxanthin; < 5 % ARA and
+  ~80 % DHA in the PUFA; small colonies; ectoplasmic net poorly developed;
+  zoospores reniform to ovoid) and the RCC893 caveat above.
+- `wong-2008-a-mangrovei-MP2.pdf` — Wong et al. 2008, *Mycoscience* 49:266–270,
+  J-STAGE: strain MP2 from Hong Kong. Cells spherical and full of lipid bodies
+  (DIC); 10.6–45.1 µm (mean 15.6) at 10 % glucose; burst in fresh water; after
+  centrifugation a floating layer and a pellet, the floating cells richer in
+  larger, more unsaturated lipid bodies.
+- `tsui-2012-zoospore-motility.pdf` — Tsui et al. 2012, *Mycoscience* 53:1–9,
+  J-STAGE: strain KF6. Zoospores swim straight with occasional turns, up to
+  151 µm/s (curvilinear) and 125 µm/s (straight line) at 7.5 ‰ salinity;
+  production triggered at 0–15 ‰.
+- `russo-2021-a-mangrovei-RCC893.pdf` (CC BY) and
+  `delabroise-2022-RCC893-pilot.pdf` (*Mar. Drugs* 20:499, CC BY) — RCC893 in
+  culture: YEP on filtered seawater, 24 ± 2 °C in the dark; flask cultures near
+  2 × 10⁷ cells/mL.
+
+**Sister-species references, kept in the repository because the licence allows
+it** — these are *A. limacinum*, the model tier for this specimen:
+
+- `gilgomez2025-s1-02h.png` … `gilgomez2025-s1-12h.png` — the six unadjusted
+  time-lapse stills of the S1 file of Gil-Gomez et al. 2025, *PLoS ONE*
+  20:e0326651, https://doi.org/10.1371/journal.pone.0326651, **CC BY 4.0**.
+  Strain ATCC MYA-1381 (SR21, the type strain) on a glass-bottom dish, 63×/1.4
+  oil objective, 2, 4, 6, 8, 10 and 12 hours after zoospore settlement. Converted
+  from TIFF to greyscale PNG without loss (the originals are pure grey).
+  **Scale: the 10 µm bar is 83 px, so 8.3 px/µm; the frame is 80 × 94 µm.**
+  Measured on them: a settled cell of about 4 µm at 2 h, 5 at 4 h, 6 at 6 h,
+  then a dividing cluster of 8, 10.5 and 13.6 µm at 8, 10 and 12 h (a tetrad of
+  cells of about 7 µm). The ground is neutral grey, about 110/255. This is the
+  reference the settlement view will be calibrated against.
+- `gilgomez2025-fig1.png` — the published figure made from those stills, with
+  contrast raised to show the ectoplasmic net and arrows on its strands. Same
+  licence.
+- `deragon2021-fig1-stem.jpg` — Deragon et al. 2021, *Cells* 10:2680,
+  https://doi.org/10.3390/cells10102680, **CC BY 4.0**, Fig. 1: scanning
+  transmission EM of *A. limacinum* CCAP 4062/1 after two days in rich medium,
+  wild type and a lipid hyper-accumulating mutant, with nucleus, Golgi,
+  mitochondria, vacuoles and lipid droplets labelled. Measured: wild-type cells
+  about 8–9 µm, droplets about 0.6 µm and few; mutant droplets 1–1.9 µm and dense
+  round a large vacuole; nucleus 2.5–3 µm; mitochondrial profiles 0.6–1.1 µm.
+- `commons-neonja2011-sr21-dic.jpg` — "Aurantiochytrium limacinum SR21", by
+  NEON ja (2011), Olympus IX71 with a DP72 colour camera, Wikimedia Commons,
+  **CC BY-SA 3.0** — so any adaptation of this one image must carry the same
+  licence. DIC, 10 µm bar = 94 px. Measured: cells 10–17 µm, neutral grey
+  ground (103, 103, 103), cells without a hue of their own.
+- `adl2024-thraustochytrid-schema.jpg` — schematic of a thraustochytrid trophont
+  by Sina Adl (2024), from *Protistology* (Elsevier), ch. 7, uploaded by the
+  author to Wikimedia Commons under **CC BY 4.0**: scales, mitochondria with
+  tubular cristae, nucleus and nucleolus, a lipid globule, the bothrosome and
+  the ectoplasmic net. A diagram, not a measurement.
+
+**Kept locally, never published:** `utente-aurantiochytrium-200x.jpg`, the
+project owner's own brightfield photograph of RCC893 after 72 h of culture in
+YEP, at 200× through the eyepiece with a phone. The owner has chosen not to publish it,
+so it is gitignored and only numbers measured on it may appear anywhere else
+(distinta §2.10): a 1.0 mm field at 1.32 px/µm, cells 13.2 µm median
+(9.5–17.8 µm, 5th–95th percentile, n = 230), about 70 % of cells in groups of
+2–7, no zoospores at 72 h, a few rod bacteria (which the owner has chosen not
+to have drawn).
+
+**Consulted on the collection's site, not kept:** the Roscoff Culture
+Collection's one micrograph of RCC893, on its strain page (no licence stated,
+so it is not copied here). Measured on its 5 µm bar (14.4 px/µm): the cell is
+19.9 µm across — the record's "length 20 µm" is that one cell — and packed with
+lipid droplets of about 1 µm (0.8–1.2); its interior is 1.04 / 1.04 / 0.98 of
+the field in red, green and blue, blue about 5 % under green, and its texture
+has a standard deviation of 0.103 of the field. It is the reference for the
+droplets and for how much colour is really in the cells: taken on a third
+microscope, it shows none of the reference photograph's yellow.
+
+**Read, not kept:** Chung et al. 2025 (*Nat. Commun.*, CC BY-NC-ND), Sasaki et
+al. 2023 (*J. Phys. Chem. B*, CC BY-NC-ND) and the Stony Brook laboratory pages
+(no licence) were consulted and measured; only numbers come from them. The
+life-cycle plate of Ganuza et al. 2019 is on Wikimedia Commons as CC BY 4.0, but
+the article is not listed as open access, so it is not copied here until the
+publisher's licence is confirmed.
