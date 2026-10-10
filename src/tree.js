@@ -77,11 +77,14 @@ export const LINEAGES = [
 // that was taken in to the lineage that took it. Both ends name a lineage above
 // or a genus in the atlas.
 //
-// The red-algal arrow is drawn from red algae to the haptophytes and labelled as
-// debated rather than routed through anyone: Keeling (r61) gives a single uptake
-// of a red alga shared by the "chromalveolates", Stiller et al. (r63) a chain of
-// three, the last of them an ochrophyte taken in by the haptophytes. The two
-// agree on where the plastid began and not on how it arrived.
+// The red-algal arrows are drawn from red algae to the haptophytes and to the
+// diatoms, and labelled as debated rather than routed through anyone: Keeling
+// (r61) gives a single uptake of a red alga shared by the "chromalveolates",
+// Stiller et al. (r63) a chain of three — a red alga into a cryptophyte, that
+// into an ochrophyte, the ochrophyte into the haptophytes. The diatoms are
+// ochrophytes, so on either account their plastid is red at its root and
+// arrived at second hand or later. The two agree on where the plastid began and
+// not on how it arrived.
 //
 // The nitroplast's date is the divergence of the UCYN-A lineages, ~91 million
 // years ago (r64): a date inside the partnership, which is therefore at least
@@ -106,6 +109,14 @@ export const ENDOSYMBIOSES = [
   {
     from: 'Rhodophyta',
     to: 'Haptophyta',
+    kind: 'red',
+    label: 'Plastid of red-algal origin',
+    note: 'by a route still debated',
+    sources: ['r61', 'r63'],
+  },
+  {
+    from: 'Rhodophyta',
+    to: 'Bacillariophyta',
     kind: 'red',
     label: 'Plastid of red-algal origin',
     note: 'by a route still debated',

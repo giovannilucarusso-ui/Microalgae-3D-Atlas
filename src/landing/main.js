@@ -205,6 +205,26 @@ function organism(body) {
         `<path d="M50 33 L50 21" stroke="#8a7440" stroke-width="1.2"/><ellipse cx="50" cy="57" rx="26" ry="24" fill="#f1e7c9" stroke="#a88a4a" stroke-width="1.6"/>` +
         `<ellipse cx="36.5" cy="55" rx="8.5" ry="15.5" fill="#c79d3c" transform="rotate(12 36.5 55)"/><ellipse cx="63.5" cy="55" rx="8.5" ry="15.5" fill="#c79d3c" transform="rotate(-12 63.5 55)"/>` +
         `<circle cx="50" cy="70" r="7.5" fill="#aebfae" stroke="#6f8a78" stroke-width="1.3"/>`
+    case 'pennate-field': {
+      // A few fusiform cells hanging at different depths, as the culture does
+      // in the drop: a golden body on two colourless arms, one cell bent, and
+      // one oval cell lying on the glass.
+      const spindle = (cx, cy, len, rot, sag, soft) => {
+        const h = len / 2
+        const arm = `M${f(cx - h)} ${f(cy)}Q${f(cx)} ${f(cy - 2 * sag)} ${f(cx + h)} ${f(cy)}`
+        return `<g transform="rotate(${rot} ${f(cx)} ${f(cy)})"${soft ? ' opacity=".45"' : ''}>` +
+          `<path d="${arm}" fill="none" stroke="#9c9583" stroke-width="3.2" stroke-linecap="round"/>` +
+          `<path d="${arm}" fill="none" stroke="#f4f1e7" stroke-width="1.5" stroke-linecap="round"/>` +
+          `<ellipse cx="${f(cx)}" cy="${f(cy - sag)}" rx="${f(len * 0.19)}" ry="4.2" fill="#ece3c6" stroke="#9c8a55" stroke-width="1"/>` +
+          `<ellipse cx="${f(cx + 0.6)}" cy="${f(cy - sag - 1)}" rx="${f(len * 0.15)}" ry="2.4" fill="#c69a3a"/></g>`
+      }
+      return spindle(48, 30, 62, -18, 0, false) +
+        spindle(55, 56, 70, 12, 2.2, false) +
+        spindle(36, 76, 52, -34, 0, true) +
+        spindle(78, 80, 44, 64, 0, true) +
+        `<ellipse cx="24" cy="50" rx="8.5" ry="4.2" transform="rotate(-28 24 50)" fill="#e9dfbf" stroke="#8f8566" stroke-width="1.6"/>` +
+        `<ellipse cx="24.5" cy="49.5" rx="5.5" ry="2.3" transform="rotate(-28 24 50)" fill="#c69a3a"/>`
+    }
     case 'colony-field': {
       // Seen as it is at the microscope, in darkfield: the disc goes dark, the
       // colony is a green haze with its rim a ring of bright points, and its

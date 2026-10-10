@@ -492,6 +492,99 @@ export const SOURCES = {
     text: 'Project owner (2026) — unpublished observations of RCC893 in YEP, and a brightfield photograph of it after 72 h at 200× (kept private; measurements in the anatomical bill of materials, §2.10)',
     url: 'https://github.com/giovannilucarusso-ui/Microalgae-3D-Atlas/blob/main/docs/distinta-anatomica-aurantiochytrium.md',
   },
+  // ── Phaeodactylum tricornutum ─────────────────────────────────────────────
+  // The protologue: described from triradiate cells, with a fusiform cell and
+  // a pair of cells drawn as stages of division. The plate is public domain.
+  r97: {
+    text: 'Bohlin (1897) Öfvers. K. Vetensk.-Akad. Förh. 9:507–529 — “Zur Morphologie und Biologie einzelliger Algen”, p. 520, fig. 9 (plate on Wikimedia Commons)',
+    url: 'https://commons.wikimedia.org/wiki/File:Bohlin_figure9_phaeodactylum.png',
+  },
+  // The ultrastructure of the three forms: the organic wall and its silica
+  // bands, the vacuoles of the arms, the one plastid, the four kinds of oval
+  // frustule, division. Read in full.
+  r98: {
+    text: 'Borowitzka & Volcani (1978) J Phycol 14:10–21 — “The polymorphic diatom Phaeodactylum tricornutum: ultrastructure of its morphotypes”',
+    url: 'https://doi.org/10.1111/j.1529-8817.1978.tb00625.x',
+  },
+  // The review of the forms and their transformations, with Pt1 8.6 in
+  // transmitted light, SEM and TEM. Read in full.
+  r99: {
+    text: 'Tesson, Gaillard & Martín-Jézéquel (2009) Bot Mar 52:104–116 — “Insights into the polymorphism of the diatom Phaeodactylum tricornutum Bohlin”',
+    url: 'https://doi.org/10.1515/BOT.2009.012',
+  },
+  // The cruciform form, the four stages into an oval, and the morphotype
+  // proportions of the accessions as De Martino et al. (2007) measured them.
+  // Open access.
+  r100: {
+    text: 'He, Han & Yu (2014) PLoS ONE 9:e93922 — “A rare Phaeodactylum tricornutum cruciform morphotype: culture conditions, transformation and unique fatty acid characteristics”',
+    url: 'https://doi.org/10.1371/journal.pone.0093922',
+  },
+  // TEM and confocal images of the three forms of Pt3: the plastid's place,
+  // the vacuoles of the arms, the mitochondria, the lipid bodies. Open access.
+  r101: {
+    text: 'Galas, Burel, Schapman, Ropitaux, Bernard, Bénard & Bardor (2021) Front Plant Sci 12:638181 — “Comparative structural and functional analyses of the fusiform, oval, and triradiate morphotypes of Phaeodactylum tricornutum Pt3 strain”',
+    url: 'https://doi.org/10.3389/fpls.2021.638181',
+  },
+  // Whole Pt1 cells reconstructed by FIB-SEM: the volumes of the cell, the
+  // plastid, the pyrenoid, the mitochondria and the nucleus are in its
+  // Supplementary Data 1. Open access.
+  r102: {
+    text: 'Uwizeye, Decelle, Jouneau, Flori, Gallet, Keck et al. (2021) Nat Commun 12:1049 — “Morphological bases of phytoplankton energy management and physiological responses unveiled by 3D subcellular imaging”',
+    url: 'https://doi.org/10.1038/s41467-021-21314-0',
+  },
+  // Pt1 and Pt4 counted by the thousand in brightfield, and their lipid
+  // droplets through eleven days without nitrogen and three with it. Open
+  // access.
+  r103: {
+    text: 'Murison, Hérault, Côme, Guinio, Lebon, Chamot, Bénard, Galas, Schoefs, Marchand, Bardor & Ulmann (2023) Front Plant Sci 14:1257500 — “Comparison of two Phaeodactylum tricornutum ecotypes under nitrogen starvation and resupply reveals distinct lipid accumulation strategies but a common degradation process”',
+    url: 'https://doi.org/10.3389/fpls.2023.1257500',
+  },
+  // Sinking rates in settling columns, with and without phosphate.
+  r104: {
+    text: 'Zhang, Hao, Zhu, Deng, Xi, Cai, Liu, Zhai & Le (2023) Front Mar Sci 10:1255915 — “Nanoplanktonic diatom rapidly alters sinking velocity via regulating lipid content and composition in response to changing nutrient concentrations”',
+    url: 'https://doi.org/10.3389/fmars.2023.1255915',
+  },
+  // Division of Pt1 8.6 in synchronised culture, hour by hour.
+  r105: {
+    text: 'Tanaka, De Martino, Amato, Montsant, Mathieu, Rostaing, Tirichine & Bowler (2015) Protist 166:506–521 — “Ultrastructure and membrane traffic during cell division in the marine pennate diatom Phaeodactylum tricornutum”',
+    url: 'https://doi.org/10.1016/j.protis.2015.07.005',
+  },
+  // Seventeen accessions, among them Pt14 from the Gulf of Salerno; where the
+  // species lives. Open access.
+  r106: {
+    text: 'Chaumier, Yang, Manirakiza, Ait-Mohamed, Wu, Chandola, Jesus, Piganeau, Groisillier & Tirichine (2024) ISME Commun 4:ycad008 — “Genome-wide assessment of genetic diversity and transcript variations in 17 accessions of the model diatom Phaeodactylum tricornutum”',
+    url: 'https://doi.org/10.1093/ismeco/ycad008',
+  },
+  r107: {
+    text: 'Bowler, Allen, Badger, Grimwood, Jabbari, Kuo et al. (2008) Nature 456:239–244 — “The Phaeodactylum genome reveals the evolutionary history of diatom genomes”',
+    url: 'https://doi.org/10.1038/nature07410',
+  },
+  r108: {
+    text: 'Giguere, Bahcheli, Slattery, Patel, Browne, Flatley, Karas, Edgell & Gloor (2022) PeerJ 10:e13607 — “Telomere-to-telomere genome assembly of Phaeodactylum tricornutum”',
+    url: 'https://doi.org/10.7717/peerj.13607',
+  },
+  // The strain drawn: where, when and by whom it was isolated.
+  r109: {
+    text: 'Culture Collection of Algae and Protozoa — strain CCAP 1055/1, Phaeodactylum tricornutum Pt1 clone 8.6, and CCAP 1055/3, the Pt1 culture it was cloned from (consulted 10 October 2026)',
+    url: 'https://www.ccap.ac.uk/catalogue/strain-1055-1',
+  },
+  r110: {
+    text: 'WoRMS Editorial Board — World Register of Marine Species: Phaeodactylum tricornutum Bohlin, 1897, AphiaID 175584 (consulted 10 October 2026)',
+    url: 'https://www.marinespecies.org/aphia.php?p=taxdetails&id=175584',
+  },
+  // The reference micrograph: an oval, a triradiate and a fusiform cell at
+  // high magnification with a 10 µm bar, measured for the shapes and the
+  // plastid. CC BY 4.0, kept in docs/fonti.
+  r111: {
+    text: 'Gruber (2008) — “Phaeodactylum tricornutum”: three forms in brightfield, 10 µm bar, Universität Konstanz; Wikimedia Commons, CC BY 4.0',
+    url: 'https://commons.wikimedia.org/wiki/File:Phaeodactylum_tricornutum.jpg',
+  },
+  // A field of a Pt1 culture: the density, the way the cells lie, how many are
+  // in focus at once. CC BY-SA 4.0, kept in docs/fonti.
+  r112: {
+    text: 'Monteil (2022) — “Phaeodactylum tricornutum Pt1”: a field of the culture in brightfield; Wikimedia Commons, CC BY-SA 4.0',
+    url: 'https://commons.wikimedia.org/wiki/File:Phaeodactylum_tricornutum_Pt1.jpg',
+  },
   r43: {
     text: 'Deschoenmaeker, Facchini, Cabrera Pino, Bayon-Vicente, Sachdeva, Flammang & Wattiez (2016) J Struct Biol 196:385–393 — “Nitrogen depletion in Arthrospira sp. PCC 8005, an ultrastructural point of view”',
     url: 'https://doi.org/10.1016/j.jsb.2016.08.007',

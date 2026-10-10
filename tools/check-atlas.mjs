@@ -53,6 +53,7 @@ const EXTERIOR_KINDS = [
   'haptophyte-field',
   'colony-field',
   'thraustochytrid-field',
+  'pennate-field',
 ]
 // App.jsx draws every interior with CellSection, whatever the kind says. The
 // list is here so that a second interior arrives with its own kind and its own

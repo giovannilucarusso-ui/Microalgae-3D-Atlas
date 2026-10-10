@@ -558,3 +558,86 @@ al. 2023 (*J. Phys. Chem. B*, CC BY-NC-ND) and the Stony Brook laboratory pages
 life-cycle plate of Ganuza et al. 2019 is on Wikimedia Commons as CC BY 4.0, but
 the article is not listed as open access, so it is not copied here until the
 publisher's licence is confirmed.
+
+## Phaeodactylum tricornutum — the first diatom (October 2026)
+
+The research record is `docs/distinta-anatomica-phaeodactylum.md` (v0.3); its
+numbered bibliography is the full list. This section keeps what is stored here
+and why. The exterior was built on 10 October 2026, and what it cites is r97–r112
+in `src/structures.js`: Bohlin 1897 (r97), Borowitzka & Volcani 1978 (r98),
+Tesson et al. 2009 (r99), He et al. 2014 (r100), Galas et al. 2021 (r101),
+Uwizeye et al. 2021 (r102), Murison et al. 2023 (r103), Zhang et al. 2023 (r104),
+Tanaka et al. 2015 (r105), Chaumier et al. 2024 (r106), Bowler et al. 2008
+(r107), Giguere et al. 2022 (r108), the CCAP catalogue (r109), WoRMS (r110), and
+the two open images below, Gruber (r111) and Monteil (r112).
+`tools/check-phaeodactylum.mjs` holds the drawn culture to them.
+
+**The reference strain is Pt1 8.6** (CCAP 1055/1 = CCMP2561), the clone
+De Martino and Ten-Hage isolated in 2003 from the Pt1 culture (CCMP632 =
+CCAP 1055/3), which Coughlan isolated around 1956 from a polluted estuary off
+Blackpool (CCAP catalogue). It is the genome strain (Bowler et al. 2008;
+telomere-to-telomere assembly, 25 chromosomes, Giguere et al. 2022), the strain
+of the FIB-SEM reconstruction (Uwizeye et al. 2021) and of the cell-division
+study (Tanaka et al. 2015), and it is mostly fusiform.
+
+**Kept in the repository because the licence allows it:**
+
+- `commons-gruber2008-morphotypes.jpg` — "Phaeodactylum tricornutum", by Ansgar
+  Gruber, Universität Konstanz (2008), Wikimedia Commons, **CC BY 4.0**. Oval
+  (inset), triradiate and fusiform cells in brightfield at high magnification;
+  strain not stated. **Scale: the 10 µm bar is 454 px, so 45.4 px/µm.**
+  Measured: fusiform 16.5 µm tip to tip (about 17 along the arc), pigmented body
+  about 7 × 2.4–3.0 µm, arms 0.9–1.0 µm across; triradiate arms 6.9, 8.0 and
+  7.1 µm from the centre at 117°, 117° and 126°; ovals 5.4–7.7 × 2.8–3.2 µm with
+  a thick hyaline rim. Field (162, 171, 166); densest plastid 0.53 / 0.68 / 0.33
+  of the field in red, green and blue; inside an arm 0.98–1.00, its edges
+  0.93–0.95. The reference for the shapes and for the plastid's luminance.
+- `commons-monteil2022-pt1-field.jpg` — "Phaeodactylum tricornutum Pt1", by
+  R. Monteil (2022), Wikimedia Commons, **CC BY-SA 4.0** — so any adaptation of
+  this one image must carry the same licence. A whole field of a Pt1 culture,
+  no scale bar, strongly yellow white balance (field 219, 216, 154), phone
+  sharpening and purple fringes from the objective. Measured: 122 pigmented
+  objects near focus plus many out of focus; pigmented part 183 px median
+  (114–244, 10th–90th percentile), which at about 23 µm per cell puts the field
+  near 210 × 160 µm. The reference for density, orientation and depth, not for
+  colour.
+- `commons-bohlin1897-fig9.png` — Bohlin 1897, fig. 9, the protologue's plate,
+  **public domain**: (a) the triradiate cell as the vegetative stage, (b–c) a
+  fusiform cell and a pair of cells drawn as division stages.
+- `uwizeye2021-fig1.png`, `uwizeye2021-fig3.png`, `uwizeye2021-fig5.png` —
+  Uwizeye et al. 2021, *Nat. Commun.* 12:1049,
+  https://doi.org/10.1038/s41467-021-21314-0, **CC BY 4.0**: the FIB-SEM surface
+  of a Pt1 cell (32.6 ± 2.4 µm³), its plastid, nucleus and mitochondria in 3D,
+  and the plastid with its pyrenoid crossed by parallel thylakoid stacks. The
+  volumes are from the paper's Supplementary Data 1 (read, not stored). Raw
+  stacks: BioStudies S-BSST575.
+- `galas2021-fig1-tem.jpg`, `galas2021-fig2-plastid.jpg` — Galas et al. 2021,
+  *Front. Plant Sci.* 12:638181, https://doi.org/10.3389/fpls.2021.638181,
+  **CC BY 4.0**, strain Pt3: TEM of the fusiform, oval and triradiate cells
+  (1 µm bars; vacuoles in the arms, one plastid beside a round nucleus, the
+  oval's thicker wall), and the plastid's autofluorescence over transmitted
+  light for the three forms.
+- `he2014-fig2-transformations.png` — He, Han & Yu 2014, *PLoS ONE* 9:e93922,
+  https://doi.org/10.1371/journal.pone.0093922, **CC BY 4.0**, strain CCMM 2004:
+  cruciform, triradiate and fusiform cells turning oval in four stages, 10 µm
+  bars.
+
+**Kept locally, not in the repository** (`*.pdf` is ignored here; both are
+subscription papers, supplied by the project owner):
+
+- `borowitzka-volcani-1978-morphotypes.pdf` — Borowitzka & Volcani 1978,
+  *J. Phycol.* 14:10–21: the ultrastructure of the three forms, the wall and its
+  silica bands, the vacuoles of the arms, the shape variants. A scan with no
+  text layer. Measured on it: the oval cell's wall, 30–45 nm in the transverse
+  sections of figs 15–16 against their 0.1 µm bars.
+- `tesson-2009-polymorphism.pdf` — Tesson, Gaillard & Martín-Jézéquel 2009,
+  *Bot. Mar.* 52:104–116: the forms, the conditions that favour each, how an
+  oval forms inside a fusiform cell, the long and the round ovals.
+
+**Read, not kept:** Tanaka et al. 2015 (*Protist*, CC BY-NC-ND: the division
+sequence and its timing), Flori et al. 2017 (*Nat. Commun.*, CC BY: thylakoid
+architecture), Murison et al. 2023 (*Front. Plant Sci.*, CC BY: Pt1 22.6–23.5 ×
+3.5–4 µm on thousands of cells, lipid droplets under nitrogen starvation),
+Chaumier et al. 2024 (*ISME Commun.*, CC BY: 17 accessions, including Pt14 from
+the Gulf of Salerno), Chuberre et al. 2022 and Rastogi et al. 2018 (CC BY), and
+the abstracts of the papers listed in the distinta as not yet obtained.

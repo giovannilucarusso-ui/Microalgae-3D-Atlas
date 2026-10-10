@@ -51,7 +51,7 @@ credited on it (see [Licence and credit](#licence-and-credit)).
 
 ### Add a specimen on an existing generator
 
-There are six body generators. A species whose body fits one of them needs a
+There are seven body generators. A species whose body fits one of them needs a
 species file, some cards and some bibliography entries, and no rendering code.
 
 | `exterior.kind` | draws | built for |
@@ -62,6 +62,7 @@ species file, some cards and some bibliography entries, and no rendering code.
 | `haptophyte-field` | a scaly flagellate with a flattened body, parietal plastids, flagella, haptonema and spine-scales | Braarudosphaera — [`braarudosphaera-bigelowii.js`](src/species/braarudosphaera-bigelowii.js) |
 | `colony-field` | a drop of hollow colonies, each a layer of cells on a sphere of matrix, carrying their young inside | Volvox — [`volvox-aureus.js`](src/species/volvox-aureus.js) |
 | `thraustochytrid-field` | a settled culture of colourless round cells full of oil droplets, in groups pressed flat where they touch | Aurantiochytrium — [`aurantiochytrium-mangrovei.js`](src/species/aurantiochytrium-mangrovei.js) |
+| `pennate-field` | a culture of spindle-shaped cells with tubular arms and one plastid each, hanging through the drop, with a few ovals on the glass | Phaeodactylum — [`phaeodactylum-tricornutum.js`](src/species/phaeodactylum-tricornutum.js) |
 
 1. **Start from the closest record** in [`src/species/`](src/species/) and give
    it its own `id`, `name`, `latin`, `authority` and `group`. The parameters
@@ -102,8 +103,10 @@ species file, some cards and some bibliography entries, and no rendering code.
 A chain-forming diatom or a dinoflagellate each needs a new generator. It sits
 beside [`Trichome.jsx`](src/Trichome.jsx),
 [`CellField.jsx`](src/CellField.jsx), [`EuglenaField.jsx`](src/EuglenaField.jsx),
-[`HaptophyteField.jsx`](src/HaptophyteField.jsx) and
-[`ColonyField.jsx`](src/ColonyField.jsx), is selected by a new
+[`HaptophyteField.jsx`](src/HaptophyteField.jsx),
+[`ColonyField.jsx`](src/ColonyField.jsx),
+[`ThraustochytridField.jsx`](src/ThraustochytridField.jsx) and
+[`PennateField.jsx`](src/PennateField.jsx), is selected by a new
 `exterior.kind` in `App.jsx`, and that kind is added to the list in
 [`tools/check-atlas.mjs`](tools/check-atlas.mjs). Give it a disc on the landing
 page too, in `organism()` in [`src/landing/main.js`](src/landing/main.js); until
@@ -164,6 +167,9 @@ Every pull request runs `npm run check`:
 - [`tools/check-atlas.mjs`](tools/check-atlas.mjs) checks that every specimen
   record can be drawn: tiers from the three, sources that resolve, cards that can
   be reached;
+- `tools/check-<specimen>.mjs`, one for each of Braarudosphaera, Volvox,
+  Aurantiochytrium and Phaeodactylum, holds what is drawn — sizes, volumes,
+  shares, counts, where the cells lie — to the measurements its cards cite;
 - [`tools/check-shaders.mjs`](tools/check-shaders.mjs) catches a stray backtick
   inside GLSL.
 

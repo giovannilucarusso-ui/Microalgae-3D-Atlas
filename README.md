@@ -126,10 +126,12 @@ confocal stack or a tomogram because 56 nm is past what any lens resolves.
 ## Sources
 
 `docs/fonti/README.md` describes every source, what it settles, and where it came
-from. The PDFs themselves are **not** in this repository — one of them is not
-open access — so a fresh clone has the descriptions and not the papers. The three
-figures from Nowicka-Krawczyk et al. (2019) are included under their own CC BY
-4.0 licence, with attribution.
+from. The PDFs themselves are **not** in this repository — several are not open
+access — so a fresh clone has the descriptions and not the papers. The figures
+that are here, such as the three from Nowicka-Krawczyk et al. (2019), are
+included under their own open licences, with attribution, and that file gives
+each one's; one photograph of a *Phaeodactylum* culture is CC BY-SA 4.0, so an
+adaptation of that image must carry the same licence.
 
 ## Licence
 

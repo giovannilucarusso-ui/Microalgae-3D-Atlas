@@ -352,6 +352,82 @@ set aside:
   just their size. `Debris` takes the two counts as props, and a species record
   may set them.
 
+## The pennate field, and Phaeodactylum
+
+The eighth specimen, *Phaeodactylum tricornutum* strain Pt1 8.6 (October
+2026), is the atlas's first diatom, and almost none of its cells looks like one:
+in liquid culture the strain is fusiform, with an organic wall and no glass box.
+The owner chose the strain, a field about a hundred micrometres across and the
+exterior only. There is no photograph of the owner's own, so the references are
+two open images: a micrograph of the three forms (Gruber, CC BY 4.0) for shapes,
+margins and the plastid's luminance, and a photograph of a Pt1 culture (Monteil,
+CC BY-SA 4.0) for density, orientation and depth. What was measured on them is in
+`docs/distinta-anatomica-phaeodactylum.md`, §2.10–2.11, and in
+`tools/check-phaeodactylum.mjs`. The generator is `src/PennateField.jsx`, the
+population `src/pennate.js`. What was decided, and what was tried and set aside:
+
+- **A body and two tubes.** The outline is a parabolic spindle blended into
+  tubular arms by a p-norm, (body³ + arm³)^⅓. An ellipse was tried first and
+  every cell was a lemon with two straws in it. The body's width is the one at
+  which a cell of 13–15 µm holds the FIB-SEM volume of the strain, 32.6 µm³; the
+  micrograph's arms, 0.9–1.0 µm across, include the blur, and the drawn tube of
+  about 0.84 µm reads as 1.0 µm between its wall lines.
+- **Most of each cell is nearly invisible.** An arm is mostly vacuole and barely
+  darkens the field, and what draws it is its wall. So a cell is a shell and a
+  core, the wall's chord the difference of two chords, exact under the blur.
+  Wall thickness and index (40 nm at 1.395) are fitted to the micrograph's arm
+  margins: 0.93–0.95 of the field at the wall, 1.08–1.11 just outside.
+- **Curvatures on the objective's own step.** The phase term was first taken in
+  closed form, as the difference of the slopes at the two ends of the blur, and
+  for a 40 nm wall that difference spikes wherever an end crosses a margin:
+  every arm was a double line, dotted by the pixel grid. Second differences of
+  the blurred path, on a step no finer than the resolution (0.22 µm), give the
+  smooth margin the micrograph shows.
+- **Small bodies are discs, not lines.** The nucleus and the lipid droplets were
+  first chords blurred along one direction, and a droplet a few micrometres out
+  of focus came back as a ring several times its size. As Gaussians that hold
+  their volume over a disc, they fade as they should.
+- **The phase is trusted less away from focus.** Unbounded, every cell ten
+  micrometres out was striped along its length by its wall, core and plastid.
+  Each term saturates, and its ceiling falls over three micrometres of defocus.
+- **The cells hang in the drop.** A replete culture of the species does not
+  sink, so fusiform cells are spread through the whole gap and the fine focus
+  brings them in one layer at a time, as in the culture photograph. The ovals
+  stick to the glass with what they secrete through the raphe, which they
+  usually carry in the hypotheca, and their plastid is on the epivalve side: so
+  they lie plastid up, and it fills the outline seen from above.
+- **The plastid follows the body.** It is a body of revolution of its own, its
+  section an ellipse pushed to one side, parabolic along a fusiform cell and
+  elliptical along an oval one; a pointed plastid in an oval was a lens floating
+  in an empty shell. When it divides it is pinched across its middle, and its
+  distance from the axis follows the unpinched profile, or the two halves swing
+  in and cross as an X.
+- **Colour from the pigments, luminance from the micrograph.** The two images
+  disagree about red against green, which is what their cameras' white balance
+  does to a ratio. Fucoxanthin and the chlorophylls set the order — blue taken
+  most, then green, then red — and the micrograph sets the luminance: 0.68 of
+  the field in green at the plastid's thickest.
+- **An oval's dark line is a focus, not a wall.** In electron micrographs the
+  oval's wall is 30–45 nm, and with the plane through its middle it showed no
+  dark line at all, only the objective's red and cyan fringes, as two rings. The
+  micrograph's rim — 0.85 of the field in green, cold inside, warm outside — is
+  what the model gives with the plane 0.4 µm below the cell, so that is where
+  the oval card focuses. On the way, the light lost at a steep margin was
+  rewritten from the slope of the optical path against the aperture, as in the
+  thraustochytrid field; the first version, a fraction of the outline's slope,
+  was ten times weaker than the other fields'.
+- **Nine attributes.** SwiftShader counts declared attributes, and three.js
+  declares position, normal, uv and the four columns of instanceMatrix in every
+  instanced shader, so a cell carries nine of its own. A droplet is a position
+  along the cell and a radius; where it sits across the cell is a rule both
+  sides apply (`dropletAcross`).
+- **The check caught the daughters.** Two daughters lying side by side share an
+  outline, and the second was first given its sister's after its plastid and
+  nucleus had been sized to its own: thirteen of the second daughters had a
+  nucleus off its measured share or too big for the body, and six of them a
+  plastid through the wall. Each is now drawn on its final outline before
+  anything inside it is fitted.
+
 ## The landing page, and the type
 
 The site opens on a tree of life, `index.html`, and the microscope moved to

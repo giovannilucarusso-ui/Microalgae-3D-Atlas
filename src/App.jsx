@@ -9,6 +9,7 @@ import EuglenaField from './EuglenaField.jsx'
 import HaptophyteField from './HaptophyteField.jsx'
 import ColonyField from './ColonyField.jsx'
 import ThraustochytridField from './ThraustochytridField.jsx'
+import PennateField from './PennateField.jsx'
 import Debris from './specimen.jsx'
 import CellSection from './CellSection.jsx'
 import { SWATCH } from './materials.js'
@@ -513,6 +514,8 @@ export default function App() {
                 optics={config.optics}
                 life={cycleOn ? life : null}
               />
+            ) : config.form.kind === 'pennate-field' ? (
+              <PennateField form={config.form} focus={focus} optics={config.optics} />
             ) : config.form.kind === 'coccoid-field' ? (
               RENDER_2D ? (
                 <CellField2D
@@ -727,7 +730,8 @@ export default function App() {
               config.form?.kind === 'euglenoid-field' ||
               config.form?.kind === 'haptophyte-field' ||
               config.form?.kind === 'colony-field' ||
-              config.form?.kind === 'thraustochytrid-field') && (
+              config.form?.kind === 'thraustochytrid-field' ||
+              config.form?.kind === 'pennate-field') && (
             <div className="cycle">
               <label htmlFor="condenser">Condenser filter</label>
               <select
